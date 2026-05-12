@@ -2,8 +2,8 @@ import Image from "next/image";
 import type { Dispatch, SetStateAction } from "react";
 import type { Product, ProductDraft, ShopTheme } from "@/types";
 import { safeImage, formatMoney } from "@/lib/utils";
-import { Badge } from "../ui";
-import { ProductForm } from "@/components/admin/ProductForm";
+import { Badge } from "@/components/ui";
+import { ProductForm } from "@/app/components/admin/ProductForm";
 
 type Props = {
   product: Product;

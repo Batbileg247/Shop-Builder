@@ -3,10 +3,10 @@
 import { useShop } from "@/hooks/useShop";
 
 import { formatMoney } from "@/lib/utils";
-import { Metric } from "./ui";
 import { BuilderSurface } from "./surfaces/BuilderSurface";
 import { AdminSurface } from "./surfaces/AdminSurface";
 import { ClientSurface } from "./surfaces/ClientSurface";
+import { Metric } from "@/components/ui";
 
 const SURFACES = ["builder", "admin", "client"] as const;
 

@@ -11,8 +11,8 @@ import type {
 } from "@/types";
 import { formatMoney } from "@/lib/utils";
 import { Badge } from "@/components/ui";
-import { ProductForm } from "@/components/admin/ProductForm";
-import { ProductRow } from "@/components/admin/ProductRow";
+import { ProductForm } from "@/app/components/admin/ProductForm";
+import { ProductRow } from "@/app/components/admin/ProductRow";
 
 type Props = {
   draft: ProductDraft;

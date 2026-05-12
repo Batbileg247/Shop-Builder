@@ -5,7 +5,7 @@ import type { Dispatch, SetStateAction } from "react";
 import type { CartItem, Product, ShopTheme } from "@/types";
 import { formatMoney } from "@/lib/utils";
 import { Field } from "@/components/ui";
-import { ShopHero, ProductShelf } from "@/components/shop";
+import { ShopHero, ProductShelf } from "@/app/components/shop";
 
 type Props = {
   addToCart: (id: string) => void;

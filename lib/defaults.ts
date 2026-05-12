@@ -52,6 +52,73 @@ export const defaultProducts: Product[] = [
       "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&w=1000&q=80",
     featured: false,
   },
+  {
+    id: "felt-slippers",
+    name: "Felt Slippers",
+    category: "Home",
+    description: "Hand-pressed wool felt with a soft indoor sole.",
+    price: 52000,
+    inventory: 22,
+    image:
+      "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1000&q=80",
+    featured: true,
+  },
+  {
+    id: "yak-beanie",
+    name: "Yak Wool Beanie",
+    category: "Accessories",
+    description: "Dense rib knit that keeps heat without bulk.",
+    price: 45000,
+    salePrice: 39000,
+    inventory: 18,
+    image:
+      "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?auto=format&fit=crop&w=1000&q=80",
+    featured: true,
+  },
+  {
+    id: "linen-shirt",
+    name: "Linen Camp Shirt",
+    category: "Apparel",
+    description: "Breathable open weave for warm days in the city.",
+    price: 112000,
+    inventory: 11,
+    image:
+      "https://images.unsplash.com/photo-1596755094514-d87a0537a063?auto=format&fit=crop&w=1000&q=80",
+    featured: true,
+  },
+  {
+    id: "ceramic-mug-set",
+    name: "Ceramic Mug Set",
+    category: "Home",
+    description: "Two stackable mugs with a matte glaze finish.",
+    price: 58000,
+    inventory: 30,
+    image:
+      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=1000&q=80",
+    featured: true,
+  },
+  {
+    id: "travel-pouch",
+    name: "Travel Pouch",
+    category: "Accessories",
+    description: "Waxed canvas with a brass zip and interior pockets.",
+    price: 76000,
+    inventory: 15,
+    image:
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1000&q=80",
+    featured: true,
+  },
+  {
+    id: "merino-socks",
+    name: "Merino Sock Pack",
+    category: "Apparel",
+    description: "Three pairs in neutral tones for daily wear.",
+    price: 34000,
+    inventory: 40,
+    image:
+      "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&w=1000&q=80",
+    featured: true,
+  },
 ];
 
 export const emptyDraft: ProductDraft = {

@@ -1,6 +1,6 @@
 import type { Product, ShopTheme } from "@/types";
 import { Field, ColorField } from "@/components/ui";
-import { ShopHero, ProductShelf } from "@/components/shop";
+import { ShopHero, ProductShelf } from "@/app/components/shop";
 
 const CURRENCIES = ["₮", "$", "€", "£", "¥"] as const;
 const FONTS = [

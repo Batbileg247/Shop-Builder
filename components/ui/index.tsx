@@ -1,17 +1,44 @@
 import type { ReactNode } from "react";
 
 export function Field({
-  children,
   label,
+  children,
 }: {
-  children: ReactNode;
   label: string;
+  children: ReactNode;
 }) {
   return (
-    <label className="grid gap-1.5 text-sm font-medium text-zinc-700">
+    <div className="grid gap-1.5 text-sm font-medium text-zinc-700">
       <span>{label}</span>
       {children}
-    </label>
+    </div>
+  );
+}
+
+const badgeClass: Record<
+  "zinc" | "amber" | "green" | "red" | "blue",
+  string
+> = {
+  zinc: "border-zinc-200 bg-zinc-100 text-zinc-800",
+  amber: "border-amber-200 bg-amber-100 text-amber-900",
+  green: "border-emerald-200 bg-emerald-100 text-emerald-900",
+  red: "border-red-200 bg-red-100 text-red-900",
+  blue: "border-blue-200 bg-blue-100 text-blue-900",
+};
+
+export function Badge({
+  color,
+  children,
+}: {
+  color: keyof typeof badgeClass;
+  children: ReactNode;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold capitalize ${badgeClass[color]}`}
+    >
+      {children}
+    </span>
   );
 }
 
@@ -51,30 +78,11 @@ export function Metric({
 }) {
   return (
     <div className="rounded-md border border-black/10 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">{label}</p>
+      <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+        {label}
+      </p>
       <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
       {sub && <p className="mt-0.5 text-xs text-zinc-500">{sub}</p>}
     </div>
-  );
-}
-
-export function Badge({
-  children,
-  color = "zinc",
-}: {
-  children: ReactNode;
-  color?: "zinc" | "green" | "amber" | "red" | "blue";
-}) {
-  const colors = {
-    zinc: "bg-zinc-100 text-zinc-700",
-    green: "bg-emerald-50 text-emerald-700",
-    amber: "bg-amber-50 text-amber-700",
-    red: "bg-red-50 text-red-600",
-    blue: "bg-blue-50 text-blue-700",
-  };
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${colors[color]}`}>
-      {children}
-    </span>
   );
 }
