@@ -1,5 +1,6 @@
+"use client";
+
 import { useMemo, useState } from "react";
-import { SidebarLayout } from "@/components/layout/SidebarLayout";
 import { Field, ColorField } from "@/ui";
 import { Separator } from "@/ui/separator";
 import { ShopHero, ProductShelf } from "@/app/components/shop";
@@ -64,24 +65,16 @@ export function BuilderSurface({
   const cartCount = cartItems.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <SidebarLayout
-      title="Builder"
-      sidebar={
-        <div className="p-2">
-          <div className="rounded-lg border border-sidebar-border bg-sidebar p-3 shadow-sm">
-            <p className="text-sm font-semibold text-sidebar-foreground">
-              Theme controls
-            </p>
-            <p className="mt-0.5 text-xs text-sidebar-foreground/70">
-              Edit your store identity, colors, and layout.
-            </p>
-          </div>
+    <section className="grid gap-5 lg:grid-cols-[minmax(380px,34%)_1fr]">
+      <div className="h-fit rounded-md border border-black/10 bg-white p-4 shadow-sm">
+        <h2 className="text-base font-semibold">Theme controls</h2>
 
-          <div className="mt-3 rounded-lg border border-sidebar-border bg-sidebar p-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70">
+        <div className="mt-4 grid gap-4">
+          <div className="border-b border-zinc-100 pb-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
               Identity
             </p>
-            <div className="mt-3 grid gap-3">
+            <div className="grid gap-3">
               <Field label="Shop name">
                 <input
                   className="input"
@@ -106,26 +99,24 @@ export function BuilderSurface({
             </div>
           </div>
 
-          <div className="mt-3 rounded-lg border border-sidebar-border bg-sidebar p-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70">
+          <div className="border-b border-zinc-100 pb-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
               Media
             </p>
-            <div className="mt-3">
-              <Field label="Hero image (Unsplash URL)">
-                <input
-                  className="input"
-                  onChange={(e) => updateTheme("heroImage", e.target.value)}
-                  value={theme.heroImage}
-                />
-              </Field>
-            </div>
+            <Field label="Hero image (Unsplash URL)">
+              <input
+                className="input"
+                onChange={(e) => updateTheme("heroImage", e.target.value)}
+                value={theme.heroImage}
+              />
+            </Field>
           </div>
 
-          <div className="mt-3 rounded-lg border border-sidebar-border bg-sidebar p-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70">
+          <div className="border-b border-zinc-100 pb-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
               Colors
             </p>
-            <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <ColorField
                 label="Primary"
                 onChange={(v) => updateTheme("primaryColor", v)}
@@ -149,11 +140,11 @@ export function BuilderSurface({
             </div>
           </div>
 
-          <div className="mt-3 rounded-lg border border-sidebar-border bg-sidebar p-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70">
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
               Style
             </p>
-            <div className="mt-3 grid gap-3">
+            <div className="grid gap-3">
               <Field label="Product layout">
                 <select
                   className="input"
@@ -186,9 +177,7 @@ export function BuilderSurface({
                   className="w-full accent-current"
                   max="20"
                   min="0"
-                  onChange={(e) =>
-                    updateTheme("radius", Number(e.target.value))
-                  }
+                  onChange={(e) => updateTheme("radius", Number(e.target.value))}
                   style={{ accentColor: theme.primaryColor }}
                   type="range"
                   value={theme.radius}
@@ -221,19 +210,13 @@ export function BuilderSurface({
             </div>
           </div>
 
-          <Separator className="my-4" />
+          <Separator className="my-2" />
 
-          <div className="rounded-lg border border-sidebar-border bg-sidebar p-3">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-sidebar-foreground">
-                Storefront controls
-              </p>
-              <span className="rounded-full bg-sidebar-accent px-2 py-0.5 text-xs font-semibold text-sidebar-accent-foreground">
-                Cart {cartCount}
-              </span>
-            </div>
-
-            <div className="mt-3 grid gap-3">
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              Storefront demo
+            </p>
+            <div className="grid gap-3">
               <Field label="Preview category">
                 <select
                   className="input"
@@ -277,8 +260,7 @@ export function BuilderSurface({
                                 {item.product.name}
                               </p>
                               <p className="mt-0.5 text-xs text-zinc-500">
-                                {formatMoney(effectivePrice, theme.currency)}{" "}
-                                each
+                                {formatMoney(effectivePrice, theme.currency)} each
                               </p>
                             </div>
                             <button
@@ -371,9 +353,9 @@ export function BuilderSurface({
             </div>
           </div>
         </div>
-      }
-    >
-      <div className="overflow-hidden rounded-xl">
+      </div>
+
+      <div className="overflow-hidden rounded-md border border-black/10 bg-white shadow-sm">
         <ShopHero
           heroImages={[
             theme.heroImage,
@@ -381,15 +363,13 @@ export function BuilderSurface({
           ].filter(Boolean)}
           theme={theme}
         />
-        <div className="border-t border-zinc-100">
-          <ProductShelf
-            mode="preview"
-            products={filtered}
-            theme={theme}
-            title={categoryFilter === "All" ? "All products" : categoryFilter}
-          />
-        </div>
+        <ProductShelf
+          mode="preview"
+          products={filtered}
+          theme={theme}
+          title={categoryFilter === "All" ? "All products" : categoryFilter}
+        />
       </div>
-    </SidebarLayout>
+    </section>
   );
 }

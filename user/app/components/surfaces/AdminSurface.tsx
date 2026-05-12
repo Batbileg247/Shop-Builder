@@ -73,7 +73,7 @@ export function AdminSurface({
     };
 
   return (
-    <section className="grid gap-5 lg:grid-cols-[360px_1fr]">
+    <section className="grid gap-5 lg:grid-cols-[minmax(380px,34%)_1fr]">
       {/* Sidebar: Create product */}
       <div className="h-fit rounded-md border border-black/10 bg-white p-4 shadow-sm">
         <h2 className="text-base font-semibold tracking-normal">Add product</h2>
