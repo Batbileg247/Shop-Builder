@@ -76,17 +76,6 @@ export const defaultProducts: Product[] = [
     featured: true,
   },
   {
-    id: "linen-shirt",
-    name: "Linen Camp Shirt",
-    category: "Apparel",
-    description: "Breathable open weave for warm days in the city.",
-    price: 112000,
-    inventory: 11,
-    image:
-      "https://images.unsplash.com/photo-1596755094514-d87a0537a063?auto=format&fit=crop&w=1000&q=80",
-    featured: true,
-  },
-  {
     id: "ceramic-mug-set",
     name: "Ceramic Mug Set",
     category: "Home",

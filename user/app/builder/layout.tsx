@@ -12,12 +12,26 @@ import { ScrollArea } from "@/ui/scroll-area";
 import { Separator } from "@/ui/separator";
 import { Metric } from "@/ui";
 import {
+  SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-  SidebarInset,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 type Surface = "builder" | "admin" | "client";
+
+/** Collapses the rail (desktop) or closes the drawer (mobile) when switching to Storefront. */
+function CloseSidebarOnStorefront({ surface }: { surface: Surface }) {
+  const { setOpen, setOpenMobile, isMobile } = useSidebar();
+
+  React.useEffect(() => {
+    if (surface !== "client") return;
+    if (isMobile) setOpenMobile(false);
+    else setOpen(false);
+  }, [surface, isMobile, setOpen, setOpenMobile]);
+
+  return null;
+}
 
 export default function BuilderLayout({
   children,
@@ -37,6 +51,7 @@ export default function BuilderLayout({
         } as React.CSSProperties
       }
     >
+      <CloseSidebarOnStorefront surface={surface as Surface} />
       <AppSidebar
         setSurface={(s) => setSurface(s as Surface)}
         shopName={theme.name}
