@@ -61,7 +61,7 @@ export function ProductForm({
                 className="overflow-hidden border border-zinc-200 bg-white shadow-sm"
                 style={{ borderRadius: theme.radius }}
               >
-                <div className="relative aspect-[4/3] bg-zinc-100">
+                <div className="relative aspect-4/3 bg-zinc-100">
                   <Image
                     alt={draft.name || "Preview"}
                     className="object-cover"
@@ -105,7 +105,7 @@ export function ProductForm({
                 key={url}
               >
                 <button
-                  className={`relative aspect-[4/3] w-full overflow-hidden rounded-md border-2 bg-zinc-100 transition ${
+                  className={`relative aspect-4/3 w-full overflow-hidden rounded-md border-2 bg-zinc-100 transition ${
                     draft.image === url
                       ? "border-emerald-600 ring-2 ring-emerald-600/20"
                       : "border-transparent hover:border-zinc-300"

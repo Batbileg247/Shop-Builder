@@ -5,10 +5,9 @@ import { useShop } from "@/app/hooks/useShop";
 import { formatMoney } from "@/lib/utils";
 import { BuilderSurface } from "../components/surfaces/BuilderSurface";
 import { AdminSurface } from "../components/surfaces/AdminSurface";
-import { ClientSurface } from "../components/surfaces/ClientSurface";
 import { Metric } from "@/ui";
 
-const SURFACES = ["builder", "admin", "client"] as const;
+const SURFACES = ["builder", "admin"] as const;
 
 const Builder = () => {
   const shop = useShop();
@@ -73,7 +72,19 @@ const Builder = () => {
         {/* Surfaces */}
         {surface === "builder" && (
           <BuilderSurface
+            addToCart={shop.addToCart}
+            buyerEmail={shop.buyerEmail}
+            buyerName={shop.buyerName}
+            cartItems={shop.cartItems}
+            cartTotal={shop.cartTotal}
+            checkout={shop.checkout}
+            clearCartItem={shop.clearCartItem}
             featuredProducts={shop.featuredProducts}
+            lastOrderId={shop.lastOrderId}
+            products={shop.products}
+            removeFromCart={shop.removeFromCart}
+            setBuyerEmail={shop.setBuyerEmail}
+            setBuyerName={shop.setBuyerName}
             theme={theme}
             updateTheme={shop.updateTheme}
           />
@@ -94,24 +105,6 @@ const Builder = () => {
             orders={shop.orders}
             products={shop.products}
             setDraft={shop.setDraft}
-            theme={theme}
-          />
-        )}
-
-        {surface === "client" && (
-          <ClientSurface
-            addToCart={shop.addToCart}
-            buyerEmail={shop.buyerEmail}
-            buyerName={shop.buyerName}
-            cartItems={shop.cartItems}
-            cartTotal={shop.cartTotal}
-            checkout={shop.checkout}
-            clearCartItem={shop.clearCartItem}
-            lastOrderId={shop.lastOrderId}
-            products={shop.products}
-            removeFromCart={shop.removeFromCart}
-            setBuyerEmail={shop.setBuyerEmail}
-            setBuyerName={shop.setBuyerName}
             theme={theme}
           />
         )}

@@ -1,18 +1,49 @@
 import Image from "next/image";
 import type { Product, ShopTheme } from "@/types";
 import { safeImage, formatMoney } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/ui/carousel";
 
-export function ShopHero({ theme }: { theme: ShopTheme }) {
+export function ShopHero({
+  theme,
+  heroImages,
+}: {
+  theme: ShopTheme;
+  heroImages?: string[];
+}) {
+  const slides =
+    heroImages && heroImages.length > 0 ? heroImages : [theme.heroImage];
+
   return (
     <section className="relative min-h-[280px] overflow-hidden p-5 sm:p-8">
-      <Image
-        alt={theme.name}
-        className="object-cover"
-        fill
-        priority
-        sizes="(max-width: 1280px) 100vw, 896px"
-        src={safeImage(theme.heroImage)}
-      />
+      <Carousel className="absolute inset-0">
+        <CarouselContent className="h-full">
+          {slides.map((src, i) => (
+            <CarouselItem className="relative min-h-[280px] p-0" key={`${src}-${i}`}>
+              <Image
+                alt={theme.name}
+                className="object-cover"
+                fill
+                priority={i === 0}
+                sizes="(max-width: 1280px) 100vw, 896px"
+                src={safeImage(src)}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        {slides.length > 1 && (
+          <>
+            <CarouselPrevious className="left-3 border-white/20 bg-white/10 text-white shadow-sm backdrop-blur hover:bg-white/20" />
+            <CarouselNext className="right-3 border-white/20 bg-white/10 text-white shadow-sm backdrop-blur hover:bg-white/20" />
+          </>
+        )}
+      </Carousel>
+
       <div className="absolute inset-0 bg-black/45" />
       <div className="relative flex min-h-[220px] max-w-2xl flex-col justify-end text-white">
         {theme.announcement && (
@@ -51,7 +82,7 @@ export function ProductCard({
       className="overflow-hidden border border-zinc-200 bg-white shadow-sm"
       style={{ borderRadius: theme.radius }}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
+      <div className="relative aspect-4/3 overflow-hidden bg-zinc-100">
         <Image
           alt={product.name}
           className="object-cover transition-transform duration-500 hover:scale-105"
@@ -80,8 +111,12 @@ export function ProductCard({
         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
           {product.category}
         </p>
-        <h4 className="mt-1 text-base font-semibold tracking-normal">{product.name}</h4>
-        <p className="mt-1.5 text-sm leading-6 text-zinc-500">{product.description}</p>
+        <h4 className="mt-1 text-base font-semibold tracking-normal">
+          {product.name}
+        </h4>
+        <p className="mt-1.5 text-sm leading-6 text-zinc-500">
+          {product.description}
+        </p>
 
         <div className="mt-4 flex items-center justify-between gap-3">
           <div>
@@ -96,7 +131,9 @@ export function ProductCard({
               )}
             </div>
             {isLowStock && (
-              <p className="mt-0.5 text-xs text-amber-600">Only {product.inventory} left</p>
+              <p className="mt-0.5 text-xs text-amber-600">
+                Only {product.inventory} left
+              </p>
             )}
           </div>
 
@@ -139,10 +176,15 @@ export function ProductShelf({
     <section className="p-4 sm:p-5">
       <div className="mb-4 flex items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-medium" style={{ color: theme.primaryColor }}>
+          <p
+            className="text-sm font-medium"
+            style={{ color: theme.primaryColor }}
+          >
             Collection
           </p>
-          <h3 className="mt-1 text-xl font-semibold tracking-normal">{title}</h3>
+          <h3 className="mt-1 text-xl font-semibold tracking-normal">
+            {title}
+          </h3>
         </div>
         <span className="text-sm text-zinc-400">{products.length} items</span>
       </div>
