@@ -10,6 +10,11 @@ import { BuilderSurface } from "@/app/components/surfaces/BuilderSurface";
 import { ClientSurface } from "@/app/components/surfaces/ClientSurface";
 import { ScrollArea } from "@/ui/scroll-area";
 import { Separator } from "@/ui/separator";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/ui/resizable";
 import { Metric } from "@/ui";
 import {
   SidebarInset,
@@ -58,98 +63,120 @@ export default function BuilderLayout({
         surface={surface as Surface}
       />
 
-      <SidebarInset>
-        <main className="flex min-h-svh flex-1 flex-col">
-          <div className="flex h-14 items-center gap-2 border-b border-border bg-background px-4">
-            <SidebarTrigger />
-            <Separator className="mx-1 h-5" orientation="vertical" />
-            <p className="truncate text-base font-semibold capitalize">
-              {surface}
-            </p>
-          </div>
+      <SidebarInset className="min-h-0 flex-1 overflow-hidden">
+        <div className="flex min-h-svh min-h-0 flex-1 flex-col overflow-hidden">
+          <ResizablePanelGroup
+            className="flex min-h-0 flex-1 flex-col"
+            orientation="vertical"
+          >
+            <ResizablePanel
+              className="flex min-h-0 flex-col overflow-hidden"
+              defaultSize="12%"
+              id="builder-header"
+              maxSize="38%"
+              minSize="8%"
+            >
+              <div className="flex h-full min-h-11 items-center gap-2 border-b border-border bg-background px-4">
+                <SidebarTrigger />
+                <Separator className="mx-1 h-5" orientation="vertical" />
+                <p className="truncate text-base font-semibold capitalize">
+                  {surface}
+                </p>
+              </div>
+            </ResizablePanel>
 
-          <ScrollArea className="flex-1">
-            <div className="w-full px-6 py-8 sm:px-10 lg:px-14">
-              {surface === "admin" && (
-                <section className="mb-8 grid gap-4 sm:grid-cols-4">
-                  <Metric
-                    label="Products"
-                    value={shop.products.length.toString()}
-                  />
-                  <Metric
-                    label="In stock"
-                    value={shop.inStockProducts.length.toString()}
-                    sub={`${shop.products.length - shop.inStockProducts.length} out of stock`}
-                  />
-                  <Metric
-                    label="Orders"
-                    value={shop.orders.length.toString()}
-                  />
-                  <Metric
-                    label="Revenue"
-                    value={formatMoney(totalRevenue, theme.currency)}
-                  />
-                </section>
-              )}
+            <ResizableHandle className="bg-border" withHandle />
 
-              {surface === "builder" ? (
-                <BuilderSurface
-                  addToCart={shop.addToCart}
-                  buyerEmail={shop.buyerEmail}
-                  buyerName={shop.buyerName}
-                  cartItems={shop.cartItems}
-                  cartTotal={shop.cartTotal}
-                  checkout={shop.checkout}
-                  clearCartItem={shop.clearCartItem}
-                  featuredProducts={shop.featuredProducts}
-                  lastOrderId={shop.lastOrderId}
-                  products={shop.products}
-                  removeFromCart={shop.removeFromCart}
-                  setBuyerEmail={shop.setBuyerEmail}
-                  setBuyerName={shop.setBuyerName}
-                  theme={theme}
-                  updateTheme={shop.updateTheme}
-                />
-              ) : surface === "admin" ? (
-                <AdminSurface
-                  draft={shop.draft}
-                  editingId={shop.editingId}
-                  onAddProduct={shop.addProduct}
-                  onCancelEdit={shop.cancelEdit}
-                  onDeleteProduct={shop.deleteProduct}
-                  onSaveEdit={shop.saveEdit}
-                  onStartEdit={shop.startEdit}
-                  onToggleFeatured={shop.toggleFeatured}
-                  onUpdateInventory={shop.updateInventory}
-                  onUpdateOrderStatus={shop.updateOrderStatus}
-                  orders={shop.orders}
-                  products={shop.products}
-                  setDraft={shop.setDraft}
-                  theme={theme}
-                />
-              ) : (
-                <ClientSurface
-                  addToCart={shop.addToCart}
-                  buyerEmail={shop.buyerEmail}
-                  buyerName={shop.buyerName}
-                  cartItems={shop.cartItems}
-                  cartTotal={shop.cartTotal}
-                  checkout={shop.checkout}
-                  clearCartItem={shop.clearCartItem}
-                  featuredProducts={shop.featuredProducts}
-                  lastOrderId={shop.lastOrderId}
-                  products={shop.products}
-                  removeFromCart={shop.removeFromCart}
-                  setBuyerEmail={shop.setBuyerEmail}
-                  setBuyerName={shop.setBuyerName}
-                  theme={theme}
-                />
-              )}
+            <ResizablePanel
+              className="flex min-h-0 flex-col overflow-hidden"
+              defaultSize="88%"
+              id="builder-main"
+              minSize="45%"
+            >
+              <ScrollArea className="h-full min-h-0 flex-1">
+                <div className="w-full px-6 py-8 sm:px-10 lg:px-14">
+                  {surface === "admin" && (
+                    <section className="mb-8 grid gap-4 sm:grid-cols-4">
+                      <Metric
+                        label="Products"
+                        value={shop.products.length.toString()}
+                      />
+                      <Metric
+                        label="In stock"
+                        value={shop.inStockProducts.length.toString()}
+                        sub={`${shop.products.length - shop.inStockProducts.length} out of stock`}
+                      />
+                      <Metric
+                        label="Orders"
+                        value={shop.orders.length.toString()}
+                      />
+                      <Metric
+                        label="Revenue"
+                        value={formatMoney(totalRevenue, theme.currency)}
+                      />
+                    </section>
+                  )}
 
-              {children}
-            </div>
-          </ScrollArea>
-        </main>
+                  {surface === "builder" ? (
+                    <BuilderSurface
+                      addToCart={shop.addToCart}
+                      buyerEmail={shop.buyerEmail}
+                      buyerName={shop.buyerName}
+                      cartItems={shop.cartItems}
+                      cartTotal={shop.cartTotal}
+                      checkout={shop.checkout}
+                      clearCartItem={shop.clearCartItem}
+                      featuredProducts={shop.featuredProducts}
+                      lastOrderId={shop.lastOrderId}
+                      products={shop.products}
+                      removeFromCart={shop.removeFromCart}
+                      setBuyerEmail={shop.setBuyerEmail}
+                      setBuyerName={shop.setBuyerName}
+                      theme={theme}
+                      updateTheme={shop.updateTheme}
+                    />
+                  ) : surface === "admin" ? (
+                    <AdminSurface
+                      draft={shop.draft}
+                      editingId={shop.editingId}
+                      onAddProduct={shop.addProduct}
+                      onCancelEdit={shop.cancelEdit}
+                      onDeleteProduct={shop.deleteProduct}
+                      onSaveEdit={shop.saveEdit}
+                      onStartEdit={shop.startEdit}
+                      onToggleFeatured={shop.toggleFeatured}
+                      onUpdateInventory={shop.updateInventory}
+                      onUpdateOrderStatus={shop.updateOrderStatus}
+                      orders={shop.orders}
+                      products={shop.products}
+                      setDraft={shop.setDraft}
+                      theme={theme}
+                    />
+                  ) : (
+                    <ClientSurface
+                      addToCart={shop.addToCart}
+                      buyerEmail={shop.buyerEmail}
+                      buyerName={shop.buyerName}
+                      cartItems={shop.cartItems}
+                      cartTotal={shop.cartTotal}
+                      checkout={shop.checkout}
+                      clearCartItem={shop.clearCartItem}
+                      featuredProducts={shop.featuredProducts}
+                      lastOrderId={shop.lastOrderId}
+                      products={shop.products}
+                      removeFromCart={shop.removeFromCart}
+                      setBuyerEmail={shop.setBuyerEmail}
+                      setBuyerName={shop.setBuyerName}
+                      theme={theme}
+                    />
+                  )}
+
+                  {children}
+                </div>
+              </ScrollArea>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
