@@ -120,7 +120,7 @@ export default function OrbLine() {
       });
 
       // Core glow
-      const coreR = (70 + pulse * 40) * devicePixelRatio;
+      const coreR = (60 + pulse * 10) * devicePixelRatio;
       const coreGlow = ctx.createRadialGradient(
         orb.x,
         orb.y,
@@ -141,7 +141,7 @@ export default function OrbLine() {
       // White dot
       ctx.beginPath();
       ctx.arc(orb.x, orb.y, 4.5 * devicePixelRatio, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#f9f6f3";
       ctx.fill();
 
       animId = requestAnimationFrame(draw);
@@ -156,15 +156,18 @@ export default function OrbLine() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        display: "block",
-        width: "100%",
-        height: "480px",
-        background: "#000",
-        borderRadius: "0",
-      }}
-    />
+    <div>
+      <div className="h-25 bg-black"></div>
+      <canvas
+        ref={canvasRef}
+        style={{
+          display: "block",
+          width: "100%",
+          height: "480px",
+          background: "#000",
+          borderRadius: "0",
+        }}
+      />
+    </div>
   );
 }
