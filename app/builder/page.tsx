@@ -3,14 +3,14 @@
 import { useShop } from "@/hooks/useShop";
 
 import { formatMoney } from "@/lib/utils";
-import { BuilderSurface } from "./surfaces/BuilderSurface";
-import { AdminSurface } from "./surfaces/AdminSurface";
-import { ClientSurface } from "./surfaces/ClientSurface";
+import { BuilderSurface } from "../components/surfaces/BuilderSurface";
+import { AdminSurface } from "../components/surfaces/AdminSurface";
+import { ClientSurface } from "../components/surfaces/ClientSurface";
 import { Metric } from "@/components/ui";
 
 const SURFACES = ["builder", "admin", "client"] as const;
 
-export const Builder = () => {
+const Builder = () => {
   const shop = useShop();
   const { theme, surface, setSurface } = shop;
 
@@ -119,3 +119,5 @@ export const Builder = () => {
     </main>
   );
 };
+
+export default Builder;

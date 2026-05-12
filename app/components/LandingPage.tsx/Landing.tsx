@@ -2,6 +2,7 @@
 import { Sparkle, Trophy } from "lucide-react";
 import SparkleButton from "./SparkleButton";
 import OrbLine from "./Background";
+import Link from "next/link";
 
 export const LandingPage = () => {
   return (
@@ -10,11 +11,13 @@ export const LandingPage = () => {
         <h1 className="font-mono font-medium text-white text-lg tracking-widest uppercase">
           Unlimited.
         </h1>
-        <SparkleButton
-          className="h-12 gap-3"
-          label="Generate Site"
-          icon={Sparkle}
-        />
+        <Link href={"/builder"}>
+          <SparkleButton
+            className="h-12 gap-3"
+            label="Generate Site"
+            icon={Sparkle}
+          />
+        </Link>
       </div>
 
       <div className="relative flex-1 flex justify-center items-center min-h-150 mt-70">
