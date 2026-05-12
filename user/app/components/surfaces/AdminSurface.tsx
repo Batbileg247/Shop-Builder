@@ -10,7 +10,7 @@ import type {
   ShopTheme,
 } from "@/types";
 import { formatMoney } from "@/lib/utils";
-import { Badge } from "@/components/ui";
+import { Badge } from "@/ui";
 import { ProductForm } from "@/app/components/admin/ProductForm";
 import { ProductRow } from "@/app/components/admin/ProductRow";
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { CartItem, Product, ShopTheme } from "@/types";
 import { formatMoney } from "@/lib/utils";
-import { Field } from "@/components/ui";
+import { Field } from "@/ui";
 import { ShopHero, ProductShelf } from "@/app/components/shop";
 
 type Props = {

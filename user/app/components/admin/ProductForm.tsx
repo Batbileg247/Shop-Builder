@@ -8,8 +8,8 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Field } from "@/components/ui";
+} from "@/ui/carousel";
+import { Field } from "@/ui";
 import type { ProductDraft, ShopTheme } from "@/types";
 import { formatMoney, safeImage } from "@/lib/utils";
 

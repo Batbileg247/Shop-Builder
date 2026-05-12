@@ -1,12 +1,12 @@
 "use client";
 
-import { useShop } from "@/hooks/useShop";
+import { useShop } from "@/app/hooks/useShop";
 
 import { formatMoney } from "@/lib/utils";
 import { BuilderSurface } from "../components/surfaces/BuilderSurface";
 import { AdminSurface } from "../components/surfaces/AdminSurface";
 import { ClientSurface } from "../components/surfaces/ClientSurface";
-import { Metric } from "@/components/ui";
+import { Metric } from "@/ui";
 
 const SURFACES = ["builder", "admin", "client"] as const;
 
