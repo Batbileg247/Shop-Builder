@@ -73,10 +73,10 @@ export function AdminSurface({
     };
 
   return (
-    <section className="grid gap-5 lg:grid-cols-[minmax(380px,34%)_1fr]">
+    <section className="grid gap-8 lg:grid-cols-[minmax(400px,36%)_1fr]">
       {/* Sidebar: Create product */}
-      <div className="h-fit rounded-md border border-black/10 bg-white p-4 shadow-sm">
-        <h2 className="text-base font-semibold tracking-normal">Add product</h2>
+      <div className="h-fit rounded-md border border-black/10 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold tracking-normal">Add product</h2>
         <div className="mt-4">
           <ProductForm
             draft={draft}
@@ -88,12 +88,12 @@ export function AdminSurface({
         </div>
       </div>
 
-      <div className="grid gap-5">
+      <div className="grid gap-8">
         {/* Products list */}
-        <div className="rounded-md border border-black/10 bg-white p-4 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-3">
-            <h2 className="text-base font-semibold">Products</h2>
-            <span className="text-sm text-zinc-500">
+        <div className="rounded-md border border-black/10 bg-white p-6 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-4">
+            <h2 className="text-lg font-semibold">Products</h2>
+            <span className="text-base text-zinc-500">
               {products.length} total
             </span>
           </div>
@@ -148,7 +148,7 @@ export function AdminSurface({
                 </div>
               ))
             ) : (
-              <p className="rounded-md border border-zinc-100 p-4 text-sm text-zinc-400">
+              <p className="rounded-md border border-zinc-100 p-5 text-base text-zinc-400">
                 No products match your search.
               </p>
             )}
@@ -156,16 +156,16 @@ export function AdminSurface({
         </div>
 
         {/* Orders */}
-        <div className="rounded-md border border-black/10 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-3">
-            <h2 className="text-base font-semibold">Orders</h2>
-            <span className="text-sm text-zinc-500">{orders.length} total</span>
+        <div className="rounded-md border border-black/10 bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-4">
+            <h2 className="text-lg font-semibold">Orders</h2>
+            <span className="text-base text-zinc-500">{orders.length} total</span>
           </div>
-          <div className="mt-4 grid gap-3">
+          <div className="mt-5 grid gap-4">
             {orders.length > 0 ? (
               orders.map((order) => (
                 <div
-                  className="grid gap-2 rounded-md border border-zinc-200 p-3 text-sm sm:grid-cols-[1fr_auto]"
+                  className="grid gap-2 rounded-md border border-zinc-200 p-4 text-base sm:grid-cols-[1fr_auto]"
                   key={order.id}
                 >
                   <div>
@@ -178,7 +178,7 @@ export function AdminSurface({
                     <p className="mt-1 text-zinc-500">
                       {order.buyerName} · {order.buyerEmail}
                     </p>
-                    <p className="mt-0.5 text-zinc-400 text-xs">
+                    <p className="mt-0.5 text-zinc-400 text-sm">
                       {order.createdAt}
                     </p>
                   </div>

@@ -20,11 +20,11 @@ export function ShopHero({
     heroImages && heroImages.length > 0 ? heroImages : [theme.heroImage];
 
   return (
-    <section className="relative min-h-[280px] overflow-hidden p-5 sm:p-8">
+    <section className="relative min-h-[300px] overflow-hidden p-6 sm:p-10">
       <Carousel className="absolute inset-0">
         <CarouselContent className="h-full">
           {slides.map((src, i) => (
-            <CarouselItem className="relative min-h-[280px] p-0" key={`${src}-${i}`}>
+            <CarouselItem className="relative min-h-[300px] p-0" key={`${src}-${i}`}>
               <Image
                 alt={theme.name}
                 className="object-cover"
@@ -45,16 +45,16 @@ export function ShopHero({
       </Carousel>
 
       <div className="absolute inset-0 bg-black/45" />
-      <div className="relative flex min-h-[220px] max-w-2xl flex-col justify-end text-white">
+      <div className="relative flex min-h-[240px] max-w-2xl flex-col justify-end text-white">
         {theme.announcement && (
-          <p className="mb-3 w-fit rounded-md bg-white/15 px-3 py-2 text-sm font-medium backdrop-blur">
+          <p className="mb-3 w-fit rounded-md bg-white/15 px-3 py-2 text-base font-medium backdrop-blur">
             {theme.announcement}
           </p>
         )}
-        <h2 className="text-3xl font-semibold tracking-normal sm:text-5xl">
+        <h2 className="text-4xl font-semibold tracking-normal sm:text-5xl">
           {theme.name}
         </h2>
-        <p className="mt-4 max-w-xl text-base leading-7 text-white/85">
+        <p className="mt-4 max-w-xl text-lg leading-8 text-white/85">
           {theme.tagline}
         </p>
       </div>
@@ -186,7 +186,7 @@ export function ProductShelf({
             {title}
           </h3>
         </div>
-        <span className="text-sm text-zinc-400">{products.length} items</span>
+        <span className="text-sm opacity-55">{products.length} items</span>
       </div>
 
       {products.length > 0 ? (
@@ -202,7 +202,7 @@ export function ProductShelf({
           ))}
         </div>
       ) : (
-        <p className="rounded-md border border-zinc-100 p-4 text-sm text-zinc-400">
+        <p className="rounded-md border border-current/15 p-4 text-sm opacity-70">
           {mode === "preview"
             ? "Feature products in admin to preview them here."
             : "No products match your filter."}

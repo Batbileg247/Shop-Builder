@@ -2,8 +2,6 @@
 
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
-import { Metric } from "@/ui"
 import {
   Sidebar,
   SidebarContent,
@@ -21,41 +19,33 @@ export function AppSidebar({
   surface,
   setSurface,
   shopName,
-  accentColor,
-  productsCount,
-  inStockCount,
   className,
 }: {
   surface: Surface
   setSurface: (surface: Surface) => void
   shopName: string
-  accentColor: string
-  productsCount: number
-  inStockCount: number
   className?: string
 }) {
   return (
     <Sidebar collapsible="icon" variant="inset" className={className}>
-      <SidebarHeader className="gap-2">
+      <SidebarHeader className="gap-3 group-data-[collapsible=icon]:hidden">
         <div className="px-1">
-          <p
-            className="truncate text-xs font-semibold uppercase tracking-wider"
-            style={{ color: accentColor }}
-          >
+          <p className="truncate text-sm font-semibold uppercase tracking-wider text-sidebar-primary">
             Shop builder
           </p>
-          <p className="truncate text-sm font-semibold text-sidebar-foreground">
+          <p className="truncate text-lg font-semibold text-sidebar-foreground">
             {shopName}
           </p>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
-        <div className="p-2">
-          <SidebarMenu>
+        <div className="p-3">
+          <SidebarMenu className="gap-1">
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={surface === "builder"}
+                size="lg"
                 tooltip="Builder"
                 render={
                   <button onClick={() => setSurface("builder")} type="button">
@@ -68,6 +58,7 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={surface === "admin"}
+                size="lg"
                 tooltip="Admin"
                 render={
                   <button onClick={() => setSurface("admin")} type="button">
@@ -80,6 +71,7 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton
                 isActive={surface === "client"}
+                size="lg"
                 tooltip="Storefront"
                 render={
                   <button onClick={() => setSurface("client")} type="button">
@@ -90,15 +82,6 @@ export function AppSidebar({
               />
             </SidebarMenuItem>
           </SidebarMenu>
-
-          <div className={cn("mt-3 grid gap-2")}>
-            <Metric label="Products" value={productsCount.toString()} />
-            <Metric
-              label="In stock"
-              value={inStockCount.toString()}
-              sub={`${productsCount - inStockCount} out of stock`}
-            />
-          </div>
         </div>
       </SidebarContent>
 
@@ -106,4 +89,3 @@ export function AppSidebar({
     </Sidebar>
   )
 }
-

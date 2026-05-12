@@ -1,38 +1,43 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { useShop } from "@/app/hooks/useShop"
-import { AppSidebar } from "@/components/app-sidebar"
-import { formatMoney } from "@/lib/utils"
-import { AdminSurface } from "@/app/components/surfaces/AdminSurface"
-import { BuilderSurface } from "@/app/components/surfaces/BuilderSurface"
-import { ClientSurface } from "@/app/components/surfaces/ClientSurface"
-import { ScrollArea } from "@/ui/scroll-area"
-import { Separator } from "@/ui/separator"
-import { Metric } from "@/ui"
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
+import { useShop } from "@/app/hooks/useShop";
+import { AppSidebar } from "@/components/app-sidebar";
+import { formatMoney } from "@/lib/utils";
+import { AdminSurface } from "@/app/components/surfaces/AdminSurface";
+import { BuilderSurface } from "@/app/components/surfaces/BuilderSurface";
+import { ClientSurface } from "@/app/components/surfaces/ClientSurface";
+import { ScrollArea } from "@/ui/scroll-area";
+import { Separator } from "@/ui/separator";
+import { Metric } from "@/ui";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarInset,
+} from "@/components/ui/sidebar";
 
-type Surface = "builder" | "admin" | "client"
+type Surface = "builder" | "admin" | "client";
 
-export default function BuilderLayout({ children }: { children: React.ReactNode }) {
-  const shop = useShop()
-  const { theme, surface, setSurface } = shop
+export default function BuilderLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const shop = useShop();
+  const { theme, surface, setSurface } = shop;
 
-  const totalRevenue = shop.orders.reduce((s, o) => s + o.total, 0)
+  const totalRevenue = shop.orders.reduce((s, o) => s + o.total, 0);
 
   return (
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "19rem",
+          "--sidebar-width": "14rem",
         } as React.CSSProperties
       }
     >
       <AppSidebar
-        accentColor={theme.primaryColor}
-        inStockCount={shop.inStockProducts.length}
-        productsCount={shop.products.length}
         setSurface={(s) => setSurface(s as Surface)}
         shopName={theme.name}
         surface={surface as Surface}
@@ -40,23 +45,31 @@ export default function BuilderLayout({ children }: { children: React.ReactNode 
 
       <SidebarInset>
         <main className="flex min-h-svh flex-1 flex-col">
-          <div className="flex h-12 items-center gap-2 border-b border-border bg-background px-3">
+          <div className="flex h-14 items-center gap-2 border-b border-border bg-background px-4">
             <SidebarTrigger />
             <Separator className="mx-1 h-5" orientation="vertical" />
-            <p className="truncate text-sm font-semibold capitalize">{surface}</p>
+            <p className="truncate text-base font-semibold capitalize">
+              {surface}
+            </p>
           </div>
 
           <ScrollArea className="flex-1">
-            <div className="w-full px-5 py-5 sm:px-8 lg:px-10">
+            <div className="w-full px-6 py-8 sm:px-10 lg:px-14">
               {surface === "admin" && (
-                <section className="mb-5 grid gap-3 sm:grid-cols-4">
-                  <Metric label="Products" value={shop.products.length.toString()} />
+                <section className="mb-8 grid gap-4 sm:grid-cols-4">
+                  <Metric
+                    label="Products"
+                    value={shop.products.length.toString()}
+                  />
                   <Metric
                     label="In stock"
                     value={shop.inStockProducts.length.toString()}
                     sub={`${shop.products.length - shop.inStockProducts.length} out of stock`}
                   />
-                  <Metric label="Orders" value={shop.orders.length.toString()} />
+                  <Metric
+                    label="Orders"
+                    value={shop.orders.length.toString()}
+                  />
                   <Metric
                     label="Revenue"
                     value={formatMoney(totalRevenue, theme.currency)}
@@ -124,6 +137,5 @@ export default function BuilderLayout({ children }: { children: React.ReactNode 
         </main>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
-

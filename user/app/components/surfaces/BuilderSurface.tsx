@@ -5,6 +5,7 @@ import { Field, ColorField } from "@/ui";
 import { Separator } from "@/ui/separator";
 import { ShopHero, ProductShelf } from "@/app/components/shop";
 import type { CartItem, Product, ShopTheme } from "@/types";
+import { shopPreviewShellStyle } from "@/lib/shop-theme";
 import { formatMoney } from "@/lib/utils";
 
 const CURRENCIES = ["₮", "$", "€", "£", "¥"] as const;
@@ -65,13 +66,13 @@ export function BuilderSurface({
   const cartCount = cartItems.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <section className="grid gap-5 lg:grid-cols-[minmax(380px,34%)_1fr]">
-      <div className="h-fit rounded-md border border-black/10 bg-white p-4 shadow-sm">
-        <h2 className="text-base font-semibold">Theme controls</h2>
+    <section className="grid gap-8 lg:grid-cols-[minmax(400px,36%)_1fr]">
+      <div className="h-fit rounded-md border border-black/10 bg-white p-6 text-zinc-950 shadow-sm">
+        <h2 className="text-lg font-semibold">Theme controls</h2>
 
-        <div className="mt-4 grid gap-4">
+        <div className="mt-5 grid gap-5">
           <div className="border-b border-zinc-100 pb-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">
               Identity
             </p>
             <div className="grid gap-3">
@@ -100,7 +101,7 @@ export function BuilderSurface({
           </div>
 
           <div className="border-b border-zinc-100 pb-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">
               Media
             </p>
             <Field label="Hero image (Unsplash URL)">
@@ -113,7 +114,7 @@ export function BuilderSurface({
           </div>
 
           <div className="border-b border-zinc-100 pb-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">
               Colors
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -141,7 +142,7 @@ export function BuilderSurface({
           </div>
 
           <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">
               Style
             </p>
             <div className="grid gap-3">
@@ -213,7 +214,7 @@ export function BuilderSurface({
           <Separator className="my-2" />
 
           <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">
               Storefront demo
             </p>
             <div className="grid gap-3">
@@ -355,7 +356,10 @@ export function BuilderSurface({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-black/10 bg-white shadow-sm">
+      <div
+        className="overflow-hidden rounded-md border border-black/10 shadow-sm"
+        style={shopPreviewShellStyle(theme)}
+      >
         <ShopHero
           heroImages={[
             theme.heroImage,

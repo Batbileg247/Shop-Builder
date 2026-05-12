@@ -3,9 +3,13 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { CartItem, Product, ShopTheme } from "@/types";
+import { shopPreviewShellStyle } from "@/lib/shop-theme";
 import { formatMoney } from "@/lib/utils";
 import { Field } from "@/ui";
 import { ProductShelf, ShopHero } from "@/app/components/shop";
+
+/** Set to `true` to show the cart column again (cart state stays wired from layout). */
+const SHOW_CLIENT_CART_UI = false;
 
 type Props = {
   featuredProducts: Product[];
@@ -60,15 +64,18 @@ export function ClientSurface({
   ].filter(Boolean);
 
   return (
-    <section className="grid gap-5 lg:grid-cols-[minmax(380px,34%)_1fr] lg:items-start">
-      <div className="row-start-1 min-w-0 lg:col-start-2 lg:row-start-1">
-        <div className="overflow-hidden rounded-md border border-black/10 bg-white shadow-sm">
+    <section className="w-full">
+      <div className="min-w-0 w-full">
+        <div
+          className="overflow-hidden rounded-md border border-black/10 shadow-sm"
+          style={shopPreviewShellStyle(theme)}
+        >
           <ShopHero heroImages={heroImages} theme={theme} />
 
           <div className="flex gap-2 overflow-x-auto border-b border-zinc-100 px-4 py-3 sm:px-5">
             {categories.map((cat) => (
               <button
-                className="shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition"
+                className="shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold transition"
                 key={cat}
                 onClick={() => setCategoryFilter(cat)}
                 style={
@@ -93,9 +100,10 @@ export function ClientSurface({
         </div>
       </div>
 
-      <aside className="row-start-2 h-fit rounded-md border border-black/10 bg-white p-4 shadow-sm lg:sticky lg:top-4 lg:col-start-1 lg:row-start-1">
-        <div className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-3">
-          <h2 className="text-base font-semibold">Cart</h2>
+      {SHOW_CLIENT_CART_UI ? (
+      <aside className="h-fit rounded-md border border-black/10 bg-white p-6 shadow-sm lg:sticky lg:top-4">
+        <div className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-4">
+          <h2 className="text-lg font-semibold">Cart</h2>
           {cartCount > 0 && (
             <span
               className="rounded-full px-2.5 py-0.5 text-xs font-bold text-white"
@@ -161,7 +169,7 @@ export function ClientSurface({
               );
             })
           ) : (
-            <p className="rounded-md border border-zinc-100 p-4 text-sm text-zinc-400">
+            <p className="rounded-md border border-zinc-100 p-5 text-base text-zinc-400">
               Your cart is empty.
             </p>
           )}
@@ -212,6 +220,7 @@ export function ClientSurface({
           )}
         </div>
       </aside>
+      ) : null}
     </section>
   );
 }

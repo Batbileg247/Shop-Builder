@@ -8,7 +8,7 @@ export function Field({
   children: ReactNode;
 }) {
   return (
-    <div className="grid gap-1.5 text-sm font-medium text-zinc-700">
+    <div className="grid gap-2 text-base font-medium text-zinc-700">
       <span>{label}</span>
       {children}
     </div>
@@ -52,16 +52,16 @@ export function ColorField({
   value: string;
 }) {
   return (
-    <label className="grid gap-1.5 text-sm font-medium text-zinc-700">
+    <label className="grid gap-2 text-base font-medium text-zinc-700">
       <span>{label}</span>
       <div className="flex items-center gap-2 rounded-md border border-zinc-300 bg-white p-1 shadow-sm">
         <input
-          className="h-7 w-7 cursor-pointer rounded border-0 bg-transparent p-0"
+          className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"
           onChange={(e) => onChange(e.target.value)}
           type="color"
           value={value}
         />
-        <span className="font-mono text-xs text-zinc-500">{value}</span>
+        <span className="font-mono text-sm text-zinc-500">{value}</span>
       </div>
     </label>
   );
@@ -77,12 +77,12 @@ export function Metric({
   sub?: string;
 }) {
   return (
-    <div className="rounded-md border border-black/10 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+    <div className="rounded-md border border-black/10 bg-white p-5 shadow-sm">
+      <p className="text-sm font-medium uppercase tracking-wider text-zinc-400">
         {label}
       </p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
-      {sub && <p className="mt-0.5 text-xs text-zinc-500">{sub}</p>}
+      <p className="mt-1 text-3xl font-semibold tracking-tight">{value}</p>
+      {sub && <p className="mt-1 text-sm text-zinc-500">{sub}</p>}
     </div>
   );
 }
