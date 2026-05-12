@@ -11,8 +11,11 @@ function ScrollArea({
   ...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
   return (
-    <ScrollAreaPrimitive.Root className={cn("relative overflow-hidden", className)} {...props}>
-      <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
+    <ScrollAreaPrimitive.Root
+      className={cn("relative overflow-hidden", className)}
+      {...props}
+    >
+      <ScrollAreaPrimitive.Viewport className="h-full min-h-0 w-full rounded-[inherit]">
         {children}
       </ScrollAreaPrimitive.Viewport>
       <ScrollBar />

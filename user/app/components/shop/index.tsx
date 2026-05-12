@@ -12,19 +12,42 @@ import {
 export function ShopHero({
   theme,
   heroImages,
+  /** Stretch with parent height (resizable shop hero panel). */
+  fillContainer = false,
 }: {
   theme: ShopTheme;
   heroImages?: string[];
+  fillContainer?: boolean;
 }) {
   const slides =
     heroImages && heroImages.length > 0 ? heroImages : [theme.heroImage];
 
   return (
-    <section className="relative min-h-[300px] overflow-hidden p-6 sm:p-10">
-      <Carousel className="absolute inset-0">
-        <CarouselContent className="h-full">
+    <section
+      className={
+        fillContainer
+          ? "relative flex h-full min-h-[140px] flex-col overflow-hidden"
+          : "relative min-h-[300px] overflow-hidden p-6 sm:p-10"
+      }
+    >
+      <Carousel
+        className={
+          fillContainer ? "absolute inset-0 z-0 min-h-0" : "absolute inset-0"
+        }
+      >
+        <CarouselContent
+          className={fillContainer ? "h-full -ml-0" : "h-full"}
+          viewportClassName={fillContainer ? "h-full min-h-0" : undefined}
+        >
           {slides.map((src, i) => (
-            <CarouselItem className="relative min-h-[300px] p-0" key={`${src}-${i}`}>
+            <CarouselItem
+              className={
+                fillContainer
+                  ? "relative h-full min-h-0 basis-full !pl-0 p-0"
+                  : "relative min-h-[300px] p-0"
+              }
+              key={`${src}-${i}`}
+            >
               <Image
                 alt={theme.name}
                 className="object-cover"
@@ -44,8 +67,14 @@ export function ShopHero({
         )}
       </Carousel>
 
-      <div className="absolute inset-0 bg-black/45" />
-      <div className="relative flex min-h-[240px] max-w-2xl flex-col justify-end text-white">
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-black/45" />
+      <div
+        className={
+          fillContainer
+            ? "relative z-10 mt-auto flex max-w-2xl flex-col justify-end gap-1 p-4 text-white sm:p-6"
+            : "relative flex min-h-[240px] max-w-2xl flex-col justify-end text-white"
+        }
+      >
         {theme.announcement && (
           <p className="mb-3 w-fit rounded-md bg-white/15 px-3 py-2 text-base font-medium backdrop-blur">
             {theme.announcement}
@@ -211,3 +240,5 @@ export function ProductShelf({
     </section>
   );
 }
+
+export { HeroShelfResizable } from "./HeroShelfResizable";

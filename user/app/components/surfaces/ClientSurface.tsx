@@ -3,10 +3,9 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { CartItem, Product, ShopTheme } from "@/types";
-import { shopPreviewShellStyle } from "@/lib/shop-theme";
 import { formatMoney } from "@/lib/utils";
 import { Field } from "@/ui";
-import { ProductShelf, ShopHero } from "@/app/components/shop";
+import { HeroShelfResizable, ProductShelf, ShopHero } from "@/app/components/shop";
 
 /** Set to `true` to show the cart column again (cart state stays wired from layout). */
 const SHOW_CLIENT_CART_UI = false;
@@ -65,40 +64,39 @@ export function ClientSurface({
 
   return (
     <section className="w-full">
-      <div className="min-w-0 w-full">
-        <div
-          className="overflow-hidden rounded-md border border-black/10 shadow-sm"
-          style={shopPreviewShellStyle(theme)}
-        >
-          <ShopHero heroImages={heroImages} theme={theme} />
+      <HeroShelfResizable
+        belowHero={
+          <>
+            <div className="flex gap-2 overflow-x-auto border-b border-zinc-100 px-4 py-3 sm:px-5">
+              {categories.map((cat) => (
+                <button
+                  className="shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold transition"
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  style={
+                    categoryFilter === cat
+                      ? { backgroundColor: theme.primaryColor, color: "#fff" }
+                      : { backgroundColor: "#f4f4f5", color: "#52525b" }
+                  }
+                  type="button"
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
 
-          <div className="flex gap-2 overflow-x-auto border-b border-zinc-100 px-4 py-3 sm:px-5">
-            {categories.map((cat) => (
-              <button
-                className="shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold transition"
-                key={cat}
-                onClick={() => setCategoryFilter(cat)}
-                style={
-                  categoryFilter === cat
-                    ? { backgroundColor: theme.primaryColor, color: "#fff" }
-                    : { backgroundColor: "#f4f4f5", color: "#52525b" }
-                }
-                type="button"
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <ProductShelf
-            addToCart={addToCart}
-            mode="shop"
-            products={filtered}
-            theme={theme}
-            title={categoryFilter === "All" ? "All products" : categoryFilter}
-          />
-        </div>
-      </div>
+            <ProductShelf
+              addToCart={addToCart}
+              mode="shop"
+              products={filtered}
+              theme={theme}
+              title={categoryFilter === "All" ? "All products" : categoryFilter}
+            />
+          </>
+        }
+        hero={<ShopHero fillContainer heroImages={heroImages} theme={theme} />}
+        theme={theme}
+      />
 
       {SHOW_CLIENT_CART_UI ? (
       <aside className="h-fit rounded-md border border-black/10 bg-white p-6 shadow-sm lg:sticky lg:top-4">

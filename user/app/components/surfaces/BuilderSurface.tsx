@@ -3,9 +3,8 @@
 import { useMemo, useState } from "react";
 import { Field, ColorField } from "@/ui";
 import { Separator } from "@/ui/separator";
-import { ShopHero, ProductShelf } from "@/app/components/shop";
+import { HeroShelfResizable, ShopHero, ProductShelf } from "@/app/components/shop";
 import type { CartItem, Product, ShopTheme } from "@/types";
-import { shopPreviewShellStyle } from "@/lib/shop-theme";
 import { formatMoney } from "@/lib/utils";
 
 const CURRENCIES = ["₮", "$", "€", "£", "¥"] as const;
@@ -66,8 +65,8 @@ export function BuilderSurface({
   const cartCount = cartItems.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <section className="grid gap-8 lg:grid-cols-[minmax(400px,36%)_1fr]">
-      <div className="h-fit rounded-md border border-black/10 bg-white p-6 text-zinc-950 shadow-sm">
+    <section className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[minmax(400px,36%)_1fr] lg:items-stretch">
+      <div className="h-fit self-start rounded-md border border-black/10 bg-white p-6 text-zinc-950 shadow-sm">
         <h2 className="text-lg font-semibold">Theme controls</h2>
 
         <div className="mt-5 grid gap-5">
@@ -356,24 +355,27 @@ export function BuilderSurface({
         </div>
       </div>
 
-      <div
-        className="overflow-hidden rounded-md border border-black/10 shadow-sm"
-        style={shopPreviewShellStyle(theme)}
-      >
-        <ShopHero
-          heroImages={[
-            theme.heroImage,
-            ...featuredProducts.map((p) => p.image),
-          ].filter(Boolean)}
-          theme={theme}
-        />
-        <ProductShelf
-          mode="preview"
-          products={filtered}
-          theme={theme}
-          title={categoryFilter === "All" ? "All products" : categoryFilter}
-        />
-      </div>
+      <HeroShelfResizable
+        belowHero={
+          <ProductShelf
+            mode="preview"
+            products={filtered}
+            theme={theme}
+            title={categoryFilter === "All" ? "All products" : categoryFilter}
+          />
+        }
+        hero={
+          <ShopHero
+            fillContainer
+            heroImages={[
+              theme.heroImage,
+              ...featuredProducts.map((p) => p.image),
+            ].filter(Boolean)}
+            theme={theme}
+          />
+        }
+        theme={theme}
+      />
     </section>
   );
 }
