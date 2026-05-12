@@ -47,9 +47,10 @@ export const Footer = () => {
           <h2>Privacy Policy</h2>
         </div>
       </div>
-      <Separator className="my-6 bg-gray-800" />
-      <div>
-        <h1 className="font-mono text-gray-500">UNLIMITED. LLC</h1>
+      <div className=" mt-10 border-t-2 border-gray-800">
+        <h1 className="flex justify-center items-center font-mono text-gray-500 pt-6 w-450">
+          UNLIMITED. LLC
+        </h1>
       </div>
     </div>
   );

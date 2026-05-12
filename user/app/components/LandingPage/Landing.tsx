@@ -67,10 +67,11 @@ export const LandingPage = () => {
           <div className="py-20 mb-40 w-full scroll-mt-[20vh]" id="contact">
             <ContactUs />
           </div>
+          <div className=" w-full scroll-mt-[20vh]" id="footer">
+            <Footer />
+          </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

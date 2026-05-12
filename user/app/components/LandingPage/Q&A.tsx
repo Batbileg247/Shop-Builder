@@ -12,35 +12,47 @@ export const Questions = () => {
       <div className="flex justify-center text-4xl text-indigo-50 font-semibold">
         Frequently Asked Questions
       </div>
-      <Accordion type="single" collapsible className="min-w-4xl ">
+      <Accordion
+        {...({
+          type: "single",
+          collapsible: true,
+          className: "min-w-4xl ",
+        } as any)}
+      >
         <AccordionItem value="payment">
-          <AccordionTrigger className="">Payment integrations</AccordionTrigger>
-          <AccordionContent>
+          <AccordionTrigger className="text-2xl">
+            Payment integrations
+          </AccordionTrigger>
+          <AccordionContent className="text-lg">
             Yes, depending on your selected plan, you can connect various
             payment methods and loan apps.
           </AccordionContent>
         </AccordionItem>
         <Separator className="bg-gray-800" />
         <AccordionItem value="contact">
-          <AccordionTrigger>How can I contact?</AccordionTrigger>
-          <AccordionContent>
+          <AccordionTrigger className="text-xl">
+            How can I contact?
+          </AccordionTrigger>
+          <AccordionContent className="text-lg">
             You can reach our sales team at 8811-1426.
           </AccordionContent>
         </AccordionItem>
         <Separator className="bg-gray-800" />
         <AccordionItem value="doWhat">
-          <AccordionTrigger>What does your company do?</AccordionTrigger>
-          <AccordionContent>
+          <AccordionTrigger className="text-xl">
+            What does your company do?
+          </AccordionTrigger>
+          <AccordionContent className="text-lg">
             We provide ready-made website templates that allow you to easily
             create your own online store.
           </AccordionContent>
         </AccordionItem>
         <Separator className="bg-gray-800" />
         <AccordionItem value="support">
-          <AccordionTrigger>
+          <AccordionTrigger className="text-xl">
             Will you provide guidance on adding products ?
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="text-lg">
             Yes, during your first month, a manager will assist you with
             training and onboarding.
           </AccordionContent>
