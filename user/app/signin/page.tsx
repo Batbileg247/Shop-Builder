@@ -53,10 +53,7 @@ function safeRedirectPath(raw: string | null, fallback: string): string {
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const afterLogin = safeRedirectPath(
-    searchParams.get("redirect"),
-    "/builder",
-  );
+  const afterLogin = safeRedirectPath(searchParams.get("redirect"), "/builder");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -105,7 +102,7 @@ function SignInForm() {
           <div className="mb-1 flex items-center justify-between mt-2">
             <span className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
               Welcome back
-            </p>
+            </span>
             <Link
               href="/signup"
               className="text-sm font-medium text-white/60 transition hover:text-white px-2 py-1 rounded"
