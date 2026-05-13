@@ -47,17 +47,17 @@ export function CartDrawer({
   return (
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetContent
-        className="flex w-full !max-w-md flex-col border-l border-zinc-200 bg-white p-0 sm:!max-w-md"
+        className="flex w-full !max-w-md flex-col border-l border-pv-divider bg-pv-bg p-0 sm:!max-w-md"
         showCloseButton
         side="right"
       >
-        <SheetHeader className="border-b border-zinc-100 px-6 pb-4 pt-2">
-          <SheetTitle className="font-serif text-2xl font-semibold text-zinc-900">
+        <SheetHeader className="border-b border-pv-divider px-6 pb-4 pt-2">
+          <SheetTitle className="font-serif text-2xl font-semibold text-pv-fg">
             Shopping Cart
           </SheetTitle>
-          <p className="text-sm text-zinc-600">
+          <p className="text-sm text-pv-muted">
             Buy{" "}
-            <strong className="text-zinc-900">
+            <strong className="text-pv-fg">
               {formatStorefrontPrice(remaining)}
             </strong>{" "}
             more and get <strong>Free Shipping</strong>
@@ -67,15 +67,18 @@ export function CartDrawer({
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
           <ul className="flex flex-col gap-5">
             {items.length === 0 ? (
-              <li className="rounded-lg border border-dashed border-zinc-200 p-6 text-center text-sm text-zinc-500">
+              <li className="rounded-[length:var(--pv-radius)] border border-dashed border-pv-border bg-pv-card p-6 text-center text-sm text-pv-muted">
                 Your cart is empty.
               </li>
             ) : (
               items.map(({ product, quantity }) => {
                 const unit = product.salePrice ?? product.price;
                 return (
-                  <li className="flex gap-3 border-b border-zinc-100 pb-5" key={product.id}>
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-zinc-100">
+                  <li
+                    className="flex gap-3 border-b border-pv-divider pb-5"
+                    key={product.id}
+                  >
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-[length:var(--pv-radius)] bg-pv-placeholder">
                       <Image
                         alt={product.name}
                         className="object-cover"
@@ -85,27 +88,27 @@ export function CartDrawer({
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-zinc-900">{product.name}</p>
-                      <p className="mt-0.5 text-xs text-zinc-500">
+                      <p className="font-medium text-pv-fg">{product.name}</p>
+                      <p className="mt-0.5 text-xs text-pv-muted">
                         Color: Classic
                       </p>
-                      <p className="mt-1 text-sm font-semibold">
+                      <p className="mt-1 text-sm font-semibold text-pv-fg">
                         {formatStorefrontPrice(unit)}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center rounded border border-zinc-300 text-sm">
+                        <div className="flex items-center rounded-[length:var(--pv-radius)] border border-pv-border bg-pv-card text-sm">
                           <button
-                            className="px-2 py-1 text-zinc-600 hover:bg-zinc-50"
+                            className="px-2 py-1 text-pv-muted hover:bg-pv-empty"
                             onClick={() => onDecrement(product.id)}
                             type="button"
                           >
                             −
                           </button>
-                          <span className="min-w-8 text-center font-medium tabular-nums">
+                          <span className="min-w-8 text-center font-medium tabular-nums text-pv-fg">
                             {String(quantity).padStart(2, "0")}
                           </span>
                           <button
-                            className="px-2 py-1 text-zinc-600 hover:bg-zinc-50"
+                            className="px-2 py-1 text-pv-muted hover:bg-pv-empty"
                             onClick={() => onIncrement(product.id)}
                             type="button"
                           >
@@ -113,7 +116,7 @@ export function CartDrawer({
                           </button>
                         </div>
                         <button
-                          className="text-xs text-red-600 underline"
+                          className="text-xs text-red-600 underline decoration-red-400/60 underline-offset-2"
                           onClick={() => onRemoveLine(product.id)}
                           type="button"
                         >
@@ -127,7 +130,7 @@ export function CartDrawer({
             )}
           </ul>
 
-          <label className="mt-6 flex cursor-pointer items-start gap-2 text-sm text-zinc-700">
+          <label className="mt-6 flex cursor-pointer items-start gap-2 text-sm text-pv-muted">
             <input
               checked={giftWrap}
               className="mt-1"
@@ -141,15 +144,15 @@ export function CartDrawer({
           </label>
         </div>
 
-        <SheetFooter className="border-t border-zinc-100 bg-zinc-50/80 px-6 py-4">
+        <SheetFooter className="border-t border-pv-divider bg-pv-card px-6 py-4">
           <div className="flex w-full items-center justify-between text-sm">
-            <span className="text-zinc-600">Subtotal</span>
-            <span className="text-lg font-semibold text-zinc-900">
+            <span className="text-pv-muted">Subtotal</span>
+            <span className="text-lg font-semibold text-pv-fg">
               {formatStorefrontPrice(displaySubtotal)}
             </span>
           </div>
           <Button
-            className="h-11 w-full bg-black text-white hover:bg-zinc-900"
+            className="pv-btn-primary h-11 w-full"
             disabled={items.length === 0}
             onClick={() => {
               onOpenChange(false);
@@ -159,7 +162,7 @@ export function CartDrawer({
             Checkout
           </Button>
           <button
-            className="w-full text-center text-sm text-zinc-600 underline"
+            className="w-full text-center text-sm text-pv-muted underline decoration-pv-divider underline-offset-2 hover:text-pv-fg"
             onClick={() => {
               onOpenChange(false);
               onViewFullCart();

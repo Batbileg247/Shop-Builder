@@ -86,7 +86,7 @@ export function ShopHero({
         )}
       </Carousel>
 
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-black/45" />
+      <div className="pointer-events-none absolute inset-0 z-1 bg-black/45" />
       <div
         className={
           fillContainer

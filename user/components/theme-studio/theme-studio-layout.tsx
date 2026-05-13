@@ -3,48 +3,35 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 
-import { useStore } from "@/context/store-context";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 import { ThemeEditorSidebar } from "./theme-editor-sidebar";
 
-/** `/builder/panel` дээр зөвхөн legacy UI — Theme Editor нууна. */
+/** Theme Studio shell for `/builder` routes. */
 export function ThemeStudioLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const {
-    currentTheme,
-    cardRadiusFollowsTheme,
-    cardRadiusPx,
-    cardContentPaddingRem,
-    productGridGapRem,
-  } = useStore();
+  const preset = useThemeStore((s) => s.preset);
+  const radius = useThemeStore((s) => s.radius);
+  const cardContentPaddingRem = useThemeStore((s) => s.cardContentPaddingRem);
+  const productGridGapRem = useThemeStore((s) => s.productGridGapRem);
 
   const previewCssVars = React.useMemo(
     () =>
       ({
         "--pv-card-content-pad": `${cardContentPaddingRem}rem`,
         "--pv-product-gap": `${productGridGapRem}rem`,
-        ...(!cardRadiusFollowsTheme && {
-          "--pv-radius": `${cardRadiusPx}px`,
-        }),
+        "--pv-radius": `${radius}px`,
       }) as React.CSSProperties,
     [
       cardContentPaddingRem,
       productGridGapRem,
-      cardRadiusFollowsTheme,
-      cardRadiusPx,
+      radius,
     ],
   );
-
-  if (
-    pathname.startsWith("/builder/panel") ||
-    pathname.startsWith("/builder/catalog")
-  ) {
-    return <div className="min-h-svh w-full">{children}</div>;
-  }
 
   return (
     <div className="flex min-h-svh w-full bg-zinc-100">
@@ -54,7 +41,7 @@ export function ThemeStudioLayout({
 
       <div className="ml-[350px] flex min-h-svh min-w-0 flex-1 flex-col">
         <div
-          data-theme={currentTheme}
+          data-theme={preset}
           className="site-preview-root min-h-svh flex-1"
           style={previewCssVars}
         >

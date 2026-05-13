@@ -72,6 +72,10 @@ type Props = {
   catalogLayout?: StorefrontCatalogLayout;
   /** Client navigates here when View More is clicked (preview mode). */
   allProductsHref?: string;
+  /** From URL `?product=` — open product detail on load. */
+  deeplinkProductId?: string | null;
+  /** From URL `?cart=open` — open cart drawer on load. */
+  deeplinkCartOpen?: boolean;
 };
 
 export function EcommerceStorefront({
@@ -92,8 +96,10 @@ export function EcommerceStorefront({
   clearLastOrder,
   lastOrderId,
   catalogLayout = "preview",
-  allProductsHref = "/builder/catalog",
+  allProductsHref = "/builder",
   resizableHero = true,
+  deeplinkProductId,
+  deeplinkCartOpen = false,
 }: Props) {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("browse");
@@ -114,6 +120,19 @@ export function EcommerceStorefront({
   useEffect(() => {
     setFilterSelections(buildDefaultSelections(catalogFilters));
   }, [defSig, catalogFilters]);
+
+  useEffect(() => {
+    if (!deeplinkProductId) return;
+    const p = products.find((x) => x.id === deeplinkProductId);
+    if (p) {
+      setDetailProduct(p);
+      setDetailOpen(true);
+    }
+  }, [deeplinkProductId, products]);
+
+  useEffect(() => {
+    if (deeplinkCartOpen) setCartOpen(true);
+  }, [deeplinkCartOpen]);
 
   const brandLabel = theme.name;
 

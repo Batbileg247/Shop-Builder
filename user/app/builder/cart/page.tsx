@@ -1,5 +1,5 @@
-import { SiteCartPage } from "@/components/site/site-cart-page";
+import { redirect } from "next/navigation";
 
-export default function BuilderCartPage() {
-  return <SiteCartPage />;
+export default function BuilderCartRedirectPage() {
+  redirect("/builder?cart=open");
 }

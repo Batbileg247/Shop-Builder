@@ -3,64 +3,96 @@
 import Link from "next/link";
 import { Box, Layers, Sparkles } from "lucide-react";
 
-import { useStore, type ThemeId } from "@/context/store-context";
+import { useShop } from "@/app/hooks/useShop";
 import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
-import { selectCartItemCount, useCartStore } from "@/stores/cart-store";
+import { useThemeStore, type ThemePresetId } from "@/stores/useThemeStore";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { cn } from "@/lib/utils";
 
-const themes: { id: ThemeId; label: string; icon: typeof Layers }[] = [
+const themes: { id: ThemePresetId; label: string; icon: typeof Layers }[] = [
   { id: "minimal", label: "Minimal", icon: Layers },
   { id: "glass", label: "Glass", icon: Sparkles },
   { id: "neumorph", label: "Neumorph", icon: Box },
 ];
 
 export function ThemeEditorSidebar() {
-  const {
-    currentTheme,
-    setCurrentTheme,
-    heroTitle,
-    setHeroTitle,
-    heroImage,
-    setHeroImage,
-    cardRadiusFollowsTheme,
-    setCardRadiusFollowsTheme,
-    cardRadiusPx,
-    setCardRadiusPx,
-    cardContentPaddingRem,
-    setCardContentPaddingRem,
-    productGridGapRem,
-    setProductGridGapRem,
-  } = useStore();
-  const cartCount = useCartStore(selectCartItemCount);
+  const preset = useThemeStore((s) => s.preset);
+  const setPreset = useThemeStore((s) => s.setPreset);
+  const heroTitle = useThemeStore((s) => s.heroTitle);
+  const setHeroTitle = useThemeStore((s) => s.setHeroTitle);
+  const heroImage = useThemeStore((s) => s.heroImage);
+  const setHeroImage = useThemeStore((s) => s.setHeroImage);
+  const primaryColor = useThemeStore((s) => s.primaryColor);
+  const setPrimaryColor = useThemeStore((s) => s.setPrimaryColor);
+  const backgroundColor = useThemeStore((s) => s.backgroundColor);
+  const setBackgroundColor = useThemeStore((s) => s.setBackgroundColor);
+  const textColor = useThemeStore((s) => s.textColor);
+  const setTextColor = useThemeStore((s) => s.setTextColor);
+  const radius = useThemeStore((s) => s.radius);
+  const setRadius = useThemeStore((s) => s.setRadius);
+  const cardContentPaddingRem = useThemeStore((s) => s.cardContentPaddingRem);
+  const setCardContentPaddingRem = useThemeStore(
+    (s) => s.setCardContentPaddingRem,
+  );
+  const productGridGapRem = useThemeStore((s) => s.productGridGapRem);
+  const setProductGridGapRem = useThemeStore((s) => s.setProductGridGapRem);
+  const resetTheme = useThemeStore((s) => s.reset);
+
+  const shop = useShop();
+  const cartCount = shop.cartItems.reduce((s, i) => s + i.quantity, 0);
+
+  // Editor shell stays "minimal" (black/white) by default.
+  // The preview changes with Style Selection; the editor panel itself remains minimal.
+  const shellClass =
+    "flex h-svh w-[350px] shrink-0 flex-col border-r border-zinc-200 bg-zinc-50 text-zinc-900";
+  const headerBorderClass = "border-b border-zinc-200 px-5 py-4";
+  const mutedLabelClass =
+    "text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400";
+  const titleClass = "mt-1 text-lg font-semibold tracking-tight text-zinc-900";
+  const topLinkClass =
+    "text-xs font-medium text-zinc-800 underline-offset-2 hover:text-zinc-900 hover:underline";
+  const chipClass =
+    "inline-flex items-center gap-2 rounded-sm border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-800 hover:outline hover:outline-1 hover:outline-zinc-300";
+  const chipCountClass =
+    "rounded-sm border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-semibold tabular-nums text-zinc-900";
+  const sectionTitleClass =
+    "text-xs font-semibold uppercase tracking-wide text-zinc-500";
+  const fieldLabelClass = "text-sm font-medium text-zinc-800";
+  const inputClass =
+    "h-10 rounded-xl border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400";
+  const sliderClass =
+    "h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-200 accent-zinc-900";
+  const footerBorderClass = "shrink-0 border-t border-zinc-200 px-5 py-4";
 
   return (
-    <aside className="flex h-svh w-[350px] shrink-0 flex-col border-r border-zinc-200 bg-zinc-50">
-      <div className="border-b border-zinc-200 px-5 py-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400">
+    <aside className={shellClass} data-theme="minimal">
+      <div className={headerBorderClass}>
+        <p className={mutedLabelClass}>
           Live Theme Editor
         </p>
-        <h1 className="mt-1 text-lg font-semibold tracking-tight text-zinc-900">
+        <h1 className={titleClass}>
           Shop Builder
         </h1>
         <div className="mt-3 flex items-center justify-between gap-2">
           <Link
-            href={`${BUILDER_PREVIEW_BASE}/cart`}
-            className="inline-flex items-center gap-2 rounded-sm border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-800 hover:outline hover:outline-1 hover:outline-zinc-300"
+            href={`${BUILDER_PREVIEW_BASE}?cart=open`}
+            className={chipClass}
           >
             Сагс
             {cartCount > 0 ? (
-              <span className="rounded-sm border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-semibold tabular-nums text-zinc-900">
+              <span className={chipCountClass}>
                 {cartCount}
               </span>
             ) : (
-              <span className="tabular-nums text-zinc-400">0</span>
+              <span className="tabular-nums text-zinc-400">
+                0
+              </span>
             )}
           </Link>
           <Link
-            href={`${BUILDER_PREVIEW_BASE}/shop`}
-            className="text-xs font-medium text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline"
+            href={BUILDER_PREVIEW_BASE}
+            className={topLinkClass}
           >
             Дэлгүүр
           </Link>
@@ -70,14 +102,14 @@ export function ThemeEditorSidebar() {
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
         <div className="flex flex-col gap-8">
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          <h2 className={sectionTitleClass}>
             Site Settings
           </h2>
           <div className="mt-4 space-y-4">
             <div className="space-y-1.5">
               <label
                 htmlFor="hero-title"
-                className="text-sm font-medium text-zinc-800"
+                className={fieldLabelClass}
               >
                 Hero Title
               </label>
@@ -86,13 +118,13 @@ export function ThemeEditorSidebar() {
                 value={heroTitle}
                 onChange={(e) => setHeroTitle(e.target.value)}
                 placeholder="Headline…"
-                className="h-10 rounded-xl border-zinc-200 bg-white"
+                className={inputClass}
               />
             </div>
             <div className="space-y-1.5">
               <label
                 htmlFor="hero-image"
-                className="text-sm font-medium text-zinc-800"
+                className={fieldLabelClass}
               >
                 Hero Image URL
               </label>
@@ -101,19 +133,19 @@ export function ThemeEditorSidebar() {
                 value={heroImage}
                 onChange={(e) => setHeroImage(e.target.value)}
                 placeholder="/background1.png or https://…"
-                className="h-10 rounded-xl border-zinc-200 bg-white font-mono text-xs"
+                className={cn(inputClass, "font-mono text-xs")}
               />
             </div>
           </div>
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          <h2 className={sectionTitleClass}>
             Style Selection
           </h2>
           <div className="mt-4 flex flex-col gap-2">
             {themes.map(({ id, label, icon: Icon }) => {
-              const active = currentTheme === id;
+              const active = preset === id;
               return (
                 <Button
                   key={id}
@@ -121,11 +153,14 @@ export function ThemeEditorSidebar() {
                   variant={active ? "default" : "outline"}
                   size="lg"
                   className={cn(
-                    "h-11 w-full justify-start gap-2.5 rounded-xl border-zinc-200",
+                    "h-11 w-full justify-start gap-2.5 rounded-xl",
+                    preset === "minimal" && "border-zinc-200",
+                    preset === "glass" && "border-white/15",
+                    preset === "neumorph" && "border-indigo-200/70",
                     active &&
                       "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800",
                   )}
-                  onClick={() => setCurrentTheme(id)}
+                  onClick={() => setPreset(id)}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden />
                   {label}
@@ -136,7 +171,7 @@ export function ThemeEditorSidebar() {
         </section>
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          <h2 className={sectionTitleClass}>
             Карт ба layout
           </h2>
           <div className="mt-4 space-y-5">
@@ -144,37 +179,22 @@ export function ThemeEditorSidebar() {
               <div className="flex items-center justify-between gap-3">
                 <label
                   htmlFor="radius-theme"
-                  className="text-sm font-medium text-zinc-800"
+                  className={fieldLabelClass}
                 >
                   Булангийн радиус
                 </label>
                 <span className="text-xs tabular-nums text-zinc-500">
-                  {cardRadiusFollowsTheme ? "theme" : `${cardRadiusPx}px`}
+                  {radius}px
                 </span>
               </div>
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600">
-                <input
-                  id="radius-theme"
-                  type="checkbox"
-                  checked={cardRadiusFollowsTheme}
-                  onChange={(e) => setCardRadiusFollowsTheme(e.target.checked)}
-                  className="size-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400"
-                />
-                Theme-ийн default (Glass/Neumorph/Minimal)
-              </label>
               <input
                 type="range"
                 min={2}
                 max={40}
                 step={1}
-                value={cardRadiusPx}
-                disabled={cardRadiusFollowsTheme}
-                onChange={(e) =>
-                  setCardRadiusPx(Number.parseInt(e.target.value, 10))
-                }
-                className={cn(
-                  "h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-200 accent-zinc-900 disabled:cursor-not-allowed disabled:opacity-40",
-                )}
+                value={radius}
+                onChange={(e) => setRadius(Number.parseInt(e.target.value, 10))}
+                className={cn(sliderClass, "disabled:cursor-not-allowed disabled:opacity-40")}
               />
             </div>
 
@@ -182,7 +202,7 @@ export function ThemeEditorSidebar() {
               <div className="flex items-center justify-between gap-3">
                 <label
                   htmlFor="card-pad"
-                  className="text-sm font-medium text-zinc-800"
+                  className={fieldLabelClass}
                 >
                   Картын доторх зай
                 </label>
@@ -200,7 +220,7 @@ export function ThemeEditorSidebar() {
                 onChange={(e) =>
                   setCardContentPaddingRem(Number.parseFloat(e.target.value))
                 }
-                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-200 accent-zinc-900"
+                className={sliderClass}
               />
             </div>
 
@@ -208,7 +228,7 @@ export function ThemeEditorSidebar() {
               <div className="flex items-center justify-between gap-3">
                 <label
                   htmlFor="grid-gap"
-                  className="text-sm font-medium text-zinc-800"
+                  className={fieldLabelClass}
                 >
                   Торын хоорондын зай
                 </label>
@@ -226,7 +246,7 @@ export function ThemeEditorSidebar() {
                 onChange={(e) =>
                   setProductGridGapRem(Number.parseFloat(e.target.value))
                 }
-                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-200 accent-zinc-900"
+                className={sliderClass}
               />
             </div>
           </div>
@@ -234,13 +254,15 @@ export function ThemeEditorSidebar() {
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-zinc-200 px-5 py-4">
-        <Link
-          href={`${BUILDER_PREVIEW_BASE}/panel`}
-          className="text-xs font-medium text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline"
+      <div className={footerBorderClass}>
+        <Button
+          className="mb-3 w-full rounded-xl"
+          onClick={() => resetTheme()}
+          type="button"
+          variant="outline"
         >
-          Өмнөх builder (admin / storefront)
-        </Link>
+          Reset to default
+        </Button>
       </div>
     </aside>
   );

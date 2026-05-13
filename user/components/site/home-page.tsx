@@ -1,81 +1,171 @@
 "use client";
 
 import * as React from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { useStore } from "@/context/store-context";
-import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
-import { SITE_PRODUCTS } from "@/lib/site-mock-products";
+import { useShop } from "@/app/hooks/useShop";
+import { useThemeStore } from "@/stores/useThemeStore";
+import { ShopHero } from "@/app/components/shop";
+import { buildHeroCarouselUrls } from "@/lib/shop-theme";
+import {
+  HeroShelfResizable,
+  SHOP_PREVIEW_HOST_CLASS,
+} from "@/app/components/shop/HeroShelfResizable";
 
-import { ProductCard } from "./product-card";
+import { ShopProductTeaser } from "./shop-product-teaser";
+import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { SiteHeader } from "./site-header";
+import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
+import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
 
-const base = BUILDER_PREVIEW_BASE;
+function HomePageInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-const featured = SITE_PRODUCTS.slice(0, 6);
+  const preset = useThemeStore((s) => s.preset);
+  const heroTitle = useThemeStore((s) => s.heroTitle);
+  const heroImage = useThemeStore((s) => s.heroImage);
+  const primaryColor = useThemeStore((s) => s.primaryColor);
+  const backgroundColor = useThemeStore((s) => s.backgroundColor);
+  const textColor = useThemeStore((s) => s.textColor);
+  const font = useThemeStore((s) => s.font);
+  const radius = useThemeStore((s) => s.radius);
+  const shop = useShop();
 
-export function HomePage() {
-  const { heroTitle, heroImage } = useStore();
-  const [imgBroken, setImgBroken] = React.useState(false);
+  const [detailProduct, setDetailProduct] = React.useState<
+    (typeof shop.products)[number] | null
+  >(null);
+  const [detailOpen, setDetailOpen] = React.useState(false);
+  const [cartOpen, setCartOpen] = React.useState(false);
+  const [giftWrap, setGiftWrap] = React.useState(false);
 
   React.useEffect(() => {
-    setImgBroken(false);
-  }, [heroImage]);
+    const intent = searchParams.get("cart") === "open";
+    setCartOpen(intent);
+  }, [searchParams]);
+
+  const openDetail = (p: (typeof shop.products)[number]) => {
+    setDetailProduct(p);
+    setDetailOpen(true);
+  };
+
+  const effectiveTheme = React.useMemo(
+    () => ({
+      ...shop.theme,
+      heroImage,
+      tagline: heroTitle,
+      primaryColor,
+      backgroundColor,
+      textColor,
+      font,
+      radius,
+    }),
+    [
+      shop.theme,
+      heroImage,
+      heroTitle,
+      primaryColor,
+      backgroundColor,
+      textColor,
+      font,
+      radius,
+    ],
+  );
+
+  const featured = React.useMemo(() => {
+    const fp = shop.featuredProducts;
+    if (fp.length > 0) return fp.slice(0, 6);
+    return shop.products.slice(0, 6);
+  }, [shop.featuredProducts, shop.products]);
 
   return (
-    <div className="pv-storefront">
+    <div className="pv-storefront" data-theme={preset}>
       <SiteHeader />
 
-      <section className="relative flex min-h-[420px] flex-col justify-end border-b border-pv-divider sm:min-h-[480px]">
-        {!imgBroken && heroImage.trim() ? (
-          // eslint-disable-next-line @next/next/no-img-element -- StoreContext URL/path
-          <img
-            src={heroImage}
-            alt=""
-            className="absolute inset-0 size-full object-cover"
-            onError={() => setImgBroken(true)}
+      <section className="w-full px-6 py-8">
+        <div className={SHOP_PREVIEW_HOST_CLASS}>
+          <HeroShelfResizable
+            theme={effectiveTheme}
+            hero={
+              <ShopHero
+                fillContainer
+                heroImages={buildHeroCarouselUrls(effectiveTheme)}
+                theme={effectiveTheme}
+              />
+            }
+            belowHero={
+              <div className="min-h-0 flex-1 overflow-y-auto border-t border-pv-divider bg-pv-bg">
+                <div className="px-4 py-10 sm:px-8">
+                  <div className="mb-8 flex flex-col gap-1 border-b border-pv-divider pb-6">
+                    <h2 className="text-lg font-semibold tracking-tight text-pv-fg sm:text-xl">
+                      Featured Products
+                    </h2>
+                    <p className="text-sm text-pv-muted">
+                      Жинхэнэ shop preview — preset/өнгө/радиус шууд нөлөөлнө.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-(--pv-product-gap,1rem) sm:grid-cols-2 lg:grid-cols-4">
+                    {featured.map((p) => (
+                      <ShopProductTeaser
+                        key={p.id}
+                        currency={shop.theme.currency}
+                        onClick={() => openDetail(p)}
+                        product={p}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            }
           />
-        ) : (
-          <div className="absolute inset-0 bg-pv-placeholder" aria-hidden />
-        )}
-        <div
-          className="absolute inset-0"
-          style={{ background: "var(--pv-hero-overlay)" }}
-          aria-hidden
-        />
-
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 sm:py-20">
-          <div className="pv-hero-panel max-w-xl px-6 py-8 sm:px-8 sm:py-10">
-            <h1 className="text-balance text-3xl font-semibold tracking-tight text-pv-fg sm:text-4xl md:text-5xl">
-              {heroTitle}
-            </h1>
-            <p className="mt-4 text-sm leading-relaxed text-pv-muted sm:text-base">
-              StoreContext-оос ирсэн hero — Theme Editor-оос өөрчилнө.
-            </p>
-          </div>
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-6 py-14 sm:py-16">
-        <div className="mb-8 flex flex-col gap-1 border-b border-pv-divider pb-6">
-          <h2 className="text-lg font-semibold tracking-tight text-pv-fg sm:text-xl">
-            Featured Products
-          </h2>
-          <p className="text-sm text-pv-muted">Сонгосон 6 бараа.</p>
-        </div>
-        <div className="grid grid-cols-1 gap-[length:var(--pv-product-gap,1rem)] sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              href={`${base}/shop/${p.id}`}
-            />
-          ))}
-        </div>
-      </section>
+      <ShopProductDetailModal
+        onAddToCart={(product, qty) => {
+          shop.addQuantityToCart(product.id, qty);
+          setDetailOpen(false);
+        }}
+        onClose={() => setDetailOpen(false)}
+        open={detailOpen}
+        product={detailProduct}
+      />
+
+      <CartDrawer
+        giftWrap={giftWrap}
+        items={shop.cartItems}
+        onCheckout={() => router.push(`${BUILDER_PREVIEW_BASE}/checkout`)}
+        onDecrement={shop.removeFromCart}
+        onGiftWrapChange={setGiftWrap}
+        onIncrement={shop.addToCart}
+        onOpenChange={(open) => {
+          setCartOpen(open);
+          const next = new URLSearchParams(searchParams.toString());
+          if (open) next.set("cart", "open");
+          else next.delete("cart");
+          const qs = next.toString();
+          router.replace(qs ? `${pathname}?${qs}` : pathname);
+        }}
+        onRemoveLine={shop.clearCartItem}
+        onViewFullCart={() => router.push(BUILDER_PREVIEW_BASE)}
+        open={cartOpen}
+        subtotal={shop.cartTotal}
+      />
 
       <footer className="mt-auto border-t border-pv-divider py-8 text-center text-xs text-pv-muted">
         © {new Date().getFullYear()} Store
       </footer>
     </div>
+  );
+}
+
+export function HomePage() {
+  return (
+    <React.Suspense
+      fallback={<div className="pv-storefront min-h-svh bg-pv-bg" />}
+    >
+      <HomePageInner />
+    </React.Suspense>
   );
 }
