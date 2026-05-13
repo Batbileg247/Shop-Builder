@@ -27,7 +27,6 @@ export function HomePage() {
 
       <section className="relative flex min-h-[420px] flex-col justify-end border-b border-pv-divider sm:min-h-[480px]">
         {!imgBroken && heroImage.trim() ? (
-          // eslint-disable-next-line @next/next/no-img-element -- StoreContext URL/path
           <img
             src={heroImage}
             alt=""
@@ -64,11 +63,7 @@ export function HomePage() {
         </div>
         <div className="grid grid-cols-1 gap-[length:var(--pv-product-gap,1rem)] sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              href={`${base}/shop/${p.id}`}
-            />
+            <ProductCard key={p.id} product={p} href={`${base}/shop/${p.id}`} />
           ))}
         </div>
       </section>
