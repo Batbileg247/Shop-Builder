@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import type { Product } from "@/types";
-import { ProductDetail } from "@/app/components/ecommerce/ProductDetail";
+import { ProductDetail } from "../../app/components/ecommerce/ProductDetail";
 
 export function ShopProductDetailModal({
   open,
