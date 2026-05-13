@@ -72,8 +72,12 @@ function HomePageInner() {
   const shop = useShop();
   const { isDemo, heroPanelPercent, setHeroPanelPercent } = useBuilderUi();
 
+  /** Жинхэнэ storefront (`/s/...`) — builder preview-ийн хүрээгүй, View Demo-тэй ижил бүтэн site. */
+  const isStorefront = pathname.startsWith("/s/");
+  const fullSiteShell = isDemo || isStorefront;
+
   const catalogFull = searchParams.get("view") === "all";
-  const previewHostClass = isDemo
+  const previewHostClass = fullSiteShell
     ? SHOP_PREVIEW_HOST_DEMO_CLASS
     : SHOP_PREVIEW_HOST_CLASS;
 
@@ -208,14 +212,14 @@ function HomePageInner() {
     <div
       className={cn(
         "flex flex-col border-t border-pv-divider bg-pv-bg",
-        isDemo ? "w-full lg:flex-row lg:items-start" : "flex-1 lg:flex-row",
-        !isDemo && "h-full min-h-0 overflow-hidden",
+        fullSiteShell ? "w-full lg:flex-row lg:items-start" : "flex-1 lg:flex-row",
+        !fullSiteShell && "h-full min-h-0 overflow-hidden",
       )}
     >
       <aside
         className={cn(
           "shrink-0 border-pv-divider bg-pv-header",
-          isDemo
+          fullSiteShell
             ? "w-full border-b px-4 py-6 lg:w-[17.5rem] lg:border-r lg:border-b-0 lg:shrink-0 sm:px-6"
             : "hidden w-[17.5rem] overflow-y-auto border-r lg:block",
         )}
@@ -226,7 +230,7 @@ function HomePageInner() {
       <main
         className={cn(
           "px-4 py-8 sm:px-8 lg:px-10",
-          isDemo
+          fullSiteShell
             ? "w-full min-w-0 flex-1"
             : "min-h-0 flex-1 overflow-y-auto overscroll-y-contain",
         )}
@@ -294,7 +298,7 @@ function HomePageInner() {
     <div
       className={cn(
         "border-t border-pv-divider bg-pv-bg",
-        isDemo ? "w-full" : "min-h-0 flex-1 overflow-y-auto",
+        fullSiteShell ? "w-full" : "min-h-0 flex-1 overflow-y-auto",
       )}
     >
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
@@ -346,16 +350,20 @@ function HomePageInner() {
     <div
       className={cn(
         "pv-storefront flex w-full flex-col",
-        isDemo ? "w-full pt-16" : "min-h-svh",
+        fullSiteShell
+          ? isStorefront
+            ? "min-h-svh w-full"
+            : "w-full pt-16"
+          : "min-h-svh",
       )}
       data-theme={preset}
     >
-      {!isDemo ? <SiteHeader /> : null}
+      {!isDemo || isStorefront ? <SiteHeader /> : null}
 
       <section
         className={cn(
           "flex w-full flex-col",
-          isDemo ? "w-full" : "min-h-0 flex-1 overflow-y-auto px-6 py-8",
+          fullSiteShell ? "w-full" : "min-h-0 flex-1 overflow-y-auto px-6 py-8",
         )}
       >
         {catalogFull ? (
@@ -363,7 +371,7 @@ function HomePageInner() {
             <div
               className={cn(
                 "flex w-full max-w-full flex-col rounded-md border border-black/10 shadow-sm",
-                !isDemo && "h-full min-h-0 overflow-hidden",
+                !fullSiteShell && "h-full min-h-0 overflow-hidden",
               )}
               style={shopPreviewShellStyle(effectiveTheme)}
             >
@@ -382,7 +390,7 @@ function HomePageInner() {
                 />
               }
               heroSizePercent={heroPanelPercent}
-              locked={isDemo}
+              locked={fullSiteShell}
               onHeroPercentChange={setHeroPanelPercent}
               theme={effectiveTheme}
             />
@@ -421,7 +429,7 @@ function HomePageInner() {
         subtotal={shop.cartTotal}
       />
 
-      {!isDemo ? (
+      {!fullSiteShell ? (
         <footer className="mt-auto border-t border-pv-divider py-8 text-center text-xs text-pv-muted">
           © {new Date().getFullYear()} Онлайн худалдааг хөгжүүлэгч{" "}
           <span className="font-bold">UNLIMITED. LLC</span>

@@ -17,6 +17,7 @@ function SiteHeaderInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { setIsDemo } = useBuilderUi();
+  const isStorefront = pathname.startsWith("/s/");
   const shop = useShop();
   const navBase = storefrontNavBase(pathname);
   const catalogHref = `${navBase}?view=all`;
@@ -51,16 +52,18 @@ function SiteHeaderInner() {
           Store
         </Link>
         <nav className="flex items-center gap-1.5 sm:gap-2" aria-label="Main">
-          <Button
-            type="button"
-            variant="default"
-            size="lg"
-            className={builderDemoCtaButtonClassName()}
-            onClick={() => setIsDemo(true)}
-          >
-            <Play className="size-4 fill-current opacity-95" aria-hidden />
-            View Demo
-          </Button>
+          {!isStorefront ? (
+            <Button
+              type="button"
+              variant="default"
+              size="lg"
+              className={builderDemoCtaButtonClassName()}
+              onClick={() => setIsDemo(true)}
+            >
+              <Play className="size-4 fill-current opacity-95" aria-hidden />
+              View Demo
+            </Button>
+          ) : null}
           <Link
             href={navBase}
             className={cn(

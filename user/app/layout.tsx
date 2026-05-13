@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-<<<<<<< HEAD
-import { Geist } from "next/font/google";
-import Script from "next/script";
-=======
 import { Inter } from "next/font/google";
->>>>>>> user-admin
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 

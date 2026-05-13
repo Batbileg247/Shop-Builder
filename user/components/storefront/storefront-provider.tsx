@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { ShopProvider } from "@/app/hooks/useShop";
+import { BuilderUiProvider } from "@/context/builder-ui-context";
 import { StoreProvider, useStore } from "@/context/store-context";
 
 function StorefrontBootstrap({ slug }: { slug: string }) {
@@ -27,8 +28,10 @@ export function StorefrontProvider({
   return (
     <StoreProvider>
       <ShopProvider>
-        <StorefrontBootstrap slug={slug} />
-        {children}
+        <BuilderUiProvider>
+          <StorefrontBootstrap slug={slug} />
+          {children}
+        </BuilderUiProvider>
       </ShopProvider>
     </StoreProvider>
   );

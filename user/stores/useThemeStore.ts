@@ -90,6 +90,33 @@ const defaults: ThemeState = {
   productGridGapRem: 1,
 };
 
+/** Persist-ийн `partialize` талбаруудтай адил хэлбэр (migrate буцаах). */
+type PersistedThemeSlice = Pick<
+  ThemeState,
+  | "preset"
+  | "heroTitle"
+  | "heroImage"
+  | "shopName"
+  | "heroAnnouncement"
+  | "primaryColor"
+  | "backgroundColor"
+  | "textColor"
+  | "font"
+  | "radius"
+  | "cardContentPaddingRem"
+  | "productGridGapRem"
+>;
+
+function migratePersistedTheme(
+  persistedState: unknown,
+): PersistedThemeSlice {
+  const p = (persistedState ?? {}) as Partial<PersistedThemeSlice>;
+  return {
+    ...defaults,
+    ...p,
+  };
+}
+
 export const useThemeStore = create<ThemeState & ThemeActions>()(
   persist(
     (set) => ({
@@ -116,6 +143,8 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
     }),
     {
       name: "shop-builder-theme-v1",
+      version: 1,
+      migrate: (persistedState) => migratePersistedTheme(persistedState),
       merge: (persisted, current) => ({
         ...current,
         ...(persisted as Partial<ThemeState>),
