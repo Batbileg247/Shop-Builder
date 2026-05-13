@@ -22,6 +22,7 @@ export default function BuilderShopCatalogPage() {
         buyerName={shop.buyerName}
         cartItems={shop.cartItems}
         cartTotal={shop.cartTotal}
+        catalogFilters={shop.catalogFilterDefinitions}
         catalogLayout="full"
         checkout={shop.checkout}
         clearCartItem={shop.clearCartItem}

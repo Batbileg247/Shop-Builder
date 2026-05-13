@@ -6,7 +6,7 @@ import { Field, ColorField } from "@/ui";
 import { Separator } from "@/ui/separator";
 import { EcommerceStorefront } from "@/app/components/ecommerce";
 import { SHOP_PREVIEW_HOST_CLASS } from "@/app/components/shop";
-import type { CartItem, Product, ShopTheme } from "@/types";
+import type { CartItem, CatalogFilterDefinition, Product, ShopTheme } from "@/types";
 import { formatMoney } from "@/lib/utils";
 
 const CURRENCIES = ["₮", "$", "€", "£", "¥"] as const;
@@ -20,6 +20,7 @@ type Props = {
   products: Product[];
   theme: ShopTheme;
   updateTheme: <K extends keyof ShopTheme>(key: K, value: ShopTheme[K]) => void;
+  catalogFilters: CatalogFilterDefinition[];
 
   addToCart: (id: string) => void;
   addQuantityToCart: (id: string, amount: number) => void;
@@ -40,6 +41,7 @@ export function BuilderSurface({
   products,
   theme,
   updateTheme,
+  catalogFilters,
   addToCart,
   addQuantityToCart,
   removeFromCart,
@@ -103,6 +105,23 @@ export function BuilderSurface({
                 className="input"
                 onChange={(e) => updateTheme("heroImage", e.target.value)}
                 value={theme.heroImage}
+              />
+            </Field>
+            <Field label="Hero carousel — extra images (one URL per line)">
+              <textarea
+                className="input min-h-28 resize-y font-mono text-xs leading-relaxed"
+                onChange={(e) =>
+                  updateTheme(
+                    "heroGallery",
+                    e.target.value
+                      .split(/\r?\n/)
+                      .map((l) => l.trim())
+                      .filter(Boolean),
+                  )
+                }
+                placeholder="https://images.unsplash.com/..."
+                spellCheck={false}
+                value={theme.heroGallery.join("\n")}
               />
             </Field>
           </div>
@@ -349,6 +368,7 @@ export function BuilderSurface({
           buyerName={buyerName}
           cartItems={cartItems}
           cartTotal={cartTotal}
+          catalogFilters={catalogFilters}
           catalogLayout="preview"
           checkout={checkout}
           clearCartItem={clearCartItem}

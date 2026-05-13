@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import type { Product, ShopTheme } from "@/types";
 import { safeImage, formatMoney } from "@/lib/utils";
 import {
+  type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -21,6 +25,19 @@ export function ShopHero({
 }) {
   const slides =
     heroImages && heroImages.length > 0 ? heroImages : [theme.heroImage];
+  const slidesKey = slides.join("|");
+
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const multiSlide = slides.length > 1;
+
+  useEffect(() => {
+    if (!carouselApi || !multiSlide) return;
+    const intervalMs = 5000;
+    const id = window.setInterval(() => {
+      carouselApi.scrollNext();
+    }, intervalMs);
+    return () => window.clearInterval(id);
+  }, [carouselApi, multiSlide, slidesKey]);
 
   return (
     <section
@@ -34,6 +51,8 @@ export function ShopHero({
         className={
           fillContainer ? "absolute inset-0 z-0 min-h-0" : "absolute inset-0"
         }
+        opts={{ loop: multiSlide }}
+        setApi={setCarouselApi}
       >
         <CarouselContent
           className={fillContainer ? "h-full -ml-0" : "h-full"}

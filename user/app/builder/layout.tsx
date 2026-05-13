@@ -116,6 +116,7 @@ function BuilderLayoutInner({ children }: { children: React.ReactNode }) {
                       buyerName={shop.buyerName}
                       cartItems={shop.cartItems}
                       cartTotal={shop.cartTotal}
+                      catalogFilters={shop.catalogFilterDefinitions}
                       checkout={shop.checkout}
                       clearCartItem={shop.clearCartItem}
                       clearLastOrder={shop.clearLastOrder}
@@ -129,6 +130,7 @@ function BuilderLayoutInner({ children }: { children: React.ReactNode }) {
                     />
                   ) : surface === "admin" ? (
                     <AdminSurface
+                      catalogFilterDefinitions={shop.catalogFilterDefinitions}
                       draft={shop.draft}
                       editingId={shop.editingId}
                       onAddProduct={shop.addProduct}
@@ -141,6 +143,9 @@ function BuilderLayoutInner({ children }: { children: React.ReactNode }) {
                       onUpdateOrderStatus={shop.updateOrderStatus}
                       orders={shop.orders}
                       products={shop.products}
+                      setCatalogFilterDefinitions={
+                        shop.setCatalogFilterDefinitions
+                      }
                       setDraft={shop.setDraft}
                       theme={theme}
                     />
@@ -152,6 +157,7 @@ function BuilderLayoutInner({ children }: { children: React.ReactNode }) {
                       buyerName={shop.buyerName}
                       cartItems={shop.cartItems}
                       cartTotal={shop.cartTotal}
+                      catalogFilters={shop.catalogFilterDefinitions}
                       checkout={shop.checkout}
                       clearCartItem={shop.clearCartItem}
                       clearLastOrder={shop.clearLastOrder}

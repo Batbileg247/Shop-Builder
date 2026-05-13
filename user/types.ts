@@ -10,7 +10,10 @@ export type ShopTheme = {
   accentColor: string;
   backgroundColor: string;
   textColor: string;
+  /** Primary hero slide (Unsplash or any image URL). */
   heroImage: string;
+  /** Extra hero-only carousel URLs (one slide each); not product photos. */
+  heroGallery: string[];
   layout: ProductLayout;
   radius: number;
   currency: string;
@@ -48,3 +51,35 @@ export type Order = {
   createdAt: string;
   status: OrderStatus;
 };
+
+/** One selectable option for a multiselect storefront filter (admin-defined). */
+export type CatalogFilterOption = {
+  id: string;
+  label: string;
+  /**
+   * How to match products:
+   * - Exact string → `product.category === matchValue`
+   * - `__sale__` → product has `salePrice`
+   */
+  matchValue: string;
+};
+
+export type CatalogMultiselectFilter = {
+  id: string;
+  type: "multiselect";
+  label: string;
+  options: CatalogFilterOption[];
+};
+
+export type CatalogPriceRangeFilter = {
+  id: string;
+  type: "priceRange";
+  label: string;
+  /** Default / max bounds in raw price units (same as `Product.price`). */
+  min: number;
+  max: number;
+};
+
+export type CatalogFilterDefinition =
+  | CatalogMultiselectFilter
+  | CatalogPriceRangeFilter;

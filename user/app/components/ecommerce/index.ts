@@ -6,4 +6,6 @@ export { ProductDetail } from "./ProductDetail";
 export { CartDrawer } from "./CartDrawer";
 export { CheckoutSummary } from "./CheckoutSummary";
 export { StorefrontHeader } from "./StorefrontHeader";
+export { FilterSidebar } from "./FilterSidebar";
+export { FilterItem } from "./FilterItem";
 export { formatStorefrontPrice } from "./storefront-price";

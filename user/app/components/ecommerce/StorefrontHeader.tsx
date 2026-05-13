@@ -1,16 +1,20 @@
 "use client";
 
-import { SearchIcon, ShoppingBagIcon, StarIcon, UserIcon } from "lucide-react";
+import { ListFilter, SearchIcon, ShoppingBagIcon, StarIcon, UserIcon } from "lucide-react";
 import { Button } from "@/ui/button";
 
 export function StorefrontHeader({
   brandName,
   cartCount,
   onOpenCart,
+  showMobileFilters,
+  onOpenMobileFilters,
 }: {
   brandName: string;
   cartCount: number;
   onOpenCart: () => void;
+  showMobileFilters?: boolean;
+  onOpenMobileFilters?: () => void;
 }) {
   return (
     <header className="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-200 bg-white px-4 py-4 sm:px-6">
@@ -26,6 +30,18 @@ export function StorefrontHeader({
         <span className="cursor-default hover:text-zinc-900">Pages ▾</span>
       </nav>
       <div className="flex items-center gap-1 sm:gap-2">
+        {showMobileFilters && onOpenMobileFilters && (
+          <Button
+            className="text-zinc-600 lg:hidden"
+            onClick={onOpenMobileFilters}
+            size="icon"
+            type="button"
+            variant="ghost"
+          >
+            <ListFilter className="size-5" />
+            <span className="sr-only">Filters</span>
+          </Button>
+        )}
         <Button className="text-zinc-600" size="icon" variant="ghost">
           <SearchIcon className="size-5" />
         </Button>

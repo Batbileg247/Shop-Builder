@@ -9,6 +9,7 @@ import {
 } from "react";
 import type {
   CartItem,
+  CatalogFilterDefinition,
   Order,
   OrderStatus,
   Product,
@@ -16,7 +17,7 @@ import type {
   ShopTheme,
   Surface,
 } from "@/types";
-import { defaultProducts, defaultTheme, emptyDraft } from "@/lib/defaults";
+import { defaultProducts, defaultTheme, emptyDraft, defaultCatalogFilterDefinitions } from "@/lib/defaults";
 import { safeImage, slugify } from "@/lib/utils";
 
 const ShopContext = createContext<ReturnType<typeof useShopState> | null>(null);
@@ -47,6 +48,9 @@ function useShopState() {
   const [buyerName, setBuyerName] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
   const [lastOrderId, setLastOrderId] = useState("");
+  const [catalogFilterDefinitions, setCatalogFilterDefinitions] = useState<
+    CatalogFilterDefinition[]
+  >(() => [...defaultCatalogFilterDefinitions]);
 
   const cartItems: CartItem[] = useMemo(
     () =>
@@ -248,6 +252,8 @@ function useShopState() {
     buyerEmail,
     setBuyerEmail,
     lastOrderId,
+    catalogFilterDefinitions,
+    setCatalogFilterDefinitions,
     inStockProducts,
     featuredProducts,
     addProduct,

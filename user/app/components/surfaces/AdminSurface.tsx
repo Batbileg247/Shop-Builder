@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type {
+  CatalogFilterDefinition,
   Order,
   OrderStatus,
   Product,
@@ -13,6 +14,7 @@ import { formatMoney } from "@/lib/utils";
 import { Badge } from "@/ui";
 import { ProductForm } from "@/app/components/admin/ProductForm";
 import { ProductRow } from "@/app/components/admin/ProductRow";
+import { CatalogFiltersEditor } from "@/app/components/admin/CatalogFiltersEditor";
 
 type Props = {
   draft: ProductDraft;
@@ -21,6 +23,10 @@ type Props = {
   orders: Order[];
   theme: ShopTheme;
   editingId: string | null;
+  catalogFilterDefinitions: CatalogFilterDefinition[];
+  setCatalogFilterDefinitions: Dispatch<
+    SetStateAction<CatalogFilterDefinition[]>
+  >;
   onAddProduct: () => void;
   onSaveEdit: (id: string) => void;
   onStartEdit: (product: Product) => void;
@@ -38,6 +44,8 @@ export function AdminSurface({
   orders,
   theme,
   editingId,
+  catalogFilterDefinitions,
+  setCatalogFilterDefinitions,
   onAddProduct,
   onSaveEdit,
   onStartEdit,
@@ -74,17 +82,37 @@ export function AdminSurface({
 
   return (
     <section className="grid min-h-full flex-1 gap-8 lg:grid-cols-[minmax(400px,36%)_1fr]">
-      {/* Sidebar: Create product */}
-      <div className="h-fit rounded-md border border-black/10 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold tracking-normal">Add product</h2>
-        <div className="mt-4">
-          <ProductForm
-            draft={draft}
-            mode="create"
-            onSubmit={onAddProduct}
-            setDraft={setDraft}
-            theme={theme}
-          />
+      {/* Sidebar: filters + create product */}
+      <div className="grid gap-6">
+        <div className="h-fit rounded-md border border-black/10 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold tracking-normal">
+            Storefront filters
+          </h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Shoppers see these on the full catalog page. Match values to product
+            categories (or use{" "}
+            <code className="rounded bg-zinc-100 px-1 text-xs">__sale__</code>{" "}
+            for on-sale items).
+          </p>
+          <div className="mt-4">
+            <CatalogFiltersEditor
+              filters={catalogFilterDefinitions}
+              onChange={setCatalogFilterDefinitions}
+            />
+          </div>
+        </div>
+
+        <div className="h-fit rounded-md border border-black/10 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold tracking-normal">Add product</h2>
+          <div className="mt-4">
+            <ProductForm
+              draft={draft}
+              mode="create"
+              onSubmit={onAddProduct}
+              setDraft={setDraft}
+              theme={theme}
+            />
+          </div>
         </div>
       </div>
 

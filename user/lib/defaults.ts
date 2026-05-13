@@ -1,4 +1,9 @@
-import type { Product, ProductDraft, ShopTheme } from "@/types";
+import type {
+  CatalogFilterDefinition,
+  Product,
+  ProductDraft,
+  ShopTheme,
+} from "@/types";
 import { IMAGE_FALLBACK } from "@/lib/utils";
 
 export const defaultTheme: ShopTheme = {
@@ -11,6 +16,12 @@ export const defaultTheme: ShopTheme = {
   textColor: "#18181b",
   heroImage:
     "https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&w=1600&q=80",
+  heroGallery: [
+    "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1600&q=80",
+  ],
   layout: "grid",
   radius: 6,
   currency: "₮",
@@ -175,6 +186,36 @@ export const defaultProducts: Product[] = [
     image:
       "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&w=1000&q=80",
     featured: true,
+  },
+];
+
+/** Admin-editable storefront filters (persisted in shop state). */
+export const defaultCatalogFilterDefinitions: CatalogFilterDefinition[] = [
+  {
+    id: "shop-category",
+    type: "multiselect",
+    label: "Category",
+    options: [
+      { id: "cat-men", label: "Men's Fashion", matchValue: "Men's Fashion" },
+      { id: "cat-women", label: "Women's Fashion", matchValue: "Women's Fashion" },
+      {
+        id: "cat-w-acc",
+        label: "Women Accessories",
+        matchValue: "Women Accessories",
+      },
+      { id: "cat-acc", label: "Accessories", matchValue: "Accessories" },
+      { id: "cat-app", label: "Apparel", matchValue: "Apparel" },
+      { id: "cat-home", label: "Home", matchValue: "Home" },
+      { id: "cat-season", label: "Seasonal", matchValue: "Seasonal" },
+      { id: "cat-sale", label: "On sale", matchValue: "__sale__" },
+    ],
+  },
+  {
+    id: "shop-price",
+    type: "priceRange",
+    label: "Price range",
+    min: 0,
+    max: 250_000,
   },
 ];
 
