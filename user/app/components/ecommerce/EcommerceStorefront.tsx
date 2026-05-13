@@ -92,7 +92,7 @@ export function EcommerceStorefront({
   clearLastOrder,
   lastOrderId,
   catalogLayout = "preview",
-  allProductsHref = "/builder/shop",
+  allProductsHref = "/builder/catalog",
   resizableHero = true,
 }: Props) {
   const router = useRouter();

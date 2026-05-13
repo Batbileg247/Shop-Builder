@@ -364,6 +364,7 @@ export function BuilderSurface({
         <EcommerceStorefront
           addQuantityToCart={addQuantityToCart}
           addToCart={addToCart}
+          allProductsHref="/builder/catalog"
           buyerEmail={buyerEmail}
           buyerName={buyerName}
           cartItems={cartItems}

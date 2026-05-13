@@ -1,39 +1,32 @@
-"use client";
-
 import Link from "next/link";
-import { useShop } from "@/app/hooks/useShop";
-import { EcommerceStorefront } from "@/app/components/ecommerce";
 
-export default function BuilderShopCatalogPage() {
-  const shop = useShop();
+import { ShopPage } from "@/components/site/shop-page";
 
+/**
+ * Theme-preview shop (mock products + Zustand cart). Full `useShop` catalog +
+ * admin filters: `/builder/catalog`.
+ */
+export default function BuilderShopPage() {
   return (
-    <section className="flex min-h-0 w-full flex-col pb-10">
-      <Link
-        className="mb-6 inline-flex w-fit text-sm font-medium text-zinc-600 underline-offset-4 transition hover:text-zinc-900 hover:underline"
-        href="/builder"
-      >
-        ← Back to builder
-      </Link>
-      <EcommerceStorefront
-        addQuantityToCart={shop.addQuantityToCart}
-        addToCart={shop.addToCart}
-        buyerEmail={shop.buyerEmail}
-        buyerName={shop.buyerName}
-        cartItems={shop.cartItems}
-        cartTotal={shop.cartTotal}
-        catalogFilters={shop.catalogFilterDefinitions}
-        catalogLayout="full"
-        checkout={shop.checkout}
-        clearCartItem={shop.clearCartItem}
-        clearLastOrder={shop.clearLastOrder}
-        lastOrderId={shop.lastOrderId}
-        products={shop.products}
-        removeFromCart={shop.removeFromCart}
-        setBuyerEmail={shop.setBuyerEmail}
-        setBuyerName={shop.setBuyerName}
-        theme={shop.theme}
-      />
-    </section>
+    <div className="flex flex-col">
+      <div className="border-b border-pv-divider bg-pv-surface/80 px-6 py-3 text-center text-sm text-pv-muted">
+        <span className="text-pv-fg">Preview shop</span>
+        {" · "}
+        <Link
+          className="font-medium text-pv-fg underline-offset-4 hover:underline"
+          href="/builder/catalog"
+        >
+          Open shop builder catalog
+        </Link>
+        {" · "}
+        <Link
+          className="font-medium text-pv-fg underline-offset-4 hover:underline"
+          href="/builder/panel"
+        >
+          Builder / admin panel
+        </Link>
+      </div>
+      <ShopPage />
+    </div>
   );
 }
