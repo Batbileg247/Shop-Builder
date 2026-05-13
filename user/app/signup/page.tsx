@@ -1,8 +1,11 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-// --- Дүрст дүрслэлүүд (Icons) ---
+import { setAuthSession } from "@/lib/auth-session";
+import { registerMerchant } from "@/lib/platform-auth";
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -36,7 +39,6 @@ const EyeIcon = ({ open }: { open: boolean }) =>
     </svg>
   );
 
-// --- Төрлүүд ---
 interface FormData {
   firstName: string;
   lastName: string;
@@ -47,6 +49,7 @@ interface FormData {
 }
 
 export default function SignUp() {
+  const router = useRouter();
   const [form, setForm] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -60,8 +63,6 @@ export default function SignUp() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [code, setCode] = useState("");
 
   const set =
     (key: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -72,7 +73,6 @@ export default function SignUp() {
     form.confirmPassword &&
     form.password !== form.confirmPassword;
 
-  // Бүртгүүлэх товч дарах үед
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirmPassword) {
@@ -83,83 +83,24 @@ export default function SignUp() {
     setLoading(true);
     setError("");
 
-    // Энд та өөрийн API-г дуудна (Жишээ нь: fetch('/api/signup', ...))
-    setTimeout(() => {
+    try {
+      const session = await registerMerchant(form.email, form.password, {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        phone: form.phone,
+      });
+      setAuthSession(session);
+      router.push("/builder");
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Бүртгэл үүсгэхэд алдаа гарлаа.",
+      );
+    } finally {
       setLoading(false);
-      setVerifying(true); // Код оруулах хэсгийг харуулна
-    }, 1500);
+    }
   };
 
-  // Код баталгаажуулах үед
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // Энд та кодыг шалгах API дуудна
-    setTimeout(() => {
-      setLoading(false);
-      alert("Амжилттай бүртгэгдлээ!");
-    }, 1500);
-  };
-
-  // --- И-мэйл баталгаажуулах дэлгэц ---
-  //   if (verifying) {
-  //     return (
-  //       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
-  //         <Blobs />
-  //         <div className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
-  //           <Shine />
-  //           <div className="mb-7">
-  //             <p className="mb-1 text-xs font-medium uppercase tracking-widest text-indigo-300/70">
-  //               Бараг боллоо
-  //             </p>
-  //             <h1 className="text-2xl font-semibold tracking-tight text-white">
-  //               И-мэйл баталгаажуулах
-  //             </h1>
-  //             <p className="mt-1 text-sm text-white/40">
-  //               <span className="text-white/60">{form.email}</span> хаяг руу код
-  //               илгээлээ
-  //             </p>
-  //           </div>
-
-  //           <form onSubmit={handleVerify} className="flex flex-col gap-4">
-  //             <div className="flex flex-col gap-1.5">
-  //               <label className="text-xs font-medium uppercase tracking-wide text-white/50">
-  //                 Баталгаажуулах код
-  //               </label>
-  //               <input
-  //                 type="text"
-  //                 placeholder="123456"
-  //                 value={code}
-  //                 onChange={(e) => setCode(e.target.value)}
-  //                 maxLength={6}
-  //                 required
-  //                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-xl font-mono tracking-[0.5em] text-white placeholder-white/20 outline-none transition focus:border-indigo-400/50 focus:ring-2 focus:ring-indigo-500/20"
-  //               />
-  //             </div>
-
-  //             <button
-  //               type="submit"
-  //               disabled={loading || code.length < 6}
-  //               className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-500/25 transition hover:bg-indigo-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-  //             >
-  //               {loading ? <Spinner /> : "Баталгаажуулах"}
-  //             </button>
-
-  //             <button
-  //               type="button"
-  //               onClick={() => setVerifying(false)}
-  //               className="text-xs text-white/30 transition hover:text-white/60"
-  //             >
-  //               ← Буцах
-  //             </button>
-  //           </form>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-
-  // --- Бүртгүүлэх үндсэн дэлгэц ---
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
       <Blobs />
@@ -169,13 +110,14 @@ export default function SignUp() {
         <div className="mb-4">
           <div className="mb-1 flex items-center justify-between">
             <p className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
-              Let's start
+              Let&apos;s start
             </p>
-            <a href={"/signin"}>
-              <button className="text-xl text-white/80 transition hover:text-white">
-                Sign in
-              </button>
-            </a>
+            <Link
+              href="/signin"
+              className="text-sm font-medium text-white/80 transition hover:text-white py-1 px-2 rounded"
+            >
+              Sign in
+            </Link>
           </div>
 
           <h1 className="text-2xl font-semibold text-white">Sign up</h1>
@@ -183,23 +125,25 @@ export default function SignUp() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
           <div className="grid grid-cols-2 gap-3">
-            <Field label="First Name">
-              <input
-                type="text"
-                placeholder="Батболд"
-                value={form.lastName}
-                onChange={set("lastName")}
-                required
-                className={inputCls}
-              />
-            </Field>
-            <Field label="Name">
+            <Field label="First name">
               <input
                 type="text"
                 placeholder="Мөнхжин"
                 value={form.firstName}
                 onChange={set("firstName")}
                 required
+                autoComplete="given-name"
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Last name">
+              <input
+                type="text"
+                placeholder="Батболд"
+                value={form.lastName}
+                onChange={set("lastName")}
+                required
+                autoComplete="family-name"
                 className={inputCls}
               />
             </Field>
@@ -212,6 +156,7 @@ export default function SignUp() {
               value={form.email}
               onChange={set("email")}
               required
+              autoComplete="email"
               className={inputCls}
             />
           </Field>
@@ -223,6 +168,7 @@ export default function SignUp() {
               value={form.phone}
               onChange={set("phone")}
               required
+              autoComplete="tel"
               className={inputCls}
             />
           </Field>
@@ -235,6 +181,8 @@ export default function SignUp() {
                 value={form.password}
                 onChange={set("password")}
                 required
+                minLength={8}
+                autoComplete="new-password"
                 className={`${inputCls} pr-10`}
               />
               <ToggleEye
@@ -252,6 +200,7 @@ export default function SignUp() {
                 value={form.confirmPassword}
                 onChange={set("confirmPassword")}
                 required
+                autoComplete="new-password"
                 className={`${inputCls} pr-10 ${
                   passwordMatchError
                     ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
@@ -284,8 +233,6 @@ export default function SignUp() {
     </div>
   );
 }
-
-// --- Туслах Компонентууд ---
 
 const inputCls =
   "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/20 outline-none transition focus:border-indigo-400/50 focus:bg-white/[0.08] focus:ring-2 focus:ring-indigo-500/20";

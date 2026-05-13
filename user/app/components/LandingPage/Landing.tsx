@@ -9,8 +9,25 @@ import { AboutUs } from "./AboutUs";
 import { ContactUs } from "./ContactUs";
 import { Footer } from "./Footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/ui/avatar";
+import { getAuthSession } from "@/lib/auth-session";
+import { useEffect, useState } from "react";
 
 export const LandingPage = () => {
+  const [generateHref, setGenerateHref] = useState(
+    "/signin?redirect=%2Fbuilder",
+  );
+  const [avatarHref, setAvatarHref] = useState("/signin");
+
+  useEffect(() => {
+    if (getAuthSession()) {
+      setGenerateHref("/builder");
+      setAvatarHref("/user");
+    } else {
+      setGenerateHref("/signin?redirect=%2Fbuilder");
+      setAvatarHref("/signin");
+    }
+  }, []);
+
   return (
     <div className="flex flex-col min-h-full bg-black ">
       <div className="flex justify-center sticky z-50 top-7">
@@ -24,14 +41,14 @@ export const LandingPage = () => {
             Unlimited.
           </h1>
           <div className="flex gap-6 justify-center items-center">
-            <Link href={"/builder"}>
+            <Link href={generateHref}>
               <SparkleButton
                 className="h-12 gap-3"
                 label="Generate Site"
                 icon={Sparkle}
               />
             </Link>
-            <Link href={"/signin"}>
+            <Link href={avatarHref}>
               <AvatarDemo />
             </Link>
           </div>

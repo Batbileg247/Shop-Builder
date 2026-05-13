@@ -1,5 +1,15 @@
 "use client";
-import { useState } from "react";
+
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+
+import {
+  ensureAuthCookieFromSession,
+  getAuthSession,
+  setAuthSession,
+} from "@/lib/auth-session";
+import { loginWithPassword } from "@/lib/platform-auth";
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -33,18 +43,46 @@ const EyeIcon = ({ open }: { open: boolean }) =>
     </svg>
   );
 
-export default function SignIn() {
-  // const router = useRouter();
-  // const navigate = useNavigate();
+function safeRedirectPath(raw: string | null, fallback: string): string {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return fallback;
+  return raw;
+}
+
+function SignInForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const afterLogin = safeRedirectPath(
+    searchParams.get("redirect"),
+    "/builder",
+  );
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    ensureAuthCookieFromSession();
+    if (getAuthSession()) {
+      router.replace(afterLogin);
+    }
+  }, [router, afterLogin]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
+    try {
+      const session = await loginWithPassword(email, password);
+      setAuthSession(session);
+      router.push(afterLogin);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Нэвтрэхэд алдаа гарлаа.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,11 +101,12 @@ export default function SignIn() {
             <p className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
               Welcome back
             </p>
-            <a href="/signup">
-              <button className="text-xl text-white/60 transition hover:text-white px-4 py-2 rounded">
-                Sign up
-              </button>
-            </a>
+            <Link
+              href="/signup"
+              className="text-sm font-medium text-white/60 transition hover:text-white px-2 py-1 rounded"
+            >
+              Sign up
+            </Link>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-white">
             Sign in
@@ -78,6 +117,15 @@ export default function SignIn() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {error ? (
+            <p
+              className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="email"
@@ -92,6 +140,7 @@ export default function SignIn() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/20 outline-none ring-0 transition focus:border-indigo-400/50 focus:bg-white/8 focus:ring-2 focus:ring-indigo-500/20"
             />
           </div>
@@ -113,6 +162,7 @@ export default function SignIn() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-white placeholder-white/20 outline-none transition focus:border-indigo-400/50 focus:bg-white/8 focus:ring-2 focus:ring-indigo-500/20"
               />
               <button
@@ -161,5 +211,17 @@ export default function SignIn() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function SignIn() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-svh bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900" />
+      }
+    >
+      <SignInForm />
+    </Suspense>
   );
 }

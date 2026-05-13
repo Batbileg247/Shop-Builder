@@ -15,13 +15,14 @@ import {
 import { ShopProductTeaser } from "./shop-product-teaser";
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { SiteHeader } from "./site-header";
-import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
+import { storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
 
 function HomePageInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const navBase = storefrontNavBase(pathname);
 
   const preset = useThemeStore((s) => s.preset);
   const heroTitle = useThemeStore((s) => s.heroTitle);
@@ -135,7 +136,7 @@ function HomePageInner() {
       <CartDrawer
         giftWrap={giftWrap}
         items={shop.cartItems}
-        onCheckout={() => router.push(`${BUILDER_PREVIEW_BASE}/checkout`)}
+        onCheckout={() => router.push(`${navBase}/checkout`)}
         onDecrement={shop.removeFromCart}
         onGiftWrapChange={setGiftWrap}
         onIncrement={shop.addToCart}
@@ -148,7 +149,7 @@ function HomePageInner() {
           router.replace(qs ? `${pathname}?${qs}` : pathname);
         }}
         onRemoveLine={shop.clearCartItem}
-        onViewFullCart={() => router.push(BUILDER_PREVIEW_BASE)}
+        onViewFullCart={() => router.push(`${navBase}/cart`)}
         open={cartOpen}
         subtotal={shop.cartTotal}
       />
