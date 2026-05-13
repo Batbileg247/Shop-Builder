@@ -10,9 +10,7 @@ export type ShopTheme = {
   accentColor: string;
   backgroundColor: string;
   textColor: string;
-  /** Primary hero slide (Unsplash or any image URL). */
   heroImage: string;
-  /** Extra hero-only carousel URLs (one slide each); not product photos. */
   heroGallery: string[];
   layout: ProductLayout;
   radius: number;
