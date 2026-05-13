@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import type {
   CartItem,
   Order,
@@ -13,7 +19,24 @@ import type {
 import { defaultProducts, defaultTheme, emptyDraft } from "@/lib/defaults";
 import { safeImage, slugify } from "@/lib/utils";
 
+const ShopContext = createContext<ReturnType<typeof useShopState> | null>(null);
+
+export function ShopProvider({ children }: { children: ReactNode }) {
+  const value = useShopState();
+  return (
+    <ShopContext.Provider value={value}>{children}</ShopContext.Provider>
+  );
+}
+
 export function useShop() {
+  const ctx = useContext(ShopContext);
+  if (!ctx) {
+    throw new Error("useShop must be used within ShopProvider");
+  }
+  return ctx;
+}
+
+function useShopState() {
   const [surface, setSurface] = useState<Surface>("builder");
   const [theme, setTheme] = useState<ShopTheme>(defaultTheme);
   const [products, setProducts] = useState<Product[]>(defaultProducts);
@@ -24,8 +47,6 @@ export function useShop() {
   const [buyerName, setBuyerName] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
   const [lastOrderId, setLastOrderId] = useState("");
-
-  // ─── Derived ────────────────────────────────────────────────────────────────
 
   const cartItems: CartItem[] = useMemo(
     () =>
@@ -44,13 +65,9 @@ export function useShop() {
   const inStockProducts = products.filter((p) => p.inventory > 0);
   const featuredProducts = products.filter((p) => p.featured);
 
-  // ─── Theme ──────────────────────────────────────────────────────────────────
-
   function updateTheme<K extends keyof ShopTheme>(key: K, value: ShopTheme[K]) {
     setTheme((t) => ({ ...t, [key]: value }));
   }
-
-  // ─── Products ────────────────────────────────────────────────────────────────
 
   function addProduct() {
     if (!draft.name.trim()) return;
@@ -135,12 +152,22 @@ export function useShop() {
     );
   }
 
-  // ─── Cart ────────────────────────────────────────────────────────────────────
-
   function addToCart(id: string) {
     const product = products.find((p) => p.id === id);
     if (!product || product.inventory <= (cart[id] ?? 0)) return;
     setCart((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
+  }
+
+  function addQuantityToCart(id: string, amount: number) {
+    if (amount <= 0) return;
+    const product = products.find((p) => p.id === id);
+    if (!product) return;
+    setCart((prev) => {
+      const current = prev[id] ?? 0;
+      const nextQty = Math.min(current + amount, product.inventory);
+      if (nextQty <= current) return prev;
+      return { ...prev, [id]: nextQty };
+    });
   }
 
   function removeFromCart(id: string) {
@@ -160,8 +187,6 @@ export function useShop() {
       return next;
     });
   }
-
-  // ─── Orders ──────────────────────────────────────────────────────────────────
 
   function checkout() {
     if (cartItems.length === 0 || !buyerName.trim()) return;
@@ -197,12 +222,15 @@ export function useShop() {
     setLastOrderId(orderId);
   }
 
+  function clearLastOrder() {
+    setLastOrderId("");
+  }
+
   function updateOrderStatus(id: string, status: OrderStatus) {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
   }
 
   return {
-    // state
     surface,
     setSurface,
     theme,
@@ -220,10 +248,8 @@ export function useShop() {
     buyerEmail,
     setBuyerEmail,
     lastOrderId,
-    // derived
     inStockProducts,
     featuredProducts,
-    // actions
     addProduct,
     saveEdit,
     startEdit,
@@ -232,9 +258,11 @@ export function useShop() {
     updateInventory,
     toggleFeatured,
     addToCart,
+    addQuantityToCart,
     removeFromCart,
     clearCartItem,
     checkout,
+    clearLastOrder,
     updateOrderStatus,
   };
 }

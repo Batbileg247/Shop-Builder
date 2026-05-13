@@ -12,6 +12,13 @@ import {
 } from "@/ui/resizable";
 
 /**
+ * Wrap `HeroShelfResizable` so `react-resizable-panels` gets a definite height (percent splits need it).
+ * Fills viewport under app chrome (header + padding).
+ */
+export const SHOP_PREVIEW_HOST_CLASS =
+  "h-[max(20rem,calc(100dvh-9rem))] min-h-0 w-full";
+
+/**
  * Vertical split between the storefront hero (carousel) and products — Builder + Storefront only.
  */
 export function HeroShelfResizable({
@@ -28,15 +35,13 @@ export function HeroShelfResizable({
   return (
     <div
       className={cn(
-        "flex w-full max-w-full flex-col overflow-hidden rounded-md border border-black/10 shadow-sm",
+        "flex h-full min-h-0 w-full max-w-full flex-col overflow-hidden rounded-md border border-black/10 shadow-sm",
         className,
-        /* Last so callers cannot collapse height (e.g. min-h-0). Scroll parents often lack height. */
-        "min-h-[320px] h-[min(68vh,720px)]",
       )}
       style={shopPreviewShellStyle(theme)}
     >
       <ResizablePanelGroup
-        className="flex h-full min-h-0 flex-col"
+        className="flex h-full min-h-0 w-full flex-col"
         orientation="vertical"
       >
         <ResizablePanel
@@ -57,7 +62,7 @@ export function HeroShelfResizable({
           id="shop-products-panel"
           minSize="22%"
         >
-          <div className="flex min-h-0 flex-1 flex-col overflow-auto">
+          <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
             {belowHero}
           </div>
         </ResizablePanel>

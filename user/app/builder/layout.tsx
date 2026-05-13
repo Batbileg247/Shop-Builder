@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 
-import { useShop } from "@/app/hooks/useShop";
+import { ShopProvider, useShop } from "@/app/hooks/useShop";
 import { AppSidebar } from "@/components/app-sidebar";
 import { formatMoney } from "@/lib/utils";
 import { AdminSurface } from "@/app/components/surfaces/AdminSurface";
@@ -38,6 +39,16 @@ export default function BuilderLayout({
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    <ShopProvider>
+      <BuilderLayoutInner>{children}</BuilderLayoutInner>
+    </ShopProvider>
+  );
+}
+
+function BuilderLayoutInner({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isCatalogRoute = pathname === "/builder/shop";
   const shop = useShop();
   const { theme, surface, setSurface } = shop;
 
@@ -71,83 +82,91 @@ export default function BuilderLayout({
 
           <ScrollArea className="min-h-0 flex-1 basis-0 overflow-hidden">
             <div className="flex min-h-full w-full flex-1 flex-col px-6 py-8 sm:px-10 lg:px-14">
-              {surface === "admin" && (
-                <section className="mb-8 grid gap-4 sm:grid-cols-4">
-                  <Metric
-                    label="Products"
-                    value={shop.products.length.toString()}
-                  />
-                  <Metric
-                    label="In stock"
-                    value={shop.inStockProducts.length.toString()}
-                    sub={`${shop.products.length - shop.inStockProducts.length} out of stock`}
-                  />
-                  <Metric
-                    label="Orders"
-                    value={shop.orders.length.toString()}
-                  />
-                  <Metric
-                    label="Revenue"
-                    value={formatMoney(totalRevenue, theme.currency)}
-                  />
-                </section>
-              )}
-
-              {surface === "builder" ? (
-                <BuilderSurface
-                  addToCart={shop.addToCart}
-                  buyerEmail={shop.buyerEmail}
-                  buyerName={shop.buyerName}
-                  cartItems={shop.cartItems}
-                  cartTotal={shop.cartTotal}
-                  checkout={shop.checkout}
-                  clearCartItem={shop.clearCartItem}
-                  featuredProducts={shop.featuredProducts}
-                  lastOrderId={shop.lastOrderId}
-                  products={shop.products}
-                  removeFromCart={shop.removeFromCart}
-                  setBuyerEmail={shop.setBuyerEmail}
-                  setBuyerName={shop.setBuyerName}
-                  theme={theme}
-                  updateTheme={shop.updateTheme}
-                />
-              ) : surface === "admin" ? (
-                <AdminSurface
-                  draft={shop.draft}
-                  editingId={shop.editingId}
-                  onAddProduct={shop.addProduct}
-                  onCancelEdit={shop.cancelEdit}
-                  onDeleteProduct={shop.deleteProduct}
-                  onSaveEdit={shop.saveEdit}
-                  onStartEdit={shop.startEdit}
-                  onToggleFeatured={shop.toggleFeatured}
-                  onUpdateInventory={shop.updateInventory}
-                  onUpdateOrderStatus={shop.updateOrderStatus}
-                  orders={shop.orders}
-                  products={shop.products}
-                  setDraft={shop.setDraft}
-                  theme={theme}
-                />
+              {isCatalogRoute ? (
+                children
               ) : (
-                <ClientSurface
-                  addToCart={shop.addToCart}
-                  buyerEmail={shop.buyerEmail}
-                  buyerName={shop.buyerName}
-                  cartItems={shop.cartItems}
-                  cartTotal={shop.cartTotal}
-                  checkout={shop.checkout}
-                  clearCartItem={shop.clearCartItem}
-                  featuredProducts={shop.featuredProducts}
-                  lastOrderId={shop.lastOrderId}
-                  products={shop.products}
-                  removeFromCart={shop.removeFromCart}
-                  setBuyerEmail={shop.setBuyerEmail}
-                  setBuyerName={shop.setBuyerName}
-                  theme={theme}
-                />
-              )}
+                <>
+                  {surface === "admin" && (
+                    <section className="mb-8 grid gap-4 sm:grid-cols-4">
+                      <Metric
+                        label="Products"
+                        value={shop.products.length.toString()}
+                      />
+                      <Metric
+                        label="In stock"
+                        value={shop.inStockProducts.length.toString()}
+                        sub={`${shop.products.length - shop.inStockProducts.length} out of stock`}
+                      />
+                      <Metric
+                        label="Orders"
+                        value={shop.orders.length.toString()}
+                      />
+                      <Metric
+                        label="Revenue"
+                        value={formatMoney(totalRevenue, theme.currency)}
+                      />
+                    </section>
+                  )}
 
-              {children}
+                  {surface === "builder" ? (
+                    <BuilderSurface
+                      addQuantityToCart={shop.addQuantityToCart}
+                      addToCart={shop.addToCart}
+                      buyerEmail={shop.buyerEmail}
+                      buyerName={shop.buyerName}
+                      cartItems={shop.cartItems}
+                      cartTotal={shop.cartTotal}
+                      checkout={shop.checkout}
+                      clearCartItem={shop.clearCartItem}
+                      clearLastOrder={shop.clearLastOrder}
+                      lastOrderId={shop.lastOrderId}
+                      products={shop.products}
+                      removeFromCart={shop.removeFromCart}
+                      setBuyerEmail={shop.setBuyerEmail}
+                      setBuyerName={shop.setBuyerName}
+                      theme={theme}
+                      updateTheme={shop.updateTheme}
+                    />
+                  ) : surface === "admin" ? (
+                    <AdminSurface
+                      draft={shop.draft}
+                      editingId={shop.editingId}
+                      onAddProduct={shop.addProduct}
+                      onCancelEdit={shop.cancelEdit}
+                      onDeleteProduct={shop.deleteProduct}
+                      onSaveEdit={shop.saveEdit}
+                      onStartEdit={shop.startEdit}
+                      onToggleFeatured={shop.toggleFeatured}
+                      onUpdateInventory={shop.updateInventory}
+                      onUpdateOrderStatus={shop.updateOrderStatus}
+                      orders={shop.orders}
+                      products={shop.products}
+                      setDraft={shop.setDraft}
+                      theme={theme}
+                    />
+                  ) : (
+                    <ClientSurface
+                      addQuantityToCart={shop.addQuantityToCart}
+                      addToCart={shop.addToCart}
+                      buyerEmail={shop.buyerEmail}
+                      buyerName={shop.buyerName}
+                      cartItems={shop.cartItems}
+                      cartTotal={shop.cartTotal}
+                      checkout={shop.checkout}
+                      clearCartItem={shop.clearCartItem}
+                      clearLastOrder={shop.clearLastOrder}
+                      lastOrderId={shop.lastOrderId}
+                      products={shop.products}
+                      removeFromCart={shop.removeFromCart}
+                      setBuyerEmail={shop.setBuyerEmail}
+                      setBuyerName={shop.setBuyerName}
+                      theme={theme}
+                    />
+                  )}
+
+                  {children}
+                </>
+              )}
             </div>
           </ScrollArea>
         </div>
@@ -155,3 +174,4 @@ export default function BuilderLayout({
     </SidebarProvider>
   );
 }
+

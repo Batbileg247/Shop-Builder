@@ -241,4 +241,7 @@ export function ProductShelf({
   );
 }
 
-export { HeroShelfResizable } from "./HeroShelfResizable";
+export {
+  HeroShelfResizable,
+  SHOP_PREVIEW_HOST_CLASS,
+} from "./HeroShelfResizable";

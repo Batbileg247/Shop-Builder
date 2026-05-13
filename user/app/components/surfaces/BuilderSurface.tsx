@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { useMemo } from "react";
 import { Field, ColorField } from "@/ui";
 import { Separator } from "@/ui/separator";
-import { HeroShelfResizable, ShopHero, ProductShelf } from "@/app/components/shop";
+import { EcommerceStorefront } from "@/app/components/ecommerce";
+import { SHOP_PREVIEW_HOST_CLASS } from "@/app/components/shop";
 import type { CartItem, Product, ShopTheme } from "@/types";
 import { formatMoney } from "@/lib/utils";
 
@@ -15,30 +17,31 @@ const FONTS = [
 ] as const;
 
 type Props = {
-  featuredProducts: Product[];
   products: Product[];
   theme: ShopTheme;
   updateTheme: <K extends keyof ShopTheme>(key: K, value: ShopTheme[K]) => void;
 
   addToCart: (id: string) => void;
+  addQuantityToCart: (id: string, amount: number) => void;
   removeFromCart: (id: string) => void;
   clearCartItem: (id: string) => void;
   cartItems: CartItem[];
   cartTotal: number;
   buyerName: string;
-  setBuyerName: (value: string) => void;
+  setBuyerName: Dispatch<SetStateAction<string>>;
   buyerEmail: string;
-  setBuyerEmail: (value: string) => void;
+  setBuyerEmail: Dispatch<SetStateAction<string>>;
   checkout: () => void;
+  clearLastOrder: () => void;
   lastOrderId: string;
 };
 
 export function BuilderSurface({
-  featuredProducts,
   products,
   theme,
   updateTheme,
   addToCart,
+  addQuantityToCart,
   removeFromCart,
   clearCartItem,
   cartItems,
@@ -48,24 +51,16 @@ export function BuilderSurface({
   buyerEmail,
   setBuyerEmail,
   checkout,
+  clearLastOrder,
   lastOrderId,
 }: Props) {
-  const [categoryFilter, setCategoryFilter] = useState<string>("All");
-
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(products.map((p) => p.category)))],
-    [products],
+  const cartCount = useMemo(
+    () => cartItems.reduce((s, i) => s + i.quantity, 0),
+    [cartItems],
   );
 
-  const filtered =
-    categoryFilter === "All"
-      ? products
-      : products.filter((p) => p.category === categoryFilter);
-
-  const cartCount = cartItems.reduce((s, i) => s + i.quantity, 0);
-
   return (
-    <section className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[minmax(400px,36%)_1fr] lg:items-stretch">
+    <section className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[minmax(400px,36%)_1fr] lg:items-start">
       <div className="h-fit self-start rounded-md border border-black/10 bg-white p-6 text-zinc-950 shadow-sm">
         <h2 className="text-lg font-semibold">Theme controls</h2>
 
@@ -177,7 +172,9 @@ export function BuilderSurface({
                   className="w-full accent-current"
                   max="20"
                   min="0"
-                  onChange={(e) => updateTheme("radius", Number(e.target.value))}
+                  onChange={(e) =>
+                    updateTheme("radius", Number(e.target.value))
+                  }
                   style={{ accentColor: theme.primaryColor }}
                   type="range"
                   value={theme.radius}
@@ -217,20 +214,6 @@ export function BuilderSurface({
               Storefront demo
             </p>
             <div className="grid gap-3">
-              <Field label="Preview category">
-                <select
-                  className="input"
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  value={categoryFilter}
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-
               <div className="rounded-md border border-zinc-200 bg-white p-3 text-sm">
                 <div className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-3">
                   <p className="font-semibold">Cart</p>
@@ -260,7 +243,8 @@ export function BuilderSurface({
                                 {item.product.name}
                               </p>
                               <p className="mt-0.5 text-xs text-zinc-500">
-                                {formatMoney(effectivePrice, theme.currency)} each
+                                {formatMoney(effectivePrice, theme.currency)}{" "}
+                                each
                               </p>
                             </div>
                             <button
@@ -355,27 +339,28 @@ export function BuilderSurface({
         </div>
       </div>
 
-      <HeroShelfResizable
-        belowHero={
-          <ProductShelf
-            mode="preview"
-            products={filtered}
-            theme={theme}
-            title={categoryFilter === "All" ? "All products" : categoryFilter}
-          />
-        }
-        hero={
-          <ShopHero
-            fillContainer
-            heroImages={[
-              theme.heroImage,
-              ...featuredProducts.map((p) => p.image),
-            ].filter(Boolean)}
-            theme={theme}
-          />
-        }
-        theme={theme}
-      />
+      <div
+        className={`${SHOP_PREVIEW_HOST_CLASS} lg:sticky lg:top-4 lg:z-10 lg:self-start`}
+      >
+        <EcommerceStorefront
+          addQuantityToCart={addQuantityToCart}
+          addToCart={addToCart}
+          buyerEmail={buyerEmail}
+          buyerName={buyerName}
+          cartItems={cartItems}
+          cartTotal={cartTotal}
+          catalogLayout="preview"
+          checkout={checkout}
+          clearCartItem={clearCartItem}
+          clearLastOrder={clearLastOrder}
+          lastOrderId={lastOrderId}
+          products={products}
+          removeFromCart={removeFromCart}
+          setBuyerEmail={setBuyerEmail}
+          setBuyerName={setBuyerName}
+          theme={theme}
+        />
+      </div>
     </section>
   );
 }
