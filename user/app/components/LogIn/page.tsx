@@ -1,8 +1,5 @@
 "use client";
-import { Link } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -36,7 +33,7 @@ const EyeIcon = ({ open }: { open: boolean }) =>
     </svg>
   );
 
-export const LogIn = () => {
+export default function LogIn() {
   // const router = useRouter();
   // const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -185,4 +182,4 @@ export const LogIn = () => {
       </div>
     </div>
   );
-};
+}
