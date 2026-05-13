@@ -166,18 +166,19 @@ export default function SignUp() {
       <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
         <Shine />
 
-        <div className="mb-6">
+        <div className="mb-4">
           <div className="mb-1 flex items-center justify-between">
             <p className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
               Let's start
             </p>
-            <button className="text-xl text-white/80 transition hover:text-white">
-              Sign in
-            </button>
+            <a href={"/signin"}>
+              <button className="text-xl text-white/80 transition hover:text-white">
+                Sign in
+              </button>
+            </a>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">
-            Sign up
-          </h1>
+
+          <h1 className="text-2xl font-semibold text-white">Sign up</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
@@ -277,20 +278,6 @@ export default function SignUp() {
             className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 py-2.5 text-base font-medium text-white shadow-lg shadow-indigo-500/25 transition hover:bg-indigo-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? <Spinner /> : "Sign up →"}
-          </button>
-
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-white/8" />
-            <span className="text-xs text-white/25">or</span>
-            <div className="h-px flex-1 bg-white/8" />
-          </div>
-
-          <button
-            type="button"
-            className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/5 py-2.5 text-base text-white/70 transition hover:bg-white/10 hover:text-white active:scale-[0.98]"
-          >
-            <img src="/googleIcon.svg" />
-            Sign up with Google
           </button>
         </form>
       </div>

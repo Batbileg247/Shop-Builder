@@ -8,28 +8,36 @@ import { Questions } from "./Q&A";
 import { AboutUs } from "./AboutUs";
 import { ContactUs } from "./ContactUs";
 import { Footer } from "./Footer";
+import { Avatar, AvatarFallback, AvatarImage } from "@/ui/avatar";
 
 export const LandingPage = () => {
   return (
-    <div className="flex flex-col min-h-full bg-black overflow-x-hidden">
-      {/* Header хэсэг */}
-      <div
-        className="flex justify-between items-center px-6 md:px-20 pt-15 "
-        id="hero"
-      >
-        <h1 className="font-mono font-medium text-white text-lg tracking-widest uppercase ">
-          Unlimited.
-        </h1>
-        <Link href={"/builder"}>
-          <SparkleButton
-            className="h-12 gap-3"
-            label="Generate Site"
-            icon={Sparkle}
-          />
-        </Link>
+    <div className="flex flex-col min-h-full bg-black ">
+      <div className="flex justify-center sticky z-50 top-7">
+        <div
+          className="w-350 flex justify-between items-center px-6 md:px-12 py-3 
+             bg-white/10 backdrop-blur-sm border border-white/20 
+             rounded-full shadow-xl shadow-white/10"
+          id="hero"
+        >
+          <h1 className="font-mono font-medium text-white text-lg tracking-widest uppercase">
+            Unlimited.
+          </h1>
+          <div className="flex gap-6 justify-center items-center">
+            <Link href={"/builder"}>
+              <SparkleButton
+                className="h-12 gap-3"
+                label="Generate Site"
+                icon={Sparkle}
+              />
+            </Link>
+            <Link href={"/signin"}>
+              <AvatarDemo />
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* Hero хэсэг */}
       <div className="relative flex-1 flex justify-center items-center min-h-150 mt-50">
         <div className="absolute inset-0">
           <OrbLine />
@@ -41,16 +49,12 @@ export const LandingPage = () => {
         </div>
       </div>
 
-      {/* ШИНЭЧЛЭГДСЭН ХЭСЭГ: Questions, AboutUs, ContactUs бүгд нэг background дээр */}
       <div className="relative flex flex-col items-center mt-40">
-        {/* Арын фон (Background2) - бүх хэсгийг бүрхэнэ */}
         <div className="absolute inset-0 z-0">
           <MinimalDarkBackground />
         </div>
 
-        {/* Агуулга - z-10 ашиглаж фон дээр гаргана */}
         <div className="relative z-10 w-full flex flex-col items-center">
-          {/* Questions хэсэг */}
           <div
             className="flex text-white justify-center text-2xl py-20 w-full scroll-mt-[20vh]"
             id="faq"
@@ -58,12 +62,10 @@ export const LandingPage = () => {
             <Questions />
           </div>
 
-          {/* AboutUs хэсэг */}
           <div className="py-20 w-full scroll-mt-[20vh]" id="about">
             <AboutUs />
           </div>
 
-          {/* ContactUs хэсэг */}
           <div className="py-20 mb-40 w-full scroll-mt-[20vh]" id="contact">
             <ContactUs />
           </div>
@@ -137,6 +139,14 @@ function GlassHero() {
     </div>
   );
 }
+const AvatarDemo = () => {
+  return (
+    <Avatar className="size-11">
+      <AvatarImage src="/3g.jpeg" alt="@shadcn" className="grayscale" />
+      <AvatarFallback>CN</AvatarFallback>
+    </Avatar>
+  );
+};
 
 const ScrollDown = () => {
   return (

@@ -33,7 +33,7 @@ const EyeIcon = ({ open }: { open: boolean }) =>
     </svg>
   );
 
-export default function LogIn() {
+export default function SignIn() {
   // const router = useRouter();
   // const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -58,12 +58,12 @@ export default function LogIn() {
       <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 py-10 shadow-2xl backdrop-blur-xl">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/30 to-transparent rounded-t-2xl" />
 
-        <div className="mb-7">
+        <div className="mb-4">
           <div className="mb-1 flex items-center justify-between">
             <p className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
               Welcome back
             </p>
-            <a href="/SignUp">
+            <a href="/signup">
               <button className="text-xl text-white/60 transition hover:text-white px-4 py-2 rounded">
                 Sign up
               </button>
@@ -72,7 +72,7 @@ export default function LogIn() {
           <h1 className="text-2xl font-semibold tracking-tight text-white">
             Sign in
           </h1>
-          <p className="mt-1 text-sm text-white/40">
+          <p className=" text-sm text-white/40">
             Enter your credentials to continue
           </p>
         </div>
@@ -104,12 +104,6 @@ export default function LogIn() {
               >
                 Password
               </label>
-              <a
-                href="#"
-                className="text-xs text-indigo-300/60 transition hover:text-indigo-300"
-              >
-                Forgot password?
-              </a>
             </div>
             <div className="relative">
               <input
@@ -163,20 +157,6 @@ export default function LogIn() {
             ) : (
               "Sign in"
             )}
-          </button>
-
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-white/8" />
-            <span className="text-xs text-white/25">or</span>
-            <div className="h-px flex-1 bg-white/8" />
-          </div>
-
-          <button
-            type="button"
-            className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/5 py-2.5 text-sm text-white/70 transition hover:bg-white/10 hover:text-white active:scale-[0.98]"
-          >
-            <img src="/googleIcon.svg" />
-            Continue with Google
           </button>
         </form>
       </div>
