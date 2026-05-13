@@ -1,12 +1,10 @@
 "use client";
 
+import * as React from "react";
+
 import { ShopProvider } from "@/app/hooks/useShop";
 import { ThemeStudioLayout } from "@/components/theme-studio/theme-studio-layout";
 
-/**
- * Combines incoming Theme Studio (`StoreProvider` + preview chrome) with keeper
- * shop state (`ShopProvider`) — used by Theme Studio preview.
- */
 export default function BuilderLayout({
   children,
 }: {

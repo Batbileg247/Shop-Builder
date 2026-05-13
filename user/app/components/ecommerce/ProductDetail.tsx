@@ -86,7 +86,7 @@ export function ProductDetail({
       aria-labelledby={titleId}
       aria-modal="true"
       className={cn(
-        "fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto bg-black/45 p-3 transition-opacity duration-200 sm:p-6",
+        "fixed inset-0 z-200 flex items-start justify-center overflow-y-auto bg-black/45 p-3 transition-opacity duration-200 sm:p-6",
         open ? "opacity-100" : "pointer-events-none opacity-0",
       )}
       role="dialog"
@@ -100,13 +100,13 @@ export function ProductDetail({
       />
       <div
         className={cn(
-          "relative z-10 mt-4 mb-10 w-full max-w-6xl rounded-lg bg-white shadow-2xl transition-transform duration-200",
+          "pv-card relative z-10 mt-4 mb-10 w-full max-w-6xl overflow-hidden shadow-pv-card transition-transform duration-200",
           open ? "translate-y-0" : "translate-y-3",
         )}
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-3 right-3 z-20 rounded-full bg-white/90 p-2 text-zinc-700 shadow ring-1 ring-black/10 transition hover:bg-zinc-50"
+          className="absolute top-3 right-3 z-20 rounded-full bg-pv-card p-2 text-pv-muted shadow ring-1 ring-pv-border transition hover:text-pv-fg"
           onClick={handleClose}
           type="button"
         >
@@ -119,8 +119,8 @@ export function ProductDetail({
               {thumbs.map((t, i) => (
                 <button
                   className={cn(
-                    "relative size-14 overflow-hidden rounded-md ring-2 ring-transparent transition sm:size-16",
-                    activeThumb === i && "ring-black",
+                    "relative size-14 overflow-hidden rounded-(--pv-radius) ring-2 ring-transparent transition sm:size-16",
+                    activeThumb === i && "ring-pv-primary",
                   )}
                   key={t.key}
                   onClick={() => setActiveThumb(i)}
@@ -136,7 +136,7 @@ export function ProductDetail({
                 </button>
               ))}
             </div>
-            <div className="relative min-h-[280px] flex-1 overflow-hidden rounded-lg bg-zinc-100 sm:min-h-[420px]">
+            <div className="pv-visual relative min-h-[280px] flex-1 overflow-hidden rounded-(--pv-radius) bg-pv-placeholder sm:min-h-[420px]">
               <Image
                 alt={product.name}
                 className="object-cover"
@@ -150,19 +150,19 @@ export function ProductDetail({
 
           <div className="flex min-w-0 flex-col gap-5">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+              <p className="text-xs font-medium uppercase tracking-wider text-pv-muted">
                 {brandLabel}
               </p>
               <div className="mt-1 flex items-start justify-between gap-3">
                 <h2
-                  className="font-serif text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl"
+                  className="font-serif text-3xl font-semibold tracking-tight text-pv-fg sm:text-4xl"
                   id={titleId}
                 >
                   {product.name}
                 </h2>
                 <button
                   aria-label="Save to wishlist"
-                  className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border border-zinc-200 text-zinc-500 transition hover:border-zinc-400"
+                  className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border border-pv-border text-pv-muted transition hover:text-pv-fg"
                   type="button"
                 >
                   ☆
@@ -170,43 +170,43 @@ export function ProductDetail({
               </div>
               <div className="mt-2 flex items-center gap-2 text-sm">
                 <StarRating className="text-base" rating={Math.min(5, rating)} />
-                <span className="text-zinc-500">({count})</span>
+                <span className="text-pv-muted">({count})</span>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-2xl font-semibold text-zinc-900">
+              <span className="text-2xl font-semibold text-pv-fg">
                 {formatStorefrontPrice(effective)}
               </span>
               {product.salePrice != null && (
                 <>
-                  <span className="text-lg text-zinc-400 line-through">
+                  <span className="text-lg text-pv-muted/70 line-through">
                     {formatStorefrontPrice(product.price)}
                   </span>
-                  <span className="rounded bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">
+                  <span className="rounded-(--pv-radius) bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">
                     SAVE {pctOff}%
                   </span>
                 </>
               )}
             </div>
 
-            <p className="flex items-center gap-2 text-sm text-zinc-600">
+            <p className="flex items-center gap-2 text-sm text-pv-muted">
               <span aria-hidden>👁</span>
               24 people are viewing this right now
             </p>
 
-            <div className="rounded-md border border-red-100 bg-red-50/80 px-3 py-2 text-sm text-red-800">
+            <div className="rounded-(--pv-radius) border border-red-100 bg-red-50/80 px-3 py-2 text-sm text-red-800">
               Hurry up! Sale ends in:{" "}
               <span className="font-mono font-semibold">00 : 05 : 59 : 47</span>
             </div>
 
             <div>
-              <p className="text-sm font-medium text-zinc-800">
+              <p className="text-sm font-medium text-pv-fg">
                 Only {product.inventory} item(s) left in stock!
               </p>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-zinc-200">
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-pv-divider">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-red-500 to-zinc-300"
+                  className="h-full rounded-full bg-linear-to-r from-red-500 to-zinc-300"
                   style={{
                     width: `${Math.min(100, Math.max(8, (product.inventory / 20) * 100))}%`,
                   }}
@@ -214,20 +214,20 @@ export function ProductDetail({
               </div>
             </div>
 
-            <p className="text-sm leading-relaxed text-zinc-600">
+            <p className="text-sm leading-relaxed text-pv-muted">
               {product.description}
             </p>
 
             <div>
-              <p className="text-sm font-medium text-zinc-800">Size: {size}</p>
+              <p className="text-sm font-medium text-pv-fg">Size: {size}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {SIZES.map((s) => (
                   <button
                     className={cn(
                       "min-w-10 rounded border px-3 py-2 text-sm font-medium transition",
                       size === s
-                        ? "border-black bg-black text-white"
-                        : "border-zinc-300 bg-white text-zinc-800 hover:border-zinc-500",
+                        ? "border-pv-primary bg-pv-primary text-pv-primary-fg"
+                        : "border-pv-border bg-pv-card text-pv-fg hover:bg-pv-empty",
                     )}
                     key={s}
                     onClick={() => setSize(s)}
@@ -240,7 +240,7 @@ export function ProductDetail({
             </div>
 
             <div>
-              <p className="text-sm font-medium text-zinc-800">
+              <p className="text-sm font-medium text-pv-fg">
                 Color:{" "}
                 {COLORS.find((c) => c.id === colorId)?.label ?? "Blue"}
               </p>
@@ -250,7 +250,7 @@ export function ProductDetail({
                     aria-label={c.label}
                     className={cn(
                       "size-9 rounded-full border-2 border-transparent p-0.5 ring-offset-2 transition",
-                      colorId === c.id && "border-black",
+                      colorId === c.id && "border-pv-primary",
                     )}
                     key={c.id}
                     onClick={() => setColorId(c.id)}
@@ -268,21 +268,21 @@ export function ProductDetail({
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-zinc-800">Qty</span>
-              <div className="flex items-center rounded-md border border-zinc-300">
+              <span className="text-sm font-medium text-pv-fg">Qty</span>
+              <div className="flex items-center rounded-(--pv-radius) border border-pv-border bg-pv-card">
                 <button
-                  className="px-3 py-2 text-lg leading-none text-zinc-600 transition hover:bg-zinc-50 disabled:opacity-40"
+                  className="px-3 py-2 text-lg leading-none text-pv-muted transition hover:bg-pv-empty disabled:opacity-40"
                   disabled={qty <= 1}
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   type="button"
                 >
                   −
                 </button>
-                <span className="min-w-8 text-center text-sm font-semibold">
+                <span className="min-w-8 text-center text-sm font-semibold text-pv-fg">
                   {qty}
                 </span>
                 <button
-                  className="px-3 py-2 text-lg leading-none text-zinc-600 transition hover:bg-zinc-50 disabled:opacity-40"
+                  className="px-3 py-2 text-lg leading-none text-pv-muted transition hover:bg-pv-empty disabled:opacity-40"
                   disabled={qty >= product.inventory}
                   onClick={() =>
                     setQty((q) => Math.min(product.inventory, q + 1))
@@ -295,27 +295,26 @@ export function ProductDetail({
             </div>
 
             <Button
-              className="h-11 w-full max-w-md border border-black bg-white text-black hover:bg-zinc-50"
+              className="pv-btn-primary h-11 w-full max-w-md"
               onClick={() => {
                 onAddToCart(product, qty);
               }}
-              variant="outline"
             >
               Add to cart
             </Button>
 
-            <div className="flex flex-wrap gap-4 text-sm text-zinc-500">
+            <div className="flex flex-wrap gap-4 text-sm text-pv-muted">
               <span>Compare</span>
               <span>Ask a question</span>
               <span>Share</span>
             </div>
 
-            <div className="mt-2 space-y-2 border-t border-zinc-100 pt-4 text-sm text-zinc-600">
+            <div className="mt-2 space-y-2 border-t border-pv-divider pt-4 text-sm text-pv-muted">
               <p>🚚 Estimated Delivery: Jul 30 – Aug 03</p>
               <p>📦 Free Shipping &amp; Returns on orders over $75</p>
             </div>
 
-            <div className="rounded-md bg-zinc-50 px-3 py-2 text-center text-xs text-zinc-500">
+            <div className="rounded-(--pv-radius) bg-pv-empty px-3 py-2 text-center text-xs text-pv-muted">
               Guarantee safe &amp; secure checkout — Visa · Mastercard · Amex ·
               PayPal
             </div>

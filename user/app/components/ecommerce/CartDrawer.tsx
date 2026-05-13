@@ -129,19 +129,6 @@ export function CartDrawer({
               })
             )}
           </ul>
-
-          <label className="mt-6 flex cursor-pointer items-start gap-2 text-sm text-pv-muted">
-            <input
-              checked={giftWrap}
-              className="mt-1"
-              onChange={(e) => onGiftWrapChange(e.target.checked)}
-              type="checkbox"
-            />
-            <span>
-              For <strong>{formatStorefrontPrice(1000)}</strong> please wrap the
-              product
-            </span>
-          </label>
         </div>
 
         <SheetFooter className="border-t border-pv-divider bg-pv-card px-6 py-4">

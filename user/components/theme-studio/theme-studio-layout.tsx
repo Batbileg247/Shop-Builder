@@ -33,6 +33,24 @@ export function ThemeStudioLayout({
     ],
   );
 
+  // The cart drawer and other overlays render in a portal (document.body),
+  // so we mirror the preview theme tokens onto <body> as well.
+  React.useEffect(() => {
+    const el = document.body;
+    el.classList.add("site-preview-root");
+    el.setAttribute("data-theme", preset);
+    el.style.setProperty("--pv-card-content-pad", `${cardContentPaddingRem}rem`);
+    el.style.setProperty("--pv-product-gap", `${productGridGapRem}rem`);
+    el.style.setProperty("--pv-radius", `${radius}px`);
+    return () => {
+      el.classList.remove("site-preview-root");
+      el.removeAttribute("data-theme");
+      el.style.removeProperty("--pv-card-content-pad");
+      el.style.removeProperty("--pv-product-gap");
+      el.style.removeProperty("--pv-radius");
+    };
+  }, [preset, cardContentPaddingRem, productGridGapRem, radius]);
+
   return (
     <div className="flex min-h-svh w-full bg-zinc-100">
       <div className="fixed left-0 top-0 z-40 h-svh w-[350px] shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
