@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useShop } from "@/app/hooks/useShop";
@@ -383,11 +384,29 @@ function HomePageInner() {
             <HeroShelfResizable
               belowHero={previewBelowHero}
               hero={
-                <ShopHero
-                  fillContainer
-                  heroImages={buildHeroCarouselUrls(effectiveTheme)}
-                  theme={effectiveTheme}
-                />
+                <div className="flex h-full min-h-0 flex-col overflow-hidden">
+                  <header className="pv-header flex h-11 shrink-0 items-center justify-between gap-3 px-4 sm:h-12 sm:px-5">
+                    <Link
+                      href={navBase}
+                      className={cn(
+                        "rounded-[length:var(--pv-radius)] px-1 py-0.5 text-sm font-semibold tracking-tight text-pv-fg",
+                        "pv-interactive transition-none",
+                      )}
+                    >
+                      Store
+                    </Link>
+                    <span className="truncate text-right text-xs font-medium text-pv-muted sm:text-sm">
+                      {effectiveTheme.name}
+                    </span>
+                  </header>
+                  <div className="min-h-0 flex-1 overflow-hidden">
+                    <ShopHero
+                      fillContainer
+                      heroImages={buildHeroCarouselUrls(effectiveTheme)}
+                      theme={effectiveTheme}
+                    />
+                  </div>
+                </div>
               }
               heroSizePercent={heroPanelPercent}
               locked={fullSiteShell}
