@@ -18,13 +18,13 @@ export function FilterItem({
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-center gap-2 rounded-md px-1 py-1.5 text-sm text-zinc-800 transition hover:bg-zinc-100",
+        "flex cursor-pointer items-center gap-2 rounded-(--pv-radius) px-1 py-1.5 text-sm text-pv-fg transition hover:bg-pv-empty",
         disabled && "pointer-events-none opacity-50",
       )}
     >
       <input
         checked={checked}
-        className="size-4 rounded border-zinc-300 text-zinc-900"
+        className="size-4 rounded border-pv-border text-pv-primary accent-pv-primary"
         id={id}
         onChange={(e) => onChange(e.target.checked)}
         type="checkbox"

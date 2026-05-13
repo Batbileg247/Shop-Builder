@@ -41,6 +41,10 @@ export function ThemeEditorSidebar() {
   const setHeroTitle = useThemeStore((s) => s.setHeroTitle);
   const heroImage = useThemeStore((s) => s.heroImage);
   const setHeroImage = useThemeStore((s) => s.setHeroImage);
+  const shopName = useThemeStore((s) => s.shopName);
+  const setShopName = useThemeStore((s) => s.setShopName);
+  const heroAnnouncement = useThemeStore((s) => s.heroAnnouncement);
+  const setHeroAnnouncement = useThemeStore((s) => s.setHeroAnnouncement);
   const radius = useThemeStore((s) => s.radius);
   const setRadius = useThemeStore((s) => s.setRadius);
   const cardContentPaddingRem = useThemeStore((s) => s.cardContentPaddingRem);
@@ -104,6 +108,8 @@ export function ThemeEditorSidebar() {
             builderTheme: preset,
             heroTitle,
             heroImage,
+            shopName,
+            heroAnnouncement,
             primaryColor,
             backgroundColor,
             textColor,
@@ -182,20 +188,44 @@ export function ThemeEditorSidebar() {
             <h2 className={sectionTitleClass}>Site Settings</h2>
             <div className="mt-4 space-y-4">
               <div className="space-y-1.5">
+                <label htmlFor="shop-name" className={fieldLabelClass}>
+                  Shop name
+                </label>
+                <Input
+                  id="shop-name"
+                  value={shopName}
+                  onChange={(e) => setShopName(e.target.value)}
+                  placeholder="Nomad Goods"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="hero-announcement" className={fieldLabelClass}>
+                  Announcement
+                </label>
+                <Input
+                  id="hero-announcement"
+                  value={heroAnnouncement}
+                  onChange={(e) => setHeroAnnouncement(e.target.value)}
+                  placeholder="Free delivery in Ulaanbaatar this week"
+                  className={inputClass}
+                />
+              </div>
+              <div className="space-y-1.5">
                 <label htmlFor="hero-title" className={fieldLabelClass}>
-                  Hero Title
+                  Tagline
                 </label>
                 <Input
                   id="hero-title"
                   value={heroTitle}
                   onChange={(e) => setHeroTitle(e.target.value)}
-                  placeholder="Headline…"
+                  placeholder="Subtitle under the shop name…"
                   className={inputClass}
                 />
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="hero-image" className={fieldLabelClass}>
-                  Hero Image URL
+                  Hero image URL
                 </label>
                 <Input
                   id="hero-image"

@@ -1,7 +1,10 @@
 "use client";
 
 import type { CatalogFilterDefinition } from "@/types";
-import type { CatalogFilterSelections, PriceSortMode } from "@/lib/catalog-filters";
+import type {
+  CatalogFilterSelections,
+  PriceSortMode,
+} from "@/lib/catalog-filters";
 import { FilterItem } from "@/app/components/ecommerce/FilterItem";
 
 export function FilterSidebar({
@@ -54,12 +57,13 @@ export function FilterSidebar({
 
   if (definitions.length === 0) {
     return (
-      <p className="p-4 text-sm text-zinc-500">No filters configured yet.</p>
+      <p className="p-4 text-sm text-pv-muted">No filters configured yet.</p>
     );
   }
 
-  const firstPriceFilterId = definitions.find((d) => d.type === "priceRange")
-    ?.id;
+  const firstPriceFilterId = definitions.find(
+    (d) => d.type === "priceRange",
+  )?.id;
 
   const priceSortLabel =
     priceSortMode === "asc"
@@ -70,20 +74,20 @@ export function FilterSidebar({
 
   return (
     <div className="flex flex-col gap-0 p-3 sm:p-4">
-      <p className="px-1 pb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+      <p className="px-1 pb-3 text-xs font-semibold uppercase tracking-wider text-pv-muted">
         Filters
       </p>
       {definitions.map((def) =>
         def.type === "multiselect" ? (
           <details
-            className="group border-b border-zinc-200 py-1 last:border-b-0"
+            className="group border-b border-pv-divider py-1 last:border-b-0"
             key={def.id}
             open
           >
-            <summary className="cursor-pointer list-none py-2 text-sm font-semibold text-zinc-900 marker:hidden [&::-webkit-details-marker]:hidden">
+            <summary className="cursor-pointer list-none py-2 text-sm font-semibold text-pv-fg marker:hidden [&::-webkit-details-marker]:hidden">
               <span className="flex items-center justify-between gap-2">
                 {def.label}
-                <span className="text-zinc-400 group-open:rotate-180">▾</span>
+                <span className="text-pv-muted group-open:rotate-180">▾</span>
               </span>
             </summary>
             <div className="flex flex-col gap-0.5 pb-3 pl-1">
@@ -101,17 +105,21 @@ export function FilterSidebar({
             </div>
           </details>
         ) : (
-          <details className="group border-b border-zinc-200 py-1 last:border-b-0" key={def.id} open>
-            <summary className="cursor-pointer list-none py-2 text-sm font-semibold text-zinc-900 marker:hidden [&::-webkit-details-marker]:hidden">
+          <details
+            className="group border-b border-pv-divider py-1 last:border-b-0"
+            key={def.id}
+            open
+          >
+            <summary className="cursor-pointer list-none py-2 text-sm font-semibold text-pv-fg marker:hidden [&::-webkit-details-marker]:hidden">
               <span className="flex items-center justify-between gap-2">
                 {def.label}
-                <span className="text-zinc-400 group-open:rotate-180">▾</span>
+                <span className="text-pv-muted group-open:rotate-180">▾</span>
               </span>
             </summary>
             <div className="space-y-3 pb-3">
               {onPriceSortCycle && def.id === firstPriceFilterId && (
                 <button
-                  className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2.5 text-left text-xs font-medium text-zinc-800 transition hover:border-zinc-300 hover:bg-zinc-50"
+                  className="w-full rounded-(--pv-radius) border border-pv-border bg-pv-card px-3 py-2.5 text-left text-xs font-medium text-pv-fg transition hover:bg-pv-empty"
                   onClick={() => onPriceSortCycle()}
                   type="button"
                 >
@@ -119,10 +127,10 @@ export function FilterSidebar({
                 </button>
               )}
               <div className="grid grid-cols-2 gap-2">
-                <label className="text-xs text-zinc-500">
+                <label className="text-xs text-pv-muted">
                   Min
                   <input
-                    className="input mt-1"
+                    className="pv-input mt-1 pl-2 w-full"
                     max={def.max}
                     min={def.min}
                     onChange={(e) =>
@@ -138,10 +146,10 @@ export function FilterSidebar({
                     value={selections.priceRange[def.id]?.min ?? def.min}
                   />
                 </label>
-                <label className="text-xs text-zinc-500">
+                <label className="text-xs text-pv-muted">
                   Max
                   <input
-                    className="input mt-1"
+                    className="pv-input mt-1 pl-2 w-full"
                     max={def.max}
                     min={def.min}
                     onChange={(e) =>
@@ -159,7 +167,7 @@ export function FilterSidebar({
                 </label>
               </div>
               <input
-                className="w-full accent-zinc-900"
+                className="w-full accent-pv-primary"
                 max={def.max}
                 min={def.min}
                 onChange={(e) =>

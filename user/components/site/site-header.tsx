@@ -4,22 +4,39 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
+import { Play } from "lucide-react";
+
 import { useShop } from "@/app/hooks/useShop";
+import { useBuilderUi } from "@/context/builder-ui-context";
+import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { storefrontNavBase } from "@/lib/site-paths";
 import { cn } from "@/lib/utils";
+import { Button } from "@/ui/button";
 
 function SiteHeaderInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { setIsDemo } = useBuilderUi();
   const shop = useShop();
   const navBase = storefrontNavBase(pathname);
-  const shopHref = `${navBase}/shop`;
+  const catalogHref = `${navBase}?view=all`;
   const cartCount = shop.cartItems.reduce((s, i) => s + i.quantity, 0);
   const cartIntent = searchParams.get("cart") === "open";
+  const shopBrowse = searchParams.get("view") === "all";
+  const onBuilderHome =
+    pathname === navBase || pathname === `${navBase}/`;
   const onShopPath =
-    pathname === `${navBase}/shop` || pathname?.startsWith(`${navBase}/shop/`);
+    pathname === `${navBase}/shop` ||
+    pathname?.startsWith(`${navBase}/shop/`);
   const onCartPath =
     pathname === `${navBase}/cart` || pathname === `${navBase}/cart/`;
+  const cartHref =
+    shopBrowse && onBuilderHome
+      ? `${navBase}?view=all&cart=open`
+      : `${navBase}?cart=open`;
+  const shopActive =
+    !cartIntent &&
+    ((shopBrowse && onBuilderHome) || (onShopPath && !shopBrowse));
 
   return (
     <header className="pv-header">
@@ -34,31 +51,41 @@ function SiteHeaderInner() {
           Store
         </Link>
         <nav className="flex items-center gap-1.5 sm:gap-2" aria-label="Main">
+          <Button
+            type="button"
+            variant="default"
+            size="lg"
+            className={builderDemoCtaButtonClassName()}
+            onClick={() => setIsDemo(true)}
+          >
+            <Play className="size-4 fill-current opacity-95" aria-hidden />
+            View Demo
+          </Button>
           <Link
             href={navBase}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-[length:var(--pv-radius)] px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
               "text-pv-muted pv-interactive",
-              (pathname === navBase || pathname === `${navBase}/`) &&
+              onBuilderHome &&
+                !shopBrowse &&
+                !cartIntent &&
                 "bg-pv-card text-pv-fg outline outline-1 outline-pv-border",
             )}
           >
             Home
           </Link>
           <Link
-            href={shopHref}
+            href={catalogHref}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-[length:var(--pv-radius)] px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
               "text-pv-muted pv-interactive",
-              onShopPath &&
-                !cartIntent &&
-                "bg-pv-card text-pv-fg outline outline-1 outline-pv-border",
+              shopActive && "bg-pv-card text-pv-fg outline outline-1 outline-pv-border",
             )}
           >
             Shop
           </Link>
           <Link
-            href={`${navBase}?cart=open`}
+            href={cartHref}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-[length:var(--pv-radius)] px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
               "text-pv-muted pv-interactive",

@@ -32,7 +32,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group flex cursor-pointer flex-col overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 transition hover:shadow-xl",
+        "pv-card group flex cursor-pointer flex-col overflow-hidden shadow-pv-card transition hover:shadow-pv-card",
         soldOut && "opacity-90",
       )}
       onClick={() => {
@@ -48,7 +48,7 @@ export function ProductCard({
       role="button"
       tabIndex={soldOut ? -1 : 0}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-zinc-100">
+      <div className="relative aspect-[3/4] overflow-hidden bg-pv-placeholder">
         <Image
           alt={product.name}
           className="object-cover transition duration-500 group-hover:scale-[1.02]"
@@ -58,34 +58,37 @@ export function ProductCard({
         />
         {soldOut && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/35 backdrop-blur-[1px]">
-            <span className="rounded-full bg-white/95 px-4 py-1.5 text-xs font-semibold tracking-wide text-zinc-800">
+            <span className="rounded-full bg-pv-card px-4 py-1.5 text-xs font-semibold tracking-wide text-pv-fg ring-1 ring-pv-border">
               SOLD OUT
             </span>
           </div>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-2 p-[length:var(--pv-card-content-pad,1rem)]">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="font-serif text-base font-semibold leading-snug text-zinc-900">
+            <h3 className="font-inter text-xl font-semibold leading-snug text-pv-fg">
               {product.name}
             </h3>
-            <p className="mt-0.5 text-xs text-zinc-500">{brandLabel}</p>
-            <p className="mt-1 text-[11px] text-zinc-400">
+            <p className="mt-0.5 text-xs text-pv-muted">{brandLabel}</p>
+            <p className="mt-1 text-[11px] text-pv-muted">
               ({reviewLabel}) Customer Reviews
             </p>
           </div>
-          <StarRating className="shrink-0 text-sm leading-none" rating={rating} />
+          <StarRating
+            className="shrink-0 text-sm leading-none"
+            rating={rating}
+          />
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-2 border-t border-zinc-100 pt-3">
+        <div className="mt-auto flex items-end justify-between gap-2 border-t border-pv-divider pt-3">
           <div>
-            <p className="text-lg font-semibold text-zinc-900">
+            <p className="text-lg font-semibold text-pv-fg">
               {formatStorefrontPrice(effective)}
             </p>
             {product.salePrice && (
-              <p className="text-xs text-zinc-400 line-through">
+              <p className="text-xs text-pv-muted line-through">
                 {formatStorefrontPrice(product.price)}
               </p>
             )}

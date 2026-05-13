@@ -12,6 +12,10 @@ export type ThemeState = {
   /** Storefront hero text + image. */
   heroTitle: string;
   heroImage: string;
+  /** Shown as large title on `ShopHero` (e.g. Nomad Goods). */
+  shopName: string;
+  /** Banner above the title on `ShopHero`. */
+  heroAnnouncement: string;
 
   /** Core colors used by the real storefront theme. */
   primaryColor: string;
@@ -31,6 +35,8 @@ export type ThemeActions = {
   setPreset: (preset: ThemePresetId) => void;
   setHeroTitle: (value: string) => void;
   setHeroImage: (value: string) => void;
+  setShopName: (value: string) => void;
+  setHeroAnnouncement: (value: string) => void;
   setPrimaryColor: (value: string) => void;
   setBackgroundColor: (value: string) => void;
   setTextColor: (value: string) => void;
@@ -71,8 +77,10 @@ function presetDefaults(preset: ThemePresetId): Partial<ThemeState> {
 
 const defaults: ThemeState = {
   preset: "minimal",
-  heroTitle: "Build your store in minutes.",
+  heroTitle: "Everyday pieces with a Mongolian point of view.",
   heroImage: "/background1.png",
+  shopName: "Nomad Goods",
+  heroAnnouncement: "Free delivery in Ulaanbaatar this week",
   primaryColor: "#0a0a0a",
   backgroundColor: "#ffffff",
   textColor: "#0a0a0a",
@@ -94,6 +102,8 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
         })),
       setHeroTitle: (heroTitle) => set({ heroTitle }),
       setHeroImage: (heroImage) => set({ heroImage }),
+      setShopName: (shopName) => set({ shopName }),
+      setHeroAnnouncement: (heroAnnouncement) => set({ heroAnnouncement }),
       setPrimaryColor: (primaryColor) => set({ primaryColor }),
       setBackgroundColor: (backgroundColor) => set({ backgroundColor }),
       setTextColor: (textColor) => set({ textColor }),
@@ -106,11 +116,21 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
     }),
     {
       name: "shop-builder-theme-v1",
-      version: 1,
+      merge: (persisted, current) => ({
+        ...current,
+        ...(persisted as Partial<ThemeState>),
+        shopName:
+          (persisted as Partial<ThemeState>).shopName ?? current.shopName,
+        heroAnnouncement:
+          (persisted as Partial<ThemeState>).heroAnnouncement ??
+          current.heroAnnouncement,
+      }),
       partialize: (s) => ({
         preset: s.preset,
         heroTitle: s.heroTitle,
         heroImage: s.heroImage,
+        shopName: s.shopName,
+        heroAnnouncement: s.heroAnnouncement,
         primaryColor: s.primaryColor,
         backgroundColor: s.backgroundColor,
         textColor: s.textColor,
