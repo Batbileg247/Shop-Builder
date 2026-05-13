@@ -1,19 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
 
+import { useBuilderUi } from "@/context/builder-ui-context";
+import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { useThemeStore } from "@/stores/useThemeStore";
+import { cn } from "@/lib/utils";
+import { Button } from "@/ui/button";
+import { PanelLeftClose } from "lucide-react";
 
 import { ThemeEditorSidebar } from "./theme-editor-sidebar";
 
 /** Theme Studio shell for `/builder` routes. */
-export function ThemeStudioLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
+export function ThemeStudioLayout({ children }: { children: React.ReactNode }) {
+  const { isDemo, setIsDemo } = useBuilderUi();
   const preset = useThemeStore((s) => s.preset);
   const radius = useThemeStore((s) => s.radius);
   const cardContentPaddingRem = useThemeStore((s) => s.cardContentPaddingRem);
@@ -26,11 +26,7 @@ export function ThemeStudioLayout({
         "--pv-product-gap": `${productGridGapRem}rem`,
         "--pv-radius": `${radius}px`,
       }) as React.CSSProperties,
-    [
-      cardContentPaddingRem,
-      productGridGapRem,
-      radius,
-    ],
+    [cardContentPaddingRem, productGridGapRem, radius],
   );
 
   // The cart drawer and other overlays render in a portal (document.body),
@@ -39,7 +35,10 @@ export function ThemeStudioLayout({
     const el = document.body;
     el.classList.add("site-preview-root");
     el.setAttribute("data-theme", preset);
-    el.style.setProperty("--pv-card-content-pad", `${cardContentPaddingRem}rem`);
+    el.style.setProperty(
+      "--pv-card-content-pad",
+      `${cardContentPaddingRem}rem`,
+    );
     el.style.setProperty("--pv-product-gap", `${productGridGapRem}rem`);
     el.style.setProperty("--pv-radius", `${radius}px`);
     return () => {
@@ -50,6 +49,31 @@ export function ThemeStudioLayout({
       el.style.removeProperty("--pv-radius");
     };
   }, [preset, cardContentPaddingRem, productGridGapRem, radius]);
+
+  if (isDemo) {
+    return (
+      <main
+        data-theme={preset}
+        className="site-preview-root relative z-50 w-full min-h-screen overflow-y-auto bg-pv-bg"
+        style={previewCssVars}
+      >
+        <Button
+          type="button"
+          variant="default"
+          size="lg"
+          className={cn(
+            builderDemoCtaButtonClassName(),
+            "fixed right-4 top-4 z-60",
+          )}
+          onClick={() => setIsDemo(false)}
+        >
+          <PanelLeftClose className="size-4 opacity-95" aria-hidden />
+          Back to Editor
+        </Button>
+        {children}
+      </main>
+    );
+  }
 
   return (
     <div className="flex min-h-svh w-full bg-zinc-100">

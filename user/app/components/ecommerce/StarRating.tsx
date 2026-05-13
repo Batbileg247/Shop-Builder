@@ -15,7 +15,7 @@ export function StarRating({
         if (i < full) return <span key={i}>★</span>;
         if (i === full && partial) return <span key={i}>★</span>;
         return (
-          <span className="text-zinc-200" key={i}>
+          <span className="text-pv-muted/35" key={i}>
             ★
           </span>
         );
