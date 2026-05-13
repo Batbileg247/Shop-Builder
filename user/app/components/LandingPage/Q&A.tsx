@@ -12,13 +12,7 @@ export const Questions = () => {
       <div className="flex justify-center text-4xl text-indigo-50 font-semibold">
         Frequently Asked Questions
       </div>
-      <Accordion
-        {...({
-          type: "single",
-          collapsible: true,
-          className: "min-w-4xl ",
-        } as any)}
-      >
+      <Accordion className="min-w-4xl ">
         <AccordionItem value="payment">
           <AccordionTrigger className="text-2xl">
             Payment integrations
