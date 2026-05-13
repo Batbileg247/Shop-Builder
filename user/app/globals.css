@@ -2,6 +2,16 @@
 @import "tw-animate-css";
 /* @import "shadcn/tailwind.css"; */
 @import "../node_modules/tw-animate-css/dist/tw-animate.css";
+/* app/globals.css */
+@tailwind utilities;
+
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
+.goog-te-highlighted {
+  background: none !important;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -259,18 +269,18 @@ body {
   --pv-border: rgba(255, 255, 255, 0.2);
   --pv-header-bg: rgba(255, 255, 255, 0.06);
   --pv-header-backdrop: blur(20px);
-  --pv-card-bg: rgba(255, 255, 255, 0.3);
+  --pv-card-bg: rgba(6, 23, 69, 0.3);
   --pv-card-border: rgba(255, 255, 255, 0.2);
-  --pv-card-shadow: 0 8px 48px rgba(0, 0, 0, 0.22),
-    0 0 64px rgba(129, 140, 248, 0.18);
+  --pv-card-shadow:
+    0 8px 48px rgba(0, 0, 0, 0.22), 0 0 64px rgba(129, 140, 248, 0.18);
   --pv-card-backdrop: blur(24px);
   --pv-radius: 1rem;
   --pv-hero-overlay: rgba(15, 23, 42, 0.5);
   --pv-placeholder-bg: rgba(255, 255, 255, 0.08);
   --pv-primary: rgba(255, 255, 255, 0.35);
   --pv-primary-fg: #f8fafc;
-  --pv-primary-shadow: 0 6px 36px rgba(255, 255, 255, 0.12),
-    0 0 48px rgba(165, 180, 252, 0.25);
+  --pv-primary-shadow:
+    0 6px 36px rgba(255, 255, 255, 0.12), 0 0 48px rgba(165, 180, 252, 0.25);
   --pv-primary-disabled-bg: rgba(255, 255, 255, 0.12);
   --pv-primary-disabled-fg: rgba(248, 250, 252, 0.45);
   --pv-chip-border: rgba(255, 255, 255, 0.2);
@@ -316,7 +326,8 @@ body {
   --pv-chip-fg: #2d3748;
   --pv-chip-active-bg: #e0e5ec;
   --pv-chip-active-border: transparent;
-  --pv-chip-active-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
+  --pv-chip-active-shadow:
+    inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
   --pv-chip-shadow: 5px 5px 10px #a3b1c6, -4px -4px 8px #ffffff;
   --pv-link-hover: #1a202c;
   --pv-divider: rgba(163, 177, 198, 0.5);
@@ -412,7 +423,10 @@ body {
     background: var(--pv-chip-bg);
     color: var(--pv-chip-fg);
     box-shadow: var(--pv-chip-shadow);
-    transition: box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    transition:
+      box-shadow 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease;
   }
 
   .pv-chip-active {
@@ -427,7 +441,9 @@ body {
     color: var(--pv-primary-fg);
     box-shadow: var(--pv-primary-shadow);
     border: 1px solid var(--pv-card-border);
-    transition: box-shadow 0.15s ease, opacity 0.15s ease;
+    transition:
+      box-shadow 0.15s ease,
+      opacity 0.15s ease;
   }
 
   .site-preview-root[data-theme="minimal"] .pv-btn-primary {
@@ -443,7 +459,8 @@ body {
     box-shadow: var(--pv-primary-shadow), var(--pv-glow-hover);
   }
 
-  .site-preview-root[data-theme="minimal"] .pv-btn-primary:hover:not(:disabled) {
+  .site-preview-root[data-theme="minimal"]
+    .pv-btn-primary:hover:not(:disabled) {
     outline: 2px solid var(--pv-outline-hover);
     outline-offset: 2px;
     box-shadow: none;
@@ -457,7 +474,8 @@ body {
     cursor: not-allowed;
   }
 
-  .site-preview-root[data-theme="neumorph"] .pv-btn-primary:active:not(:disabled) {
+  .site-preview-root[data-theme="neumorph"]
+    .pv-btn-primary:active:not(:disabled) {
     box-shadow: var(--pv-primary-inset);
   }
 
@@ -543,7 +561,9 @@ body {
 
   .site-preview-root[data-theme="neumorph"] .pv-input {
     border: none;
-    box-shadow: inset 3px 3px 6px #a3b1c6, inset -3px -3px 6px #ffffff;
+    box-shadow:
+      inset 3px 3px 6px #a3b1c6,
+      inset -3px -3px 6px #ffffff;
   }
 
   .pv-interactive:hover {

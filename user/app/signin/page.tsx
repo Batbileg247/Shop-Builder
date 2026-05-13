@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import TranslateWidget from "../components/LanguageSelector";
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -34,8 +35,6 @@ const EyeIcon = ({ open }: { open: boolean }) =>
   );
 
 export default function SignIn() {
-  // const router = useRouter();
-  // const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -48,23 +47,26 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-indigo-500/20 blur-3xl" />
         <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-violet-500/15 blur-3xl" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-sky-500/10 blur-3xl" />
       </div>
 
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 py-10 shadow-2xl backdrop-blur-xl">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/30 to-transparent rounded-t-2xl" />
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 pt-7 pb-10 shadow-2xl backdrop-blur-xl">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-t-2xl" />
 
         <div className="mb-4">
-          <div className="mb-1 flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
+          <div className="flex justify-end">
+            <TranslateWidget />
+          </div>
+          <div className="mb-1 flex items-center justify-between mt-2">
+            <span className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
               Welcome back
-            </p>
+            </span>
             <a href="/signup">
-              <button className="text-xl text-white/60 transition hover:text-white px-4 py-2 rounded">
+              <button className="text-sm text-white/60 transition hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/[0.06]">
                 Sign up
               </button>
             </a>
@@ -72,7 +74,7 @@ export default function SignIn() {
           <h1 className="text-2xl font-semibold tracking-tight text-white">
             Sign in
           </h1>
-          <p className=" text-sm text-white/40">
+          <p className="text-sm text-white/40">
             Enter your credentials to continue
           </p>
         </div>
@@ -92,19 +94,17 @@ export default function SignIn() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/20 outline-none ring-0 transition focus:border-indigo-400/50 focus:bg-white/8 focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/20 outline-none transition focus:border-indigo-400/50 focus:bg-white/[0.08] focus:ring-2 focus:ring-indigo-500/20"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="text-xs font-medium text-white/50 uppercase tracking-wide"
-              >
-                Password
-              </label>
-            </div>
+            <label
+              htmlFor="password"
+              className="text-xs font-medium text-white/50 uppercase tracking-wide"
+            >
+              Password
+            </label>
             <div className="relative">
               <input
                 id="password"
@@ -113,7 +113,7 @@ export default function SignIn() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-white placeholder-white/20 outline-none transition focus:border-indigo-400/50 focus:bg-white/8 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 pr-10 text-sm text-white placeholder-white/20 outline-none transition focus:border-indigo-400/50 focus:bg-white/[0.08] focus:ring-2 focus:ring-indigo-500/20"
               />
               <button
                 type="button"

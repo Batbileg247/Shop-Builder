@@ -18,8 +18,10 @@ export const Questions = () => {
             Payment integrations
           </AccordionTrigger>
           <AccordionContent className="text-lg">
-            Yes, depending on your selected plan, you can connect various
-            payment methods and loan apps.
+            <span>
+              Yes, depending on your selected plan, you can connect various
+              payment methods and loan apps.
+            </span>
           </AccordionContent>
         </AccordionItem>
         <Separator className="bg-gray-800" />
@@ -28,7 +30,7 @@ export const Questions = () => {
             How can I contact?
           </AccordionTrigger>
           <AccordionContent className="text-lg">
-            You can reach our sales team at 8811-1426.
+            <span>You can reach our sales team at 8811-1426.</span>
           </AccordionContent>
         </AccordionItem>
         <Separator className="bg-gray-800" />
@@ -37,8 +39,10 @@ export const Questions = () => {
             What does your company do?
           </AccordionTrigger>
           <AccordionContent className="text-lg">
-            We provide ready-made website templates that allow you to easily
-            create your own online store.
+            <span>
+              We provide ready-made website templates that allow you to easily
+              create your own online store.
+            </span>
           </AccordionContent>
         </AccordionItem>
         <Separator className="bg-gray-800" />
@@ -47,8 +51,10 @@ export const Questions = () => {
             Will you provide guidance on adding products ?
           </AccordionTrigger>
           <AccordionContent className="text-lg">
-            Yes, during your first month, a manager will assist you with
-            training and onboarding.
+            <span>
+              Yes, during your first month, a manager will assist you with
+              training and onboarding.
+            </span>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

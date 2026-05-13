@@ -47,12 +47,12 @@ export function CartDrawer({
   return (
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetContent
-        className="flex w-full !max-w-md flex-col border-l border-pv-divider bg-pv-bg p-0 sm:!max-w-md"
+        className="flex w-full max-w-md! flex-col border-l border-pv-divider bg-pv-bg p-0 sm:max-w-md!"
         showCloseButton
         side="right"
       >
-        <SheetHeader className="border-b border-pv-divider px-6 pb-4 pt-2">
-          <SheetTitle className="font-serif text-2xl font-semibold text-pv-fg">
+        <SheetHeader className="border-b border-pv-divider px-6 pt-10">
+          <SheetTitle className="text-2xl font-semibold text-pv-fg">
             Shopping Cart
           </SheetTitle>
           <p className="text-sm text-pv-muted">
@@ -60,14 +60,14 @@ export function CartDrawer({
             <strong className="text-pv-fg">
               {formatStorefrontPrice(remaining)}
             </strong>{" "}
-            more and get <strong>Free Shipping</strong>
+            more and get <strong>Free Shipping.</strong>
           </p>
         </SheetHeader>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
           <ul className="flex flex-col gap-5">
             {items.length === 0 ? (
-              <li className="rounded-[length:var(--pv-radius)] border border-dashed border-pv-border bg-pv-card p-6 text-center text-sm text-pv-muted">
+              <li className="rounded-(--pv-radius) border border-dashed border-pv-border bg-pv-card p-6 text-center text-sm text-pv-muted">
                 Your cart is empty.
               </li>
             ) : (
@@ -78,7 +78,7 @@ export function CartDrawer({
                     className="flex gap-3 border-b border-pv-divider pb-5"
                     key={product.id}
                   >
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-[length:var(--pv-radius)] bg-pv-placeholder">
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-(--pv-radius) bg-pv-placeholder">
                       <Image
                         alt={product.name}
                         className="object-cover"
@@ -96,7 +96,7 @@ export function CartDrawer({
                         {formatStorefrontPrice(unit)}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center rounded-[length:var(--pv-radius)] border border-pv-border bg-pv-card text-sm">
+                        <div className="flex items-center rounded-(--pv-radius) border border-pv-border bg-pv-card text-sm">
                           <button
                             className="px-2 py-1 text-pv-muted hover:bg-pv-empty"
                             onClick={() => onDecrement(product.id)}
@@ -131,15 +131,15 @@ export function CartDrawer({
           </ul>
         </div>
 
-        <SheetFooter className="border-t border-pv-divider bg-pv-card px-6 py-4">
+        <SheetFooter className="border-t border-pv-divider bg-pv-card px-6 py-6 pb-7">
           <div className="flex w-full items-center justify-between text-sm">
-            <span className="text-pv-muted">Subtotal</span>
+            <span className="text-pv-fg">Subtotal</span>
             <span className="text-lg font-semibold text-pv-fg">
               {formatStorefrontPrice(displaySubtotal)}
             </span>
           </div>
           <Button
-            className="pv-btn-primary h-11 w-full"
+            className="pv-btn-primary h-11 w-full "
             disabled={items.length === 0}
             onClick={() => {
               onOpenChange(false);
@@ -149,7 +149,7 @@ export function CartDrawer({
             Checkout
           </Button>
           <button
-            className="w-full text-center text-sm text-pv-muted underline decoration-pv-divider underline-offset-2 hover:text-pv-fg"
+            className="w-full text-center text-sm text-pv-fg underline decoration-pv-divider underline-offset-2 hover:text-pv-fg"
             onClick={() => {
               onOpenChange(false);
               onViewFullCart();

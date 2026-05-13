@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import TranslateWidget from "../components/LanguageSelector";
 
 // --- Дүрст дүрслэлүүд (Icons) ---
 
@@ -167,7 +168,10 @@ export default function SignUp() {
         <Shine />
 
         <div className="mb-4">
-          <div className="mb-1 flex items-center justify-between">
+          <div className="flex justify-end">
+            <TranslateWidget />
+          </div>
+          <div className="mb-1 mt-2 flex items-center justify-between">
             <p className="text-xs font-medium uppercase tracking-widest text-indigo-300/70">
               Let's start
             </p>
@@ -186,17 +190,17 @@ export default function SignUp() {
             <Field label="First Name">
               <input
                 type="text"
-                placeholder="Батболд"
+                placeholder="Мөнхжин"
                 value={form.lastName}
                 onChange={set("lastName")}
                 required
                 className={inputCls}
               />
             </Field>
-            <Field label="Name">
+            <Field label="Last Name">
               <input
                 type="text"
-                placeholder="Мөнхжин"
+                placeholder="Батболд"
                 value={form.firstName}
                 onChange={set("firstName")}
                 required

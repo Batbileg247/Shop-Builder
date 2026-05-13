@@ -9,6 +9,7 @@ import { AboutUs } from "./AboutUs";
 import { ContactUs } from "./ContactUs";
 import { Footer } from "./Footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/ui/avatar";
+import TranslateWidget from "../LanguageSelector";
 
 export const LandingPage = () => {
   return (
@@ -20,7 +21,10 @@ export const LandingPage = () => {
              rounded-full shadow-xl shadow-white/10"
           id="hero"
         >
-          <h1 className="font-mono font-medium text-white text-lg tracking-widest uppercase">
+          <h1
+            translate="no"
+            className="font-mono font-medium text-white text-lg tracking-widest uppercase"
+          >
             Unlimited.
           </h1>
           <div className="flex gap-6 justify-center items-center">
@@ -31,6 +35,7 @@ export const LandingPage = () => {
                 icon={Sparkle}
               />
             </Link>
+            <TranslateWidget />
             <Link href={"/signin"}>
               <AvatarDemo />
             </Link>

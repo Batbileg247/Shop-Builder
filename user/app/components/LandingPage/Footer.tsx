@@ -9,6 +9,7 @@ export const Footer = () => {
       <div className="grid grid-cols-3 gap-80">
         <div className="flex flex-col">
           <a
+            translate="no"
             href="#hero"
             className="font-mono text-2xl font-extrabold text-indigo-200 p-1"
           >
@@ -48,7 +49,10 @@ export const Footer = () => {
         </div>
       </div>
       <div className=" mt-10 border-t-2 border-gray-800">
-        <h1 className="flex justify-center items-center font-mono text-gray-500 pt-6 w-450">
+        <h1
+          translate="no"
+          className="flex justify-center items-center font-mono text-gray-500 pt-6 w-450"
+        >
           UNLIMITED. LLC
         </h1>
       </div>

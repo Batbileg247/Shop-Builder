@@ -106,7 +106,7 @@ export function ProductDetail({
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-3 right-3 z-20 rounded-full bg-pv-card p-2 text-pv-muted shadow ring-1 ring-pv-border transition hover:text-pv-fg"
+          className="absolute top-3 right-3 z-20 rounded-full bg-pv-card p-2 text-black shadow ring-1 ring-pv-border transition hover:text-pv-fg"
           onClick={handleClose}
           type="button"
         >
@@ -136,7 +136,7 @@ export function ProductDetail({
                 </button>
               ))}
             </div>
-            <div className="pv-visual relative min-h-[280px] flex-1 overflow-hidden rounded-(--pv-radius) bg-pv-placeholder sm:min-h-[420px]">
+            <div className="pv-visual relative min-h-70 flex-1 overflow-hidden rounded-(--pv-radius) bg-pv-placeholder sm:min-h-105">
               <Image
                 alt={product.name}
                 className="object-cover"
@@ -150,7 +150,7 @@ export function ProductDetail({
 
           <div className="flex min-w-0 flex-col gap-5">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-pv-muted">
+              <p className="text-xs font-medium uppercase tracking-wider text-black">
                 {brandLabel}
               </p>
               <div className="mt-1 flex items-start justify-between gap-3">
@@ -162,15 +162,18 @@ export function ProductDetail({
                 </h2>
                 <button
                   aria-label="Save to wishlist"
-                  className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border border-pv-border text-pv-muted transition hover:text-pv-fg"
+                  className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border border-pv-border text-black transition hover:text-pv-fg"
                   type="button"
                 >
                   ☆
                 </button>
               </div>
               <div className="mt-2 flex items-center gap-2 text-sm">
-                <StarRating className="text-base" rating={Math.min(5, rating)} />
-                <span className="text-pv-muted">({count})</span>
+                <StarRating
+                  className="text-base"
+                  rating={Math.min(5, rating)}
+                />
+                <span className="text-black">({count})</span>
               </div>
             </div>
 
@@ -180,7 +183,7 @@ export function ProductDetail({
               </span>
               {product.salePrice != null && (
                 <>
-                  <span className="text-lg text-pv-muted/70 line-through">
+                  <span className="text-lg text-black/70 line-through">
                     {formatStorefrontPrice(product.price)}
                   </span>
                   <span className="rounded-(--pv-radius) bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">
@@ -190,7 +193,7 @@ export function ProductDetail({
               )}
             </div>
 
-            <p className="flex items-center gap-2 text-sm text-pv-muted">
+            <p className="flex items-center gap-2 text-sm text-black">
               <span aria-hidden>👁</span>
               24 people are viewing this right now
             </p>
@@ -214,7 +217,7 @@ export function ProductDetail({
               </div>
             </div>
 
-            <p className="text-sm leading-relaxed text-pv-muted">
+            <p className="text-sm leading-relaxed text-black">
               {product.description}
             </p>
 
@@ -241,8 +244,7 @@ export function ProductDetail({
 
             <div>
               <p className="text-sm font-medium text-pv-fg">
-                Color:{" "}
-                {COLORS.find((c) => c.id === colorId)?.label ?? "Blue"}
+                Color: {COLORS.find((c) => c.id === colorId)?.label ?? "Blue"}
               </p>
               <div className="mt-2 flex gap-2">
                 {COLORS.map((c) => (
@@ -271,7 +273,7 @@ export function ProductDetail({
               <span className="text-sm font-medium text-pv-fg">Qty</span>
               <div className="flex items-center rounded-(--pv-radius) border border-pv-border bg-pv-card">
                 <button
-                  className="px-3 py-2 text-lg leading-none text-pv-muted transition hover:bg-pv-empty disabled:opacity-40"
+                  className="px-3 py-2 text-lg leading-none text-black transition hover:bg-pv-empty disabled:opacity-40"
                   disabled={qty <= 1}
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   type="button"
@@ -282,7 +284,7 @@ export function ProductDetail({
                   {qty}
                 </span>
                 <button
-                  className="px-3 py-2 text-lg leading-none text-pv-muted transition hover:bg-pv-empty disabled:opacity-40"
+                  className="px-3 py-2 text-lg leading-none text-black transition hover:bg-pv-empty disabled:opacity-40"
                   disabled={qty >= product.inventory}
                   onClick={() =>
                     setQty((q) => Math.min(product.inventory, q + 1))
@@ -303,18 +305,18 @@ export function ProductDetail({
               Add to cart
             </Button>
 
-            <div className="flex flex-wrap gap-4 text-sm text-pv-muted">
+            <div className="flex flex-wrap gap-4 text-sm text-black">
               <span>Compare</span>
               <span>Ask a question</span>
               <span>Share</span>
             </div>
 
-            <div className="mt-2 space-y-2 border-t border-pv-divider pt-4 text-sm text-pv-muted">
+            <div className="mt-2 space-y-2 border-t border-pv-divider pt-4 text-sm text-black">
               <p>🚚 Estimated Delivery: Jul 30 – Aug 03</p>
               <p>📦 Free Shipping &amp; Returns on orders over $75</p>
             </div>
 
-            <div className="rounded-(--pv-radius) bg-pv-empty px-3 py-2 text-center text-xs text-pv-muted">
+            <div className="rounded-(--pv-radius) bg-pv-empty px-3 py-2 text-center text-xs text-black">
               Guarantee safe &amp; secure checkout — Visa · Mastercard · Amex ·
               PayPal
             </div>
