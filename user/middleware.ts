@@ -4,8 +4,6 @@ import { NextResponse } from "next/server";
 import { AUTH_LOGGED_IN_COOKIE } from "@/lib/auth-cookie";
 import { LOGIN_PAGE, PATHS } from "@/lib/site-paths";
 
-const ADMIN_SHOP = PATHS.adminShop;
-
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const pathname = url.pathname;
@@ -35,14 +33,27 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  // Legacy `/admin/customize` → shop settings
+  // Legacy `/admin/customize` → theme studio
   if (pathname === "/admin/customize" || pathname.startsWith("/admin/customize/")) {
     const suffix =
       pathname === "/admin/customize"
         ? ""
         : pathname.slice("/admin/customize".length);
-    url.pathname = `${ADMIN_SHOP}${suffix}`;
+    url.pathname = PATHS.builderUpdate;
     if (suffix === "/cart") {
+      url.searchParams.set("cart", "open");
+    }
+    return NextResponse.redirect(url, 308);
+  }
+
+  // Removed `/admin/shop` — send bookmarks to theme studio
+  if (pathname === "/admin/shop" || pathname.startsWith("/admin/shop/")) {
+    const sub =
+      pathname === "/admin/shop"
+        ? ""
+        : pathname.slice("/admin/shop".length);
+    url.pathname = PATHS.builderUpdate;
+    if (sub === "/cart") {
       url.searchParams.set("cart", "open");
     }
     return NextResponse.redirect(url, 308);

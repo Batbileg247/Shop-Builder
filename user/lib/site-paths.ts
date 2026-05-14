@@ -13,7 +13,6 @@ export const PATHS = {
   adminProducts: "/admin/products",
   adminOrders: "/admin/orders",
   adminAnalytics: "/admin/analytics",
-  adminShop: "/admin/shop",
 
   // User account
   user: "/user",
@@ -64,5 +63,5 @@ export function storefrontNavBase(pathname: string | null): string {
     const clean = pathname.split("?")[0].replace(/\/$/, "");
     return clean || PATHS.builder;
   }
-  return PATHS.adminShop;
+  return PATHS.adminOverview;
 }
