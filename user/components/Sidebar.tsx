@@ -7,7 +7,6 @@ import {
   BarChart3,
   ChevronDown,
   LayoutDashboard,
-  Package,
   Palette,
   Settings,
   Users,
@@ -17,7 +16,6 @@ import { useDashboard } from "@/context/DashboardContext";
 
 const navItems = [
   { label: "Overview", href: "/admin/overview", icon: LayoutDashboard },
-  { label: "Products", href: "/admin/products", icon: Package },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Customize", href: "/admin/customize", icon: Palette },
@@ -42,7 +40,7 @@ export function Sidebar() {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                 Shop Builder
               </p>
-              <h1 className="text-lg font-bold text-slate-950">Admin</h1>
+              <h1 className="text-lg font-bold text-slate-950">Dashboard</h1>
             </div>
           </div>
 
@@ -51,7 +49,7 @@ export function Sidebar() {
               htmlFor="shop-switcher"
               className="mb-3 block px-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-400"
             >
-              Active shop
+              Switch shop
             </label>
             <div className="relative rounded-[1.5rem] bg-slate-50 p-2">
               <div className="pointer-events-none absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 overflow-hidden rounded-2xl bg-white shadow-sm">
@@ -79,7 +77,10 @@ export function Sidebar() {
             </div>
           </div>
 
-          <nav className="mt-8 space-y-2">
+          <nav className="mt-8 space-y-2" aria-label="Main">
+            <p className="mb-2 px-2 text-xs font-semibold text-slate-400">
+              Jump to
+            </p>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;

@@ -59,7 +59,7 @@ function AddProductSlot({ onClick }: { onClick: () => void }) {
       role="button"
       tabIndex={0}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-pv-placeholder">
+      <div className="relative aspect-3/4 overflow-hidden bg-pv-placeholder">
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-pv-card ring-1 ring-pv-border transition group-hover:ring-pv-primary">
             <Plus className="size-7 text-pv-fg" aria-hidden />
@@ -119,11 +119,14 @@ function HomePageInner() {
   /** Жинхэнэ storefront (`/s/...`) — builder preview-ийн хүрээгүй, View Demo-тэй ижил бүтэн site. */
   const isStorefront = pathname.startsWith("/s/");
   const fullSiteShell = isDemo || isStorefront;
+  const isEmbeddedCustomize = pathname.startsWith("/admin/customize");
 
   const catalogFull = searchParams.get("view") === "all";
   const previewHostClass = fullSiteShell
     ? SHOP_PREVIEW_HOST_DEMO_CLASS
-    : SHOP_PREVIEW_HOST_CLASS;
+    : isEmbeddedCustomize
+      ? "flex h-full min-h-0 w-full flex-1"
+      : SHOP_PREVIEW_HOST_CLASS;
 
   const [detailProduct, setDetailProduct] = React.useState<
     (typeof shop.products)[number] | null
@@ -424,7 +427,9 @@ function HomePageInner() {
           ? isStorefront
             ? "min-h-svh w-full"
             : "w-full pt-16"
-          : "min-h-svh",
+          : isEmbeddedCustomize
+            ? "h-full min-h-0 min-w-0 flex-1"
+            : "min-h-svh",
       )}
       data-theme={preset}
     >
@@ -433,15 +438,17 @@ function HomePageInner() {
       <section
         className={cn(
           "flex w-full flex-col",
-          fullSiteShell ? "w-full" : "min-h-0 flex-1 overflow-y-auto px-6 py-8",
+          fullSiteShell
+            ? "w-full"
+            : "min-h-0 flex-1 flex-col overflow-hidden px-6 py-8",
         )}
       >
         {catalogFull ? (
           <div className={previewHostClass}>
             <div
               className={cn(
-                "flex w-full max-w-full flex-col rounded-md border border-black/10 shadow-sm",
-                !fullSiteShell && "h-full min-h-0 overflow-hidden",
+                "flex w-full max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm",
+                !fullSiteShell && "h-full min-h-0",
               )}
               style={shopPreviewShellStyle(effectiveTheme)}
             >

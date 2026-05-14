@@ -30,7 +30,9 @@ type DashboardContextValue = {
   deleteProduct: (productId: string) => void;
 };
 
-const DashboardContext = React.createContext<DashboardContextValue | null>(null);
+const DashboardContext = React.createContext<DashboardContextValue | null>(
+  null,
+);
 
 const now = new Date("2026-05-13T00:00:00.000Z");
 

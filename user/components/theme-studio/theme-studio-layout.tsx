@@ -5,7 +5,6 @@ import * as React from "react";
 import { useBuilderUi } from "@/context/builder-ui-context";
 import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { useThemeStore } from "@/stores/useThemeStore";
-import { cn } from "@/lib/utils";
 import { PanelLeftClose } from "lucide-react";
 
 import { ThemeEditorSidebar } from "./theme-editor-sidebar";
@@ -61,44 +60,47 @@ export function ThemeStudioLayout({
     };
   }, [preset, cardContentPaddingRem, productGridGapRem, radius]);
 
+  React.useEffect(() => {
+    if (!isDemo) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isDemo]);
+
   if (isDemo) {
     return (
       <main
         data-theme={preset}
-        className={cn(
-          "site-preview-root relative z-50 w-full overflow-y-auto bg-pv-bg",
-          variant === "embedded" ? "min-h-[min(100dvh,920px)]" : "min-h-screen",
-        )}
+        className="site-preview-root fixed inset-0 z-100 flex min-h-0 w-full flex-col overflow-y-auto overscroll-contain bg-pv-bg"
         style={previewCssVars}
       >
-        <div className="flex justify-end p-2">
-          <SparkleButton
-            label="Back to Editor"
-            icon={PanelLeftClose}
-            className={cn(
-              builderDemoCtaButtonClassName(),
-              variant === "embedded"
-                ? "absolute right-4 top-4 z-60"
-                : "fixed right-4 top-4 z-60",
-            )}
-            onClick={() => setIsDemo(false)}
-          />
-        </div>
         {children}
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-[300] flex justify-end p-4">
+          <div className="pointer-events-auto">
+            <SparkleButton
+              label="Back to Editor"
+              icon={PanelLeftClose}
+              className={builderDemoCtaButtonClassName()}
+              onClick={() => setIsDemo(false)}
+            />
+          </div>
+        </div>
       </main>
     );
   }
 
   if (variant === "embedded") {
     return (
-      <div className="flex min-h-full w-full min-w-0 flex-1 bg-zinc-100">
-        <div className="min-h-full w-[350px] shrink-0 overflow-y-auto bg-white">
+      <div className="flex min-h-0 w-full flex-1 bg-[#f8f9fe]">
+        <div className="flex min-h-0 w-64 shrink-0 overflow-hidden">
           <ThemeEditorSidebar />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <div
             data-theme={preset}
-            className="site-preview-root min-h-0 flex-1 overflow-y-auto"
+            className="site-preview-root min-h-0 flex-1 overflow-y-auto bg-pv-bg"
             style={previewCssVars}
           >
             {children}
@@ -109,12 +111,12 @@ export function ThemeStudioLayout({
   }
 
   return (
-    <div className="flex min-h-svh w-full bg-zinc-100">
-      <div className="fixed left-0 top-0 z-40 h-svh w-[350px] shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
+    <div className="flex min-h-svh w-full bg-[#f8f9fe]">
+      <div className="fixed left-0 top-0 z-40 h-svh w-64 border-r border-sidebar-border shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
         <ThemeEditorSidebar />
       </div>
 
-      <div className="ml-[350px] flex min-h-svh min-w-0 flex-1 flex-col">
+      <div className="ml-64 flex min-h-svh min-w-0 flex-1 flex-col">
         <div
           data-theme={preset}
           className="site-preview-root min-h-svh flex-1"

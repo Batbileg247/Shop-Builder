@@ -1,15 +1,29 @@
+"use client";
+
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Box, Layers, Sparkles } from "lucide-react";
 
 import { useShop } from "@/app/hooks/useShop";
+import { useDashboard } from "@/context/DashboardContext";
 import { getAuthSession } from "@/lib/auth-session";
-import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
+import { BUILDER_PREVIEW_BASE, PATHS } from "@/lib/site-paths";
 import { buildHeroCarouselUrls } from "@/lib/shop-theme";
 import { useThemeStore, type ThemePresetId } from "@/stores/useThemeStore";
 import { Button } from "@/ui/button";
-import { Input } from "@/ui/input";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarProvider,
+  SidebarSeparator,
+} from "@/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 const themes: { id: ThemePresetId; label: string; icon: typeof Layers }[] = [
@@ -35,6 +49,10 @@ function shortId() {
 }
 
 export function ThemeEditorSidebar() {
+  const { activeShop } = useDashboard();
+  const brand = activeShop.brandColor;
+  const accent = activeShop.accentColor;
+
   const preset = useThemeStore((s) => s.preset);
   const setPreset = useThemeStore((s) => s.setPreset);
   const heroTitle = useThemeStore((s) => s.heroTitle);
@@ -159,57 +177,94 @@ export function ThemeEditorSidebar() {
     }
   }
 
-  const shellClass =
-    "flex h-svh w-[350px] shrink-0 flex-col border-r border-zinc-200 bg-zinc-50 text-zinc-900";
-  const headerBorderClass = "border-b border-zinc-200 px-5 py-4";
-  const mutedLabelClass =
-    "text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400";
-  const titleClass = "mt-1 text-lg font-semibold tracking-tight text-zinc-900";
-  const topLinkClass =
-    "text-xs font-medium text-zinc-800 underline-offset-2 hover:text-zinc-900 hover:underline";
-  const chipClass =
-    "inline-flex items-center gap-2 rounded-sm border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-800 hover:outline hover:outline-1 hover:outline-zinc-300";
-  const chipCountClass =
-    "rounded-sm border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-semibold tabular-nums text-zinc-900";
-  const sectionTitleClass =
-    "text-xs font-semibold uppercase tracking-wide text-zinc-500";
-  const fieldLabelClass = "text-sm font-medium text-zinc-800";
+  const sectionLabelClass =
+    "text-xs font-bold uppercase tracking-[0.16em] text-slate-400";
+  const fieldLabelClass = "text-sm font-bold text-slate-600";
   const inputClass =
-    "h-10 rounded-xl border-zinc-200 bg-white text-zinc-900 placeholder:text-zinc-400";
+    "h-11 rounded-2xl border-slate-100 bg-slate-50 text-sm font-semibold text-slate-900 shadow-none placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-200";
+
+  const sliderStyle = React.useMemo(
+    () => ({ accentColor: brand } as React.CSSProperties),
+    [brand],
+  );
+
+  const headerBg = React.useMemo(
+    () =>
+      ({
+        background: `linear-gradient(145deg, ${accent} 0%, #ffffff 42%, #f8fafc 100%)`,
+      }) as React.CSSProperties,
+    [accent],
+  );
+
   const sliderClass =
-    "h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-200 accent-zinc-900";
-  const footerBorderClass = "shrink-0 border-t border-zinc-200 px-5 py-4";
+    "h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200/90";
 
   return (
-    <aside className={shellClass} data-theme="minimal">
-      <div className={headerBorderClass}>
-        <p className={mutedLabelClass}>Live Theme Editor</p>
-        <h1 className={titleClass}>Shop Builder</h1>
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <Link href={`${base}?cart=open`} className={chipClass}>
-            Сагс
-            {cartCount > 0 ? (
-              <span className={chipCountClass}>{cartCount}</span>
-            ) : (
-              <span className="tabular-nums text-zinc-400">0</span>
-            )}
-          </Link>
-          <Link href={base} className={topLinkClass}>
-            Дэлгүүр
-          </Link>
-        </div>
-      </div>
+    <SidebarProvider
+      defaultOpen
+      className="flex h-full min-h-0 w-64 min-w-0 shrink-0 flex-col"
+    >
+      <Sidebar
+        collapsible="none"
+        className="h-full min-h-0 border-r border-slate-100 bg-white text-slate-900 shadow-[4px_0_28px_rgba(15,23,42,0.06)]"
+        data-theme="minimal"
+      >
+        <SidebarHeader
+          className="border-b border-slate-100 px-3 pb-3 pt-3"
+          style={headerBg}
+        >
+          <div className="flex items-center gap-3 px-1">
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-black text-white shadow-lg shadow-slate-200/80"
+              style={{ backgroundColor: brand }}
+            >
+              TS
+            </div>
+            <div className="min-w-0">
+              <p className={sectionLabelClass}>Live theme editor</p>
+              <p className="mt-0.5 truncate text-base font-black tracking-tight text-slate-950">
+                Shop Builder
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-2 px-1">
+            <Link
+              href={`${base}?cart=open`}
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/80 bg-white/90 px-3 py-2 text-xs font-bold text-slate-800 shadow-sm backdrop-blur-sm transition hover:bg-white"
+              style={{ boxShadow: `0 8px 20px ${brand}22` }}
+            >
+              Сагс
+              {cartCount > 0 ? (
+                <span
+                  className="rounded-xl px-2 py-0.5 text-[11px] font-black tabular-nums text-white"
+                  style={{ backgroundColor: brand }}
+                >
+                  {cartCount}
+                </span>
+              ) : (
+                <span className="tabular-nums text-slate-400">0</span>
+              )}
+            </Link>
+            <Link
+              href={base}
+              className="rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 underline-offset-2 transition hover:bg-white/80 hover:text-slate-950 hover:underline"
+            >
+              Дэлгүүр
+            </Link>
+          </div>
+        </SidebarHeader>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
-        <div className="flex flex-col gap-8">
-          <section>
-            <h2 className={sectionTitleClass}>Site Settings</h2>
-            <div className="mt-4 space-y-4">
+        <SidebarContent className="bg-[#f8f9fe]/80">
+          <SidebarGroup>
+            <SidebarGroupLabel className={sectionLabelClass}>
+              Site settings
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="space-y-3">
               <div className="space-y-1.5">
                 <label htmlFor="shop-name" className={fieldLabelClass}>
                   Shop name
                 </label>
-                <Input
+                <SidebarInput
                   id="shop-name"
                   value={shopName}
                   onChange={(e) => setShopName(e.target.value)}
@@ -221,7 +276,7 @@ export function ThemeEditorSidebar() {
                 <label htmlFor="hero-announcement" className={fieldLabelClass}>
                   Announcement
                 </label>
-                <Input
+                <SidebarInput
                   id="hero-announcement"
                   value={heroAnnouncement}
                   onChange={(e) => setHeroAnnouncement(e.target.value)}
@@ -233,7 +288,7 @@ export function ThemeEditorSidebar() {
                 <label htmlFor="hero-title" className={fieldLabelClass}>
                   Tagline
                 </label>
-                <Input
+                <SidebarInput
                   id="hero-title"
                   value={heroTitle}
                   onChange={(e) => setHeroTitle(e.target.value)}
@@ -245,7 +300,7 @@ export function ThemeEditorSidebar() {
                 <label htmlFor="hero-image" className={fieldLabelClass}>
                   Hero image URL
                 </label>
-                <Input
+                <SidebarInput
                   id="hero-image"
                   value={heroImage}
                   onChange={(e) => setHeroImage(e.target.value)}
@@ -257,7 +312,7 @@ export function ThemeEditorSidebar() {
                 <span className={fieldLabelClass}>Primary hero upload</span>
                 <input
                   accept="image/*"
-                  className="block w-full text-xs text-zinc-600 file:mr-3 file:rounded-lg file:border file:border-zinc-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold"
+                  className="block w-full text-xs text-slate-500 file:mr-3 file:rounded-2xl file:border file:border-slate-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-800"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     e.target.value = "";
@@ -271,11 +326,13 @@ export function ThemeEditorSidebar() {
                 />
               </div>
               <div className="space-y-2">
-                <span className={fieldLabelClass}>Hero gallery (extra slides)</span>
+                <span className={fieldLabelClass}>
+                  Hero gallery (extra slides)
+                </span>
                 <div className="flex flex-wrap gap-2">
                   {heroGallery.map((url, index) => (
                     <div
-                      className="relative size-14 overflow-hidden rounded-lg border border-zinc-200 bg-white"
+                      className="relative size-14 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                       key={`${url.slice(0, 48)}-${index}`}
                     >
                       <Image
@@ -298,7 +355,7 @@ export function ThemeEditorSidebar() {
                 </div>
                 <input
                   accept="image/*"
-                  className="block w-full text-xs text-zinc-600 file:mr-3 file:rounded-lg file:border file:border-zinc-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold"
+                  className="block w-full text-xs text-slate-500 file:mr-3 file:rounded-2xl file:border file:border-slate-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-800"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     e.target.value = "";
@@ -311,56 +368,75 @@ export function ThemeEditorSidebar() {
                   type="file"
                 />
               </div>
-              <div className="rounded-xl border border-zinc-200 bg-white px-3 py-2.5">
-                <p className="text-xs font-semibold text-zinc-800">
+              <div
+                className="rounded-2xl border border-slate-100 bg-white px-3 py-2.5 shadow-sm"
+                style={{ borderLeftWidth: 4, borderLeftColor: brand }}
+              >
+                <p className="text-xs font-bold text-slate-900">
                   Hero slides: {heroSlideCount} / 3 minimum
                 </p>
                 {heroSlideCount < 3 ? (
-                  <p className="mt-1 text-xs font-medium text-amber-800">
+                  <p className="mt-1 text-xs font-medium text-amber-800 dark:text-amber-200">
                     Primary + gallery together must reach three distinct images
                     for the storefront demo and publishing.
                   </p>
                 ) : (
-                  <p className="mt-1 text-xs font-medium text-emerald-700">
+                  <p className="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
                     Ready: carousel has enough slides.
                   </p>
                 )}
               </div>
-            </div>
-          </section>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-          <section>
-            <h2 className={sectionTitleClass}>Style Selection</h2>
-            <div className="mt-4 flex flex-col gap-2">
+          <SidebarSeparator className="bg-slate-200/90" />
+
+          <SidebarGroup>
+            <SidebarGroupLabel className={sectionLabelClass}>
+              Style selection
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="space-y-2 pt-1">
               {themes.map(({ id, label, icon: Icon }) => {
                 const active = preset === id;
                 return (
-                  <Button
+                  <button
                     key={id}
                     type="button"
-                    variant={active ? "default" : "outline"}
-                    size="lg"
-                    className={cn(
-                      "h-11 w-full justify-start gap-2.5 rounded-xl",
-                      preset === "minimal" && "border-zinc-200",
-                      preset === "glass" && "border-white/15",
-                      preset === "neumorph" && "border-indigo-200/70",
-                      active &&
-                        "border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800",
-                    )}
                     onClick={() => setPreset(id)}
+                    className={cn(
+                      "flex h-11 w-full items-center gap-2.5 rounded-2xl px-4 text-sm font-bold transition",
+                      active
+                        ? "bg-slate-950 text-white shadow-[0_12px_28px_rgba(15,23,42,0.18)]"
+                        : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-100 hover:bg-slate-50 hover:text-slate-900",
+                    )}
                   >
-                    <Icon className="size-4 shrink-0" aria-hidden />
+                    <span
+                      className="flex size-8 items-center justify-center rounded-xl"
+                      style={
+                        active
+                          ? {
+                              backgroundColor: "rgba(255,255,255,0.2)",
+                              color: "#ffffff",
+                            }
+                          : { backgroundColor: accent, color: brand }
+                      }
+                    >
+                      <Icon className="size-4 shrink-0" aria-hidden />
+                    </span>
                     {label}
-                  </Button>
+                  </button>
                 );
               })}
-            </div>
-          </section>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-          <section>
-            <h2 className={sectionTitleClass}>Карт ба layout</h2>
-            <div className="mt-4 space-y-5">
+          <SidebarSeparator className="bg-slate-200/90" />
+
+          <SidebarGroup>
+            <SidebarGroupLabel className={sectionLabelClass}>
+              Карт ба layout
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="space-y-5 pt-1">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <label
@@ -369,7 +445,7 @@ export function ThemeEditorSidebar() {
                   >
                     Булангийн радиус
                   </label>
-                  <span className="text-xs tabular-nums text-zinc-500">
+                  <span className="text-xs tabular-nums font-semibold text-slate-500">
                     {radius}px
                   </span>
                 </div>
@@ -384,6 +460,7 @@ export function ThemeEditorSidebar() {
                     setRadius(Number.parseInt(e.target.value, 10))
                   }
                   className={sliderClass}
+                  style={sliderStyle}
                 />
               </div>
 
@@ -392,7 +469,7 @@ export function ThemeEditorSidebar() {
                   <label htmlFor="card-pad" className={fieldLabelClass}>
                     Картын доторх зай
                   </label>
-                  <span className="text-xs tabular-nums text-zinc-500">
+                  <span className="text-xs tabular-nums font-semibold text-slate-500">
                     {cardContentPaddingRem.toFixed(2)}rem
                   </span>
                 </div>
@@ -407,6 +484,7 @@ export function ThemeEditorSidebar() {
                     setCardContentPaddingRem(Number.parseFloat(e.target.value))
                   }
                   className={sliderClass}
+                  style={sliderStyle}
                 />
               </div>
 
@@ -415,7 +493,7 @@ export function ThemeEditorSidebar() {
                   <label htmlFor="grid-gap" className={fieldLabelClass}>
                     Торын хоорондын зай
                   </label>
-                  <span className="text-xs tabular-nums text-zinc-500">
+                  <span className="text-xs tabular-nums font-semibold text-slate-500">
                     {productGridGapRem.toFixed(2)}rem
                   </span>
                 </div>
@@ -430,22 +508,27 @@ export function ThemeEditorSidebar() {
                     setProductGridGapRem(Number.parseFloat(e.target.value))
                   }
                   className={sliderClass}
+                  style={sliderStyle}
                 />
               </div>
-            </div>
-          </section>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-          <section>
-            <h2 className={sectionTitleClass}>Өөрийн дэлгүүр (backend)</h2>
-            <p className="text-xs text-zinc-500">
-              Platform API дээр дэлгүүр үүсгээд public storefront нээнэ.
-            </p>
-            <div className="mt-4 space-y-3">
+          <SidebarSeparator className="bg-slate-200/90" />
+
+          <SidebarGroup>
+            <SidebarGroupLabel className={sectionLabelClass}>
+              Өөрийн дэлгүүр (backend)
+            </SidebarGroupLabel>
+            <SidebarGroupContent className="space-y-3 pt-1">
+              <p className="text-xs font-medium text-slate-500">
+                Platform API дээр дэлгүүр үүсгээд public storefront нээнэ.
+              </p>
               <div className="space-y-1.5">
                 <label htmlFor="owner-id" className={fieldLabelClass}>
                   Owner ID
                 </label>
-                <Input
+                <SidebarInput
                   id="owner-id"
                   value={ownerId}
                   onChange={(e) => setOwnerId(e.target.value)}
@@ -457,7 +540,7 @@ export function ThemeEditorSidebar() {
                 <label htmlFor="store-name" className={fieldLabelClass}>
                   Дэлгүүрийн нэр
                 </label>
-                <Input
+                <SidebarInput
                   id="store-name"
                   value={storeName}
                   onChange={(e) => setStoreName(e.target.value)}
@@ -470,7 +553,11 @@ export function ThemeEditorSidebar() {
                 type="button"
                 onClick={handleCreateStore}
                 disabled={publishStatus === "creating"}
-                className="h-11 w-full rounded-xl"
+                className="h-11 w-full rounded-2xl text-sm font-black text-white shadow-lg transition hover:opacity-90 disabled:opacity-60"
+                style={{
+                  backgroundColor: brand,
+                  boxShadow: `0 14px 28px ${brand}44`,
+                }}
               >
                 {publishStatus === "creating"
                   ? "Үүсгэж байна…"
@@ -478,18 +565,19 @@ export function ThemeEditorSidebar() {
               </Button>
 
               {publishStatus === "created" && storeSlug ? (
-                <div className="rounded-xl border border-zinc-200 bg-white p-3">
-                  <p className="text-xs font-semibold text-zinc-900">
+                <div className="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm ring-1 ring-slate-100">
+                  <p className="text-xs font-bold text-slate-900">
                     Дэлгүүр үүслээ
                   </p>
-                  <p className="mt-1 break-all font-mono text-[11px] text-zinc-600">
+                  <p className="mt-1 break-all font-mono text-[11px] text-slate-500">
                     slug: {storeSlug}
                   </p>
                   <Link
                     href={`/s/${encodeURIComponent(storeSlug)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-semibold text-zinc-900 hover:bg-zinc-100"
+                    className="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-900 transition hover:bg-white"
+                    style={{ borderColor: brand, color: brand }}
                   >
                     Public дэлгүүр нээх
                   </Link>
@@ -497,29 +585,29 @@ export function ThemeEditorSidebar() {
               ) : null}
 
               {publishError ? (
-                <p className="text-xs text-red-600">{publishError}</p>
+                <p className="text-xs font-semibold text-red-600">{publishError}</p>
               ) : null}
-            </div>
-          </section>
-        </div>
-      </div>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
 
-      <div className={footerBorderClass}>
-        <Button
-          className="mb-3 w-full rounded-xl"
-          onClick={() => resetTheme()}
-          type="button"
-          variant="outline"
-        >
-          Reset to default
-        </Button>
-        <Link
-          href={`${base}/panel`}
-          className="block text-center text-xs font-medium text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline"
-        >
-          Өмнөх builder (admin / storefront)
-        </Link>
-      </div>
-    </aside>
+        <SidebarFooter className="border-t border-slate-100 bg-white px-2 pb-3 pt-2">
+          <Button
+            className="mb-2 h-11 w-full rounded-2xl border-slate-200 font-bold text-slate-700"
+            onClick={() => resetTheme()}
+            type="button"
+            variant="outline"
+          >
+            Reset to default
+          </Button>
+          <Link
+            href={PATHS.adminOverview}
+            className="block rounded-xl py-2 text-center text-xs font-bold text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+          >
+            Өмнөх builder (admin overview)
+          </Link>
+        </SidebarFooter>
+      </Sidebar>
+    </SidebarProvider>
   );
 }

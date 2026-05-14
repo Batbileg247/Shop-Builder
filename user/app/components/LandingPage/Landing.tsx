@@ -47,10 +47,10 @@ export const LandingPage = () => {
           >
             Unlimited.
           </h1>
-          <div className="flex gap-6 justify-center items-center">
+          <div className="flex gap-2 justify-center items-center">
             <Link href={generateHref}>
               <SparkleButton
-                className="h-12 gap-3"
+                className="h-12 gap-3 mr-2"
                 label="Generate Site"
                 icon={Sparkle}
               />

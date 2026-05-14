@@ -60,7 +60,7 @@ export default function OverviewPage() {
     {
       label: "Yearly Sales",
       value: currencyFormatter.format(totalTimelineSales),
-      caption: `${growth >= 0 ? "+" : ""}${growth}% from January`,
+      caption: `${growth >= 0 ? "+" : ""}${growth}% since January`,
       icon: TrendingUp,
       iconClass: "bg-teal-100 text-teal-500",
     },
@@ -74,14 +74,14 @@ export default function OverviewPage() {
     {
       label: "Avg. Monthly",
       value: currencyFormatter.format(averageMonthlySales),
-      caption: "Jan-Dec timeline",
+      caption: "Averaged across the months below",
       icon: LineChart,
       iconClass: "bg-blue-100 text-blue-500",
     },
     {
-      label: "Catalog Revenue",
+      label: "Catalog total",
       value: currencyFormatter.format(metrics.revenue),
-      caption: `${numberFormatter.format(products.length)} local listings`,
+      caption: `${numberFormatter.format(products.length)} products you added here`,
       icon: ShoppingBag,
       iconClass: "bg-orange-100 text-orange-500",
     },
@@ -96,8 +96,9 @@ export default function OverviewPage() {
             <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">
               {activeShop.name}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-400">
-              Sales statistics and month-by-month timeline for the active shop.
+            <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
+              How {activeShop.name} did this year — totals and a month-by-month
+              chart so you can spot the busy stretches.
             </p>
           </div>
           <div className="flex items-center gap-2 rounded-2xl bg-slate-50 px-4 py-3">
@@ -150,7 +151,7 @@ export default function OverviewPage() {
         />
 
         <div className="rounded-[2rem] bg-white p-6 shadow-[0_24px_70px_rgba(15,23,42,0.06)]">
-          <p className="text-sm font-bold text-slate-400">Sales Timeline</p>
+          <p className="text-sm font-bold text-slate-400">Month by month</p>
           <h2 className="mt-1 text-2xl font-black text-slate-950">
             January to December
           </h2>
