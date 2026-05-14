@@ -25,18 +25,10 @@ const navItems = [
 function navItemIsActive(pathname: string, href: string) {
   if (href === PATHS.builderUpdate) {
     return (
-<<<<<<< HEAD
-      pathname === PATHS.builderUpdate ||
-      pathname.startsWith(`${PATHS.builderUpdate}/`)
-    );
-  }
-  return pathname === href || pathname.startsWith(`${href}/`);
-=======
       pathname === PATHS.builder || pathname.startsWith(`${PATHS.builder}/`)
     );
   }
   return pathname === href;
->>>>>>> 6f20196fe45a8d514ba93a82165522700ad7115b
 }
 
 export function Sidebar() {
