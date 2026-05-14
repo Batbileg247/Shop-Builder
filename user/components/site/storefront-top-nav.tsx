@@ -4,21 +4,13 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-import { Play, Sparkle } from "lucide-react";
-
 import { useShop } from "@/app/hooks/useShop";
-import { useBuilderUi } from "@/context/builder-ui-context";
-import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { storefrontNavBase } from "@/lib/site-paths";
 import { cn } from "@/lib/utils";
-import { Button } from "@/ui/button";
-import SparkleButton from "@/app/components/LandingPage/SparkleButton";
 
-function SiteHeaderInner() {
+function StorefrontTopNavInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { setIsDemo } = useBuilderUi();
-  const isStorefront = pathname.startsWith("/s/");
   const shop = useShop();
   const navBase = storefrontNavBase(pathname);
   const catalogHref = `${navBase}?view=all`;
@@ -42,14 +34,6 @@ function SiteHeaderInner() {
     <header className="pv-header">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-end px-6">
         <nav className="flex items-center gap-1.5 sm:gap-2" aria-label="Main">
-          {!isStorefront ? (
-            <SparkleButton
-              label="View Demo"
-              icon={Sparkle}
-              className="h-9 gap-3"
-              onClick={() => setIsDemo(true)}
-            ></SparkleButton>
-          ) : null}
           <Link
             href={navBase}
             className={cn(
@@ -95,12 +79,12 @@ function SiteHeaderInner() {
   );
 }
 
-export function SiteHeader() {
+export function StorefrontTopNav() {
   return (
     <Suspense
       fallback={<div className="pv-header h-14 border-b border-pv-divider" />}
     >
-      <SiteHeaderInner />
+      <StorefrontTopNavInner />
     </Suspense>
   );
 }

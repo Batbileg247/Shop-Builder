@@ -32,7 +32,7 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "pv-card group flex cursor-pointer flex-col overflow-hidden shadow-pv-card transition hover:shadow-pv-card",
+        "pv-card group flex h-full min-h-0 cursor-pointer flex-col overflow-hidden shadow-pv-card transition hover:shadow-pv-card",
         soldOut && "opacity-90",
       )}
       onClick={() => {
@@ -48,7 +48,7 @@ export function ProductCard({
       role="button"
       tabIndex={soldOut ? -1 : 0}
     >
-      <div className="relative aspect-3/4 overflow-hidden bg-pv-placeholder">
+      <div className="relative aspect-3/4 shrink-0 overflow-hidden bg-pv-placeholder">
         <Image
           alt={product.name}
           className="object-cover transition duration-500 group-hover:scale-[1.02]"
@@ -65,7 +65,7 @@ export function ProductCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-(--pv-card-content-pad,1rem)">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 p-(--pv-card-content-pad,1rem)">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="font-inter text-xl font-semibold leading-snug text-pv-fg">

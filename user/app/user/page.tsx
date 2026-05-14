@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Store,
   UserRound,
+  Copy,
 } from "lucide-react";
 
 import {
@@ -57,6 +58,7 @@ export default function UserAccountPage() {
   const [shops, setShops] = useState<Shop[]>([]);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -165,9 +167,26 @@ export default function UserAccountPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
                   Account ID
                 </p>
-                <p className="mt-2 truncate font-mono text-xs text-white/85">
-                  {session.user.id}
-                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <p className="truncate font-mono text-xs text-white/85 flex-1">
+                    {session.user.id}
+                  </p>
+                  <button
+                    type="button"
+                    className="shrink-0 text-white/70 hover:text-white transition-colors"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(session.user.id);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    title="Copy Account ID"
+                  >
+                    <Copy className="size-4" />
+                  </button>
+                </div>
+                {copied && (
+                  <p className="mt-1 text-xs text-emerald-200">Copied!</p>
+                )}
               </div>
               <button
                 type="button"
@@ -222,7 +241,7 @@ export default function UserAccountPage() {
               </dl>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-[1fr_280px]">
+            <div className="grid gap-5 md:grid-cols-2">
               <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                 <h2 className="mt-1 text-xl font-black tracking-tight">
                   Дэлгүүрээ үргэлжлүүлэх
@@ -261,7 +280,7 @@ export default function UserAccountPage() {
                   Миний дэлгүүрүүд
                 </h2>
                 {shops && shops.length > 0 ? (
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div className="mt-4 grid gap-4">
                     {shops.map((shop) => (
                       <Link
                         key={shop.id}

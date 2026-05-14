@@ -1,29 +1,34 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { Plus } from "lucide-react";
 
+import SparkleButton from "@/app/components/LandingPage/SparkleButton";
+import { BuilderChromeViewDemoButton } from "@/components/builder-studio/builder-chrome-view-demo-button";
 import { Sidebar } from "@/components/Sidebar";
 import { PATHS } from "@/lib/site-paths";
-
 /** Top title row + primary CTA — matches all dashboard pages including theme studio. */
 export function AdminDashboardChrome({
   title = "Admin Dashboard",
+  showViewDemo = false,
   children,
 }: {
   title?: string;
+  /** Theme studio / builder preview: opens full-screen demo from the dashboard chrome. */
+  showViewDemo?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="mb-6 flex shrink-0 items-center justify-between">
+      <div className="mb-6 flex shrink-0 items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-950">{title}</h1>
-        <Link
-          href={PATHS.builderCreate}
-          className="flex items-center gap-2 rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800"
-        >
-          <Plus className="h-4 w-4" />
-          Create New Shop
-        </Link>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {showViewDemo ? <BuilderChromeViewDemoButton /> : null}
+          <SparkleButton
+            label="Create New Shop"
+            icon={Plus}
+            href={PATHS.builderCreate}
+            className="h-9 gap-3"
+          />
+        </div>
       </div>
       <div className="flex min-h-0 flex-1 flex-col">{children}</div>
     </div>

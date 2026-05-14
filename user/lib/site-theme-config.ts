@@ -10,6 +10,7 @@ export type SiteThemePersisted = {
     cardContentPaddingRem: number;
     productGridGapRem: number;
     heroImageHeightPx: number;
+    previewProductCardBasisRem: number;
   };
   heroGallery: string[];
 };
@@ -35,6 +36,7 @@ export type ParsedSiteTheme = {
   cardContentPaddingRem?: number;
   productGridGapRem?: number;
   heroImageHeightPx?: number;
+  previewProductCardBasisRem?: number;
 };
 
 export function parseSiteThemePersisted(raw: unknown): ParsedSiteTheme {
@@ -65,6 +67,12 @@ export function parseSiteThemePersisted(raw: unknown): ParsedSiteTheme {
     patch.cardContentPaddingRem = num(layout.cardContentPaddingRem, 1, 0.5, 2);
     patch.productGridGapRem = num(layout.productGridGapRem, 1, 0.375, 2.5);
     patch.heroImageHeightPx = num(layout.heroImageHeightPx, 240, 40, 900);
+    patch.previewProductCardBasisRem = num(
+      layout.previewProductCardBasisRem,
+      14,
+      9,
+      24,
+    );
   } else {
     if (typeof o.radius === "number") patch.radius = num(o.radius, 12, 2, 48);
     if (typeof o.cardContentPaddingRem === "number") {
@@ -81,6 +89,14 @@ export function parseSiteThemePersisted(raw: unknown): ParsedSiteTheme {
     if (typeof o.heroImageHeightPx === "number") {
       patch.heroImageHeightPx = num(o.heroImageHeightPx, 240, 40, 900);
     }
+    if (typeof o.previewProductCardBasisRem === "number") {
+      patch.previewProductCardBasisRem = num(
+        o.previewProductCardBasisRem,
+        14,
+        9,
+        24,
+      );
+    }
   }
 
   return patch;
@@ -96,6 +112,7 @@ export function buildSiteThemePersisted(s: {
   cardContentPaddingRem: number;
   productGridGapRem: number;
   heroImageHeightPx: number;
+  previewProductCardBasisRem: number;
 }): SiteThemePersisted {
   return {
     builderTheme: s.preset,
@@ -106,6 +123,12 @@ export function buildSiteThemePersisted(s: {
       cardContentPaddingRem: s.cardContentPaddingRem,
       productGridGapRem: s.productGridGapRem,
       heroImageHeightPx: Math.round(s.heroImageHeightPx),
+      previewProductCardBasisRem: num(
+        s.previewProductCardBasisRem,
+        14,
+        9,
+        24,
+      ),
     },
     heroGallery: [...s.heroGallery],
   };

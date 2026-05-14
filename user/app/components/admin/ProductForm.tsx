@@ -28,6 +28,8 @@ type Props = {
   onCancel?: () => void;
   theme: ShopTheme;
   mode: "create" | "edit";
+  /** When set (e.g. theme studio), category is chosen from this list only. */
+  categoryOptions?: readonly string[];
 };
 
 export function ProductForm({
@@ -37,6 +39,7 @@ export function ProductForm({
   onCancel,
   theme,
   mode,
+  categoryOptions,
 }: Props) {
   const update = <K extends keyof ProductDraft>(
     key: K,
@@ -60,12 +63,40 @@ export function ProductForm({
 
       <div className="grid grid-cols-2 gap-3">
         <Field label="Category">
-          <input
-            className="input"
-            onChange={(e) => update("category", e.target.value)}
-            placeholder="e.g. Apparel"
-            value={draft.category}
-          />
+          {categoryOptions !== undefined ? (
+            <>
+              <select
+                className="input"
+                disabled={categoryOptions.length === 0}
+                onChange={(e) => update("category", e.target.value)}
+                value={draft.category}
+              >
+                <option value="">Select a category</option>
+                {draft.category &&
+                !categoryOptions.includes(draft.category) ? (
+                  <option value={draft.category}>{draft.category}</option>
+                ) : null}
+                {categoryOptions.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              {categoryOptions.length === 0 ? (
+                <p className="mt-1.5 text-xs font-medium text-amber-800">
+                  Use the + button next to the category filters in the preview to
+                  add one first.
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <input
+              className="input"
+              onChange={(e) => update("category", e.target.value)}
+              placeholder="e.g. Apparel"
+              value={draft.category}
+            />
+          )}
         </Field>
         <Field label="Size">
           <input

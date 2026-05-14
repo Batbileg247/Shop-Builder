@@ -41,6 +41,8 @@ export type ThemeState = {
   productGridGapRem: number;
   /** Hero carousel бүсийн өндөр (px) — storefront / preview. */
   heroImageHeightPx: number;
+  /** Flex-wrap preview: minimum basis per product card row (`flex: 1 1 …`). */
+  previewProductCardBasisRem: number;
 };
 
 export type ThemeActions = {
@@ -60,6 +62,7 @@ export type ThemeActions = {
   setCardContentPaddingRem: (value: number) => void;
   setProductGridGapRem: (value: number) => void;
   setHeroImageHeightPx: (value: number) => void;
+  setPreviewProductCardBasisRem: (value: number) => void;
   /** Серверийн `theme_config` (whitelist JSON) → state. */
   applyPersistedSiteTheme: (raw: unknown) => void;
   reset: () => void;
@@ -108,6 +111,7 @@ const defaults: ThemeState = {
   cardContentPaddingRem: 1,
   productGridGapRem: 1,
   heroImageHeightPx: 240,
+  previewProductCardBasisRem: 14,
 };
 
 const THEME_STORE_VERSION = 3;
@@ -168,6 +172,18 @@ function themePatchFromPersisted(value: unknown): Partial<ThemeState> {
   const { preset, ...rest } = p;
   const out: Partial<ThemeState> = { ...rest };
   if (preset) out.preset = preset;
+  if (typeof p.previewProductCardBasisRem === "number") {
+    out.previewProductCardBasisRem = p.previewProductCardBasisRem;
+  }
+  if (
+    typeof o.previewProductCardBasisRem === "number" &&
+    Number.isFinite(o.previewProductCardBasisRem)
+  ) {
+    out.previewProductCardBasisRem = Math.min(
+      24,
+      Math.max(9, o.previewProductCardBasisRem),
+    );
+  }
   return out;
 }
 
@@ -205,6 +221,8 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
         set({ cardContentPaddingRem }),
       setProductGridGapRem: (productGridGapRem) => set({ productGridGapRem }),
       setHeroImageHeightPx: (heroImageHeightPx) => set({ heroImageHeightPx }),
+      setPreviewProductCardBasisRem: (previewProductCardBasisRem) =>
+        set({ previewProductCardBasisRem }),
       applyPersistedSiteTheme: (raw) => {
         const parsed = parseSiteThemePersisted(raw);
         set((prev) => {
@@ -225,6 +243,9 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
               parsed.productGridGapRem ?? prev.productGridGapRem,
             heroImageHeightPx:
               parsed.heroImageHeightPx ?? prev.heroImageHeightPx,
+            previewProductCardBasisRem:
+              parsed.previewProductCardBasisRem ??
+              prev.previewProductCardBasisRem,
           };
           return next;
         });
@@ -258,7 +279,18 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
           heroImage: "",
         };
       },
-      partialize: (s) => buildSiteThemePersisted(s),
+      partialize: (s) =>
+        buildSiteThemePersisted({
+          preset: s.preset,
+          heroTitle: s.heroTitle,
+          shopName: s.shopName,
+          heroGallery: s.heroGallery,
+          radius: s.radius,
+          cardContentPaddingRem: s.cardContentPaddingRem,
+          productGridGapRem: s.productGridGapRem,
+          heroImageHeightPx: s.heroImageHeightPx,
+          previewProductCardBasisRem: s.previewProductCardBasisRem,
+        }),
     },
   ),
 );

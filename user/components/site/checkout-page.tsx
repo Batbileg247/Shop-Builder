@@ -14,7 +14,7 @@ import {
   postStorefrontCheckout,
 } from "@/lib/storefront-api";
 
-import { SiteHeader } from "./site-header";
+import { StorefrontTopNav } from "./storefront-top-nav";
 
 function StorefrontCheckoutInner() {
   const params = useParams<{ slug: string }>();
@@ -74,7 +74,7 @@ function StorefrontCheckoutInner() {
   if (!slug) {
     return (
       <div className="pv-storefront">
-        <SiteHeader />
+        <StorefrontTopNav />
         <main className="mx-auto max-w-lg px-6 py-16 text-center text-sm text-pv-muted">
           Дэлгүүрийн хаяг олдсонгүй.
         </main>
@@ -84,7 +84,7 @@ function StorefrontCheckoutInner() {
 
   return (
     <div className="pv-storefront min-h-svh bg-pv-bg">
-      <SiteHeader />
+      <StorefrontTopNav />
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <div className="mb-6 flex items-center justify-between gap-4">
           <Link
@@ -130,7 +130,7 @@ export function CheckoutPage() {
     <React.Suspense
       fallback={
         <div className="pv-storefront min-h-svh bg-pv-bg">
-          <SiteHeader />
+          <StorefrontTopNav />
           <main className="mx-auto max-w-lg px-6 py-16 text-center text-sm text-pv-muted">
             Ачааллаж байна…
           </main>

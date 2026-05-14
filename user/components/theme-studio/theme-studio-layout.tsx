@@ -28,15 +28,19 @@ export function ThemeStudioLayout({
   const radius = useThemeStore((s) => s.radius);
   const cardContentPaddingRem = useThemeStore((s) => s.cardContentPaddingRem);
   const productGridGapRem = useThemeStore((s) => s.productGridGapRem);
+  const previewProductCardBasisRem = useThemeStore(
+    (s) => s.previewProductCardBasisRem,
+  );
 
   const previewCssVars = React.useMemo(
     () =>
       ({
         "--pv-card-content-pad": `${cardContentPaddingRem}rem`,
         "--pv-product-gap": `${productGridGapRem}rem`,
+        "--pv-preview-card-basis": `${previewProductCardBasisRem}rem`,
         "--pv-radius": `${radius}px`,
       }) as React.CSSProperties,
-    [cardContentPaddingRem, productGridGapRem, radius],
+    [cardContentPaddingRem, productGridGapRem, previewProductCardBasisRem, radius],
   );
 
   // The cart drawer and other overlays render in a portal (document.body),
@@ -50,15 +54,20 @@ export function ThemeStudioLayout({
       `${cardContentPaddingRem}rem`,
     );
     el.style.setProperty("--pv-product-gap", `${productGridGapRem}rem`);
+    el.style.setProperty(
+      "--pv-preview-card-basis",
+      `${previewProductCardBasisRem}rem`,
+    );
     el.style.setProperty("--pv-radius", `${radius}px`);
     return () => {
       el.classList.remove("site-preview-root");
       el.removeAttribute("data-theme");
       el.style.removeProperty("--pv-card-content-pad");
       el.style.removeProperty("--pv-product-gap");
+      el.style.removeProperty("--pv-preview-card-basis");
       el.style.removeProperty("--pv-radius");
     };
-  }, [preset, cardContentPaddingRem, productGridGapRem, radius]);
+  }, [preset, cardContentPaddingRem, productGridGapRem, previewProductCardBasisRem, radius]);
 
   React.useEffect(() => {
     if (!isDemo) return;

@@ -83,6 +83,18 @@ export function BuilderEditorSidebar() {
   const heroImageHeightPx = useThemeStore((s) => s.heroImageHeightPx);
   const setHeroImageHeightPx = useThemeStore((s) => s.setHeroImageHeightPx);
 
+  const previewProductCardBasisRem = useThemeStore(
+    (s) => s.previewProductCardBasisRem,
+  );
+  const setPreviewProductCardBasisRem = useThemeStore(
+    (s) => s.setPreviewProductCardBasisRem,
+  );
+
+  const primaryColor = useThemeStore((s) => s.primaryColor);
+  const backgroundColor = useThemeStore((s) => s.backgroundColor);
+  const textColor = useThemeStore((s) => s.textColor);
+  const font = useThemeStore((s) => s.font);
+
   const resetTheme = useThemeStore((s) => s.reset);
 
   const shop = useShop();
@@ -158,6 +170,7 @@ export function BuilderEditorSidebar() {
         cardContentPaddingRem,
         productGridGapRem,
         heroImageHeightPx,
+        previewProductCardBasisRem,
       });
 
       const basePart = normalizeMerchantSlugBase(createSlug.trim() || name);
@@ -250,6 +263,7 @@ export function BuilderEditorSidebar() {
       cardContentPaddingRem,
       productGridGapRem,
       heroImageHeightPx,
+      previewProductCardBasisRem,
     });
 
     try {
@@ -657,6 +671,16 @@ export function BuilderEditorSidebar() {
                   max: 900,
                   step: 4,
                   onChange: (v: number) => setHeroImageHeightPx(v),
+                },
+                {
+                  id: "preview-card-basis",
+                  label: "Бүтээгдэхүүний картын өргөн",
+                  value: previewProductCardBasisRem,
+                  display: `${previewProductCardBasisRem.toFixed(2)}rem`,
+                  min: 9,
+                  max: 24,
+                  step: 0.25,
+                  onChange: (v: number) => setPreviewProductCardBasisRem(v),
                 },
               ].map(
                 ({ id, label, value, display, min, max, step, onChange }) => (

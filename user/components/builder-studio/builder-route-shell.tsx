@@ -18,9 +18,9 @@ import { DashboardProvider } from "@/context/DashboardContext";
 import { ensureAuthCookieFromSession } from "@/lib/auth-session";
 
 function builderChromeTitle(pathname: string | null): string {
-  if (!pathname) return "Theme studio";
+  if (!pathname) return "Theme studios";
   if (pathname.includes("/create")) return "Create shop";
-  if (pathname.includes("/update")) return "Theme studio";
+  if (pathname.includes("/update")) return "Theme studios";
   return "Theme studio";
 }
 
@@ -45,7 +45,9 @@ export function BuilderRouteShell({
             <AdminLayoutShell
               sidebarReplacement={<BuilderStudioSidebarColumn />}
             >
-              <AdminDashboardChrome title={title}>{children}</AdminDashboardChrome>
+              <AdminDashboardChrome title={title} showViewDemo>
+                {children}
+              </AdminDashboardChrome>
             </AdminLayoutShell>
           </BuilderUiProvider>
         </ShopProvider>

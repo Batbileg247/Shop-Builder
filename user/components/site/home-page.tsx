@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -38,13 +39,11 @@ import {
   SheetTitle,
 } from "@/ui/sheet";
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
-import { SiteHeader } from "./site-header";
 import { useBuilderUi } from "@/context/builder-ui-context";
+import { useDashboard } from "@/context/DashboardContext";
 import { useMayEditLiveStorefrontCatalog } from "@/context/storefront-catalog-edit-context";
 import { isBuilderPreviewPath, storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
-
-const PREVIEW_SLOT_COUNT = 6;
 
 function effectivePrice(p: Product) {
   return p.salePrice ?? p.price;
@@ -54,7 +53,7 @@ function AddProductSlot({ onClick }: { onClick: () => void }) {
   return (
     <article
       className={cn(
-        "pv-card group flex cursor-pointer flex-col overflow-hidden border border-dashed border-pv-border bg-pv-empty shadow-pv-card transition hover:border-pv-primary hover:bg-pv-card hover:shadow-pv-card",
+        "pv-card group flex h-full min-h-0 cursor-pointer flex-col overflow-hidden border border-dashed border-pv-border bg-pv-empty shadow-pv-card transition hover:border-pv-primary hover:bg-pv-card hover:shadow-pv-card",
       )}
       onClick={onClick}
       onKeyDown={(e) => {
@@ -66,19 +65,36 @@ function AddProductSlot({ onClick }: { onClick: () => void }) {
       role="button"
       tabIndex={0}
     >
-      <div className="relative aspect-3/4 overflow-hidden bg-pv-placeholder">
+      <div className="relative aspect-3/4 shrink-0 overflow-hidden bg-pv-placeholder">
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-pv-card ring-1 ring-pv-border transition group-hover:ring-pv-primary">
             <Plus className="size-7 text-pv-fg" aria-hidden />
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-[length:var(--pv-card-content-pad,1rem)]">
-        <div className="min-w-0">
-          <h3 className="font-inter text-xl font-semibold leading-snug text-pv-fg">
-            Add product
-          </h3>
-          <p className="mt-0.5 text-xs text-pv-muted">New listing</p>
+
+      <div className="flex min-h-0 flex-1 flex-col gap-2 p-(--pv-card-content-pad,1rem)">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="font-inter text-xl font-semibold leading-snug text-pv-fg">
+              Add product
+            </h3>
+            <p className="mt-0.5 text-xs text-pv-muted">New listing</p>
+            <p className="mt-0.5 text-xs text-pv-muted opacity-0" aria-hidden>
+              —
+            </p>
+            <p className="mt-1 text-[11px] text-pv-muted opacity-0" aria-hidden>
+              (0.0k) Customer Reviews
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-auto flex items-end justify-between gap-2 border-t border-pv-divider pt-3">
+          <div>
+            <p className="text-lg font-semibold text-transparent select-none">
+              $00
+            </p>
+          </div>
         </div>
       </div>
     </article>
@@ -99,6 +115,125 @@ function mergeSearchParams(
   return qs ? `${pathname}?${qs}` : pathname;
 }
 
+/** Only mounted under `/builder` / `/building` where {@link DashboardProvider} exists. */
+function PreviewCategoryAddControl() {
+  const { addCategory, categories } = useDashboard();
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState("");
+  const [error, setError] = React.useState<string | null>(null);
+  const [portalReady, setPortalReady] = React.useState(false);
+
+  React.useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  const close = React.useCallback(() => {
+    setModalOpen(false);
+    setNewName("");
+    setError(null);
+  }, []);
+
+  const save = React.useCallback(() => {
+    const n = newName.trim();
+    if (!n) {
+      setError("Enter a category name.");
+      return;
+    }
+    if (categories.some((c) => c.toLowerCase() === n.toLowerCase())) {
+      setError("That category already exists.");
+      return;
+    }
+    addCategory(n);
+    close();
+  }, [addCategory, categories, newName, close]);
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Add category"
+        className={cn(
+          "pv-chip inline-flex size-10 shrink-0 items-center justify-center rounded-full p-0 text-pv-fg",
+          "ring-1 ring-transparent hover:ring-pv-primary/40",
+        )}
+        onClick={() => {
+          setError(null);
+          setModalOpen(true);
+        }}
+      >
+        <Plus className="size-4" aria-hidden />
+      </button>
+      {portalReady && modalOpen
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[400] flex items-center justify-center bg-black/50 p-4"
+              onClick={close}
+              role="presentation"
+            >
+              <div
+                aria-labelledby="preview-add-cat-title"
+                aria-modal="true"
+                className="w-full max-w-md rounded-2xl border border-pv-border bg-pv-card p-6 shadow-lg"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+              >
+                <h2
+                  className="text-lg font-semibold text-pv-fg"
+                  id="preview-add-cat-title"
+                >
+                  Add category
+                </h2>
+                <p className="mt-1 text-sm text-pv-muted">
+                  Saved for this shop and available when adding products.
+                </p>
+                <label
+                  className="mt-4 block text-sm font-medium text-pv-fg"
+                  htmlFor="preview-new-category"
+                >
+                  Category name
+                </label>
+                <input
+                  id="preview-new-category"
+                  autoFocus
+                  className="mt-1.5 w-full rounded-xl border border-pv-border bg-pv-bg px-3 py-2.5 text-sm text-pv-fg outline-none focus:ring-2 focus:ring-pv-primary/30"
+                  onChange={(e) => {
+                    setNewName(e.target.value);
+                    setError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      save();
+                    }
+                  }}
+                  placeholder="e.g. Accessories"
+                  value={newName}
+                />
+                {error ? (
+                  <p className="mt-2 text-sm font-medium text-red-600">{error}</p>
+                ) : null}
+                <div className="mt-5 flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-pv-border"
+                    onClick={close}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="button" className="pv-btn-primary" onClick={save}>
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
+  );
+}
+
 function HomePageInner() {
   const router = useRouter();
   const pathname = usePathname();
@@ -117,6 +252,9 @@ function HomePageInner() {
   const font = useThemeStore((s) => s.font);
   const radius = useThemeStore((s) => s.radius);
   const heroImageHeightPx = useThemeStore((s) => s.heroImageHeightPx);
+  const previewProductCardBasisRem = useThemeStore(
+    (s) => s.previewProductCardBasisRem,
+  );
   const shop = useShop();
   const { isDemo } = useBuilderUi();
   /** Зөвхөн resizable горим (жишээ нь admin preview) — builder/building дээр hero өндрийг theme store-оор удирдана. */
@@ -212,6 +350,21 @@ function HomePageInner() {
       );
       return;
     }
+    if (isEmbeddedDashboardPreview) {
+      if (shop.categories.length === 0) {
+        setAddProductError(
+          "Add at least one category with the + button next to the preview category filters, then try again.",
+        );
+        return;
+      }
+      if (
+        !newProductDraft.category.trim() ||
+        !shop.categories.includes(newProductDraft.category)
+      ) {
+        setAddProductError("Choose a category from your shop list.");
+        return;
+      }
+    }
     setAddProductError(null);
     shop.addProduct(newProductDraft);
     setAddProductOpen(false);
@@ -291,20 +444,24 @@ function HomePageInner() {
     return pool;
   }, [shop.products, previewCategory, searchQuery]);
 
-  const previewSlotProducts = React.useMemo(
-    () => previewPool.slice(0, PREVIEW_SLOT_COUNT),
-    [previewPool],
+  const previewProductsWrapStyle = React.useMemo(
+    () =>
+      ({
+        "--pv-preview-card-basis": `${previewProductCardBasisRem}rem`,
+      }) as React.CSSProperties,
+    [previewProductCardBasisRem],
   );
 
-  const addProductSlotCount = React.useMemo(() => {
-    if (!showAddProductInPreview) return 0;
-    if (previewPool.length > PREVIEW_SLOT_COUNT) return 0;
-    return Math.max(0, PREVIEW_SLOT_COUNT - previewSlotProducts.length);
-  }, [
-    showAddProductInPreview,
-    previewPool.length,
-    previewSlotProducts.length,
-  ]);
+  const previewProductItemStyle = React.useMemo(
+    () =>
+      ({
+        /* grow: 0 — last row must not stretch a lone “add product” card to full width */
+        flex: "0 1 min(100%, var(--pv-preview-card-basis, 14rem))",
+        minWidth: 0,
+        maxWidth: "min(100%, var(--pv-preview-card-basis, 14rem))",
+      }) as React.CSSProperties,
+    [],
+  );
 
   const filteredCatalog = React.useMemo(() => {
     let items = applyCatalogFilters(
@@ -428,28 +585,40 @@ function HomePageInner() {
                 previewCategory === cat && "pv-chip-active",
               )}
               onClick={() => setPreviewCategory(cat)}
+              type="button"
             >
               {cat}
             </button>
           ))}
+          {isEmbeddedDashboardPreview ? <PreviewCategoryAddControl /> : null}
         </div>
 
-        <div className="grid grid-cols-1 gap-(--pv-product-gap,1.5rem) sm:grid-cols-2 lg:grid-cols-3">
-          {previewSlotProducts.map((p) => (
-            <ProductCard
-              brandLabel={p.category}
+        <div
+          className="flex w-full min-w-0 flex-wrap justify-center gap-(--pv-product-gap,1.5rem)"
+          style={previewProductsWrapStyle}
+        >
+          {previewPool.map((p) => (
+            <div
               key={p.id}
-              onOpen={() => openDetail(p)}
-              product={p}
-            />
-          ))}
-          {searchQuery === "" &&
-            Array.from({ length: addProductSlotCount }).map((_, i) => (
-              <AddProductSlot
-                key={`add-slot-${i}`}
-                onClick={openAddProductSheet}
+              className="flex min-h-0 min-w-0 flex-col"
+              style={previewProductItemStyle}
+            >
+              <ProductCard
+                brandLabel={p.category}
+                onOpen={() => openDetail(p)}
+                product={p}
               />
-            ))}
+            </div>
+          ))}
+          {showAddProductInPreview && searchQuery === "" ? (
+            <div
+              key="add-product-slot"
+              className="flex min-h-0 min-w-0 flex-col"
+              style={previewProductItemStyle}
+            >
+              <AddProductSlot onClick={openAddProductSheet} />
+            </div>
+          ) : null}
         </div>
 
         {previewPool.length === 0 && (
@@ -477,21 +646,19 @@ function HomePageInner() {
         fullSiteShell
           ? isStorefront
             ? "min-h-svh w-full"
-            : "w-full pt-16"
+            : "w-full"
           : isEmbeddedDashboardPreview
             ? "h-full min-h-0 min-w-0 flex-1"
             : "min-h-svh",
       )}
       data-theme={preset}
     >
-      {!isDemo || isStorefront ? <SiteHeader /> : null}
-
       <section
         className={cn(
           "flex w-full flex-col",
           fullSiteShell
             ? "w-full"
-            : "min-h-0 flex-1 flex-col overflow-hidden px-6 py-8",
+            : "min-h-0 flex-1 flex-col overflow-hidden",
         )}
       >
         <div className={previewHostClass}>
@@ -634,6 +801,9 @@ function HomePageInner() {
             </SheetHeader>
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
               <ProductForm
+                categoryOptions={
+                  isEmbeddedDashboardPreview ? shop.categories : undefined
+                }
                 draft={newProductDraft}
                 mode="create"
                 onCancel={() => handleAddProductSheetOpen(false)}
