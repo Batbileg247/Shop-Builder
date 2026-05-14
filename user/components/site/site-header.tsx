@@ -24,11 +24,9 @@ function SiteHeaderInner() {
   const cartCount = shop.cartItems.reduce((s, i) => s + i.quantity, 0);
   const cartIntent = searchParams.get("cart") === "open";
   const shopBrowse = searchParams.get("view") === "all";
-  const onBuilderHome =
-    pathname === navBase || pathname === `${navBase}/`;
+  const onBuilderHome = pathname === navBase || pathname === `${navBase}/`;
   const onShopPath =
-    pathname === `${navBase}/shop` ||
-    pathname?.startsWith(`${navBase}/shop/`);
+    pathname === `${navBase}/shop` || pathname?.startsWith(`${navBase}/shop/`);
   const onCartPath =
     pathname === `${navBase}/cart` || pathname === `${navBase}/cart/`;
   const cartHref =
@@ -41,16 +39,7 @@ function SiteHeaderInner() {
 
   return (
     <header className="pv-header">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        <Link
-          href={navBase}
-          className={cn(
-            "rounded-[length:var(--pv-radius)] px-1 py-0.5 text-sm font-semibold tracking-tight text-pv-fg",
-            "pv-interactive transition-none",
-          )}
-        >
-          Store
-        </Link>
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-end px-6">
         <nav className="flex items-center gap-1.5 sm:gap-2" aria-label="Main">
           {!isStorefront ? (
             <Button
@@ -67,12 +56,12 @@ function SiteHeaderInner() {
           <Link
             href={navBase}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-[length:var(--pv-radius)] px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
+              "inline-flex items-center gap-1.5 rounded-(--pv-radius) px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
               "text-pv-muted pv-interactive",
               onBuilderHome &&
                 !shopBrowse &&
                 !cartIntent &&
-                "bg-pv-card text-pv-fg outline outline-1 outline-pv-border",
+                "bg-pv-card text-pv-fg outline-1 outline-pv-border",
             )}
           >
             Home
@@ -80,9 +69,9 @@ function SiteHeaderInner() {
           <Link
             href={catalogHref}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-[length:var(--pv-radius)] px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
+              "inline-flex items-center gap-1.5 rounded-(--pv-radius) px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
               "text-pv-muted pv-interactive",
-              shopActive && "bg-pv-card text-pv-fg outline outline-1 outline-pv-border",
+              shopActive && "bg-pv-card text-pv-fg outline-1 outline-pv-border",
             )}
           >
             Shop
@@ -90,15 +79,15 @@ function SiteHeaderInner() {
           <Link
             href={cartHref}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-[length:var(--pv-radius)] px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
+              "inline-flex items-center gap-1.5 rounded-(--pv-radius) px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
               "text-pv-muted pv-interactive",
               (cartIntent || onCartPath) &&
-                "bg-pv-card text-pv-fg outline outline-1 outline-pv-border",
+                "bg-pv-card text-pv-fg outline outline-pv-border",
             )}
           >
             Cart
             {cartCount > 0 ? (
-              <span className="rounded-[length:var(--pv-radius)] border border-pv-border bg-pv-card px-1.5 py-0.5 text-xs font-semibold tabular-nums text-pv-fg">
+              <span className="rounded-(--pv-radius) border border-pv-border bg-pv-card px-1.5 py-0.5 text-xs font-semibold tabular-nums text-pv-fg">
                 {cartCount}
               </span>
             ) : null}
