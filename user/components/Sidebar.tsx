@@ -20,18 +20,20 @@ const navItems = [
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Theme studio", href: PATHS.builder, icon: Sparkles },
-  { label: "Shop", href: PATHS.adminShop, icon: Store },
 ];
 
 function navItemIsActive(pathname: string, href: string) {
   if (href === PATHS.builder) {
     return (
       pathname === PATHS.builder || pathname.startsWith(`${PATHS.builder}/`)
+<<<<<<< HEAD
     );
   }
   if (href === PATHS.adminShop) {
     return (
       pathname === PATHS.adminShop || pathname.startsWith(`${PATHS.adminShop}/`)
+=======
+>>>>>>> 8cd12e3fce305a2ea9189d89484cc743c52d9b61
     );
   }
   return pathname === href;
