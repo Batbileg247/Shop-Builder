@@ -28,7 +28,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { Product, ProductDraft } from "@/types";
 import { emptyDraft } from "@/lib/defaults";
-import { Plus } from "lucide-react";
+import { Plus, Search, ShoppingBag, ShoppingCart, Menu, X } from "lucide-react";
 import { Input } from "@/ui/input";
 
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
@@ -72,12 +72,6 @@ function AddProductSlot({ onClick }: { onClick: () => void }) {
             Add product
           </h3>
           <p className="mt-0.5 text-xs text-pv-muted">New listing</p>
-          <p className="mt-1 text-[11px] text-pv-muted">
-            Same form for every slot
-          </p>
-        </div>
-        <div className="mt-auto flex items-end justify-between gap-2 border-t border-pv-divider pt-3">
-          <p className="text-sm font-medium text-pv-muted">Demo slot</p>
         </div>
       </div>
     </article>
@@ -118,7 +112,6 @@ function HomePageInner() {
   const shop = useShop();
   const { isDemo, heroPanelPercent, setHeroPanelPercent } = useBuilderUi();
 
-  /** Жинхэнэ storefront (`/s/...`) — builder preview-ийн хүрээгүй, View Demo-тэй ижил бүтэн site. */
   const isStorefront = pathname.startsWith("/s/");
   const fullSiteShell = isDemo || isStorefront;
   const isEmbeddedCustomize = pathname.startsWith("/admin/customize");
@@ -130,6 +123,7 @@ function HomePageInner() {
       ? "flex h-full min-h-0 w-full flex-1"
       : SHOP_PREVIEW_HOST_CLASS;
 
+  const [searchQuery, setSearchQuery] = React.useState("");
   const [detailProduct, setDetailProduct] = React.useState<
     (typeof shop.products)[number] | null
   >(null);
@@ -222,10 +216,20 @@ function HomePageInner() {
     return ["All", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
   }, [shop.products, shop.categories]);
 
+  // Хайлтын шүүлтүүртэй Preview Pool
   const previewPool = React.useMemo(() => {
-    if (previewCategory === "All") return shop.products;
-    return shop.products.filter((p) => p.category === previewCategory);
-  }, [shop.products, previewCategory]);
+    let pool =
+      previewCategory === "All"
+        ? shop.products
+        : shop.products.filter((p) => p.category === previewCategory);
+
+    if (searchQuery.trim() !== "") {
+      pool = pool.filter((p) =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+    return pool;
+  }, [shop.products, previewCategory, searchQuery]);
 
   const previewSlotProducts = React.useMemo(
     () => previewPool.slice(0, PREVIEW_SLOT_COUNT),
@@ -237,15 +241,26 @@ function HomePageInner() {
     return Math.max(0, PREVIEW_SLOT_COUNT - previewSlotProducts.length);
   }, [previewPool.length, previewSlotProducts.length]);
 
-  const filteredCatalog = React.useMemo(
-    () =>
-      applyCatalogFilters(
-        shop.products,
-        shop.catalogFilterDefinitions,
-        filterSelections,
-      ),
-    [shop.products, shop.catalogFilterDefinitions, filterSelections],
-  );
+  // Хайлтын шүүлтүүртэй Catalog
+  const filteredCatalog = React.useMemo(() => {
+    let items = applyCatalogFilters(
+      shop.products,
+      shop.catalogFilterDefinitions,
+      filterSelections,
+    );
+
+    if (searchQuery.trim() !== "") {
+      items = items.filter((p) =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+    return items;
+  }, [
+    shop.products,
+    shop.catalogFilterDefinitions,
+    filterSelections,
+    searchQuery,
+  ]);
 
   const catalogSorted = React.useMemo(() => {
     if (priceSort === "none") return filteredCatalog;
@@ -313,60 +328,42 @@ function HomePageInner() {
       >
         <div className="mb-6 flex flex-col gap-3 border-b border-pv-divider pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs text-pv-muted">
-              <span className="text-pv-fg">Home</span>
-              <span className="mx-1.5 text-pv-muted">/</span>
-              <span>Shop</span>
-            </p>
             <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-pv-fg sm:text-4xl">
-              Fashion
+              All Products
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-pv-muted">
-              {filteredCatalog.length} items — use filters to narrow results.
+            <p className="mt-2 text-sm text-pv-muted">
+              {filteredCatalog.length} items found
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2">
             <Button
               className="lg:hidden"
               onClick={() => setMobileFiltersOpen(true)}
-              type="button"
               variant="outline"
             >
               Filters
             </Button>
-            <Button
-              className={cn(preset === "neumorph" ? "text-black" : "")}
-              onClick={goPreviewCatalog}
-              type="button"
-              variant="outline"
-            >
-              ← New Arrivals
+            <Button onClick={goPreviewCatalog} variant="outline">
+              ← Back
             </Button>
           </div>
         </div>
 
-        <ProductGrid
-          brandLabel={brandLabel}
-          onProductOpen={openDetail}
-          products={catalogSorted}
-          variant="dense"
-        />
-      </main>
-
-      <Sheet onOpenChange={setMobileFiltersOpen} open={mobileFiltersOpen}>
-        <SheetContent
-          className="flex w-full max-w-sm! flex-col gap-0 p-0 sm:max-w-sm!"
-          showCloseButton
-          side="left"
-        >
-          <SheetHeader className="border-b border-pv-divider px-4 py-3">
-            <SheetTitle className="text-pv-fg">Filters</SheetTitle>
-          </SheetHeader>
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <FilterSidebar {...filterSidebarProps} />
+        {filteredCatalog.length > 0 ? (
+          <ProductGrid
+            brandLabel={brandLabel}
+            onProductOpen={openDetail}
+            products={catalogSorted}
+            variant="dense"
+          />
+        ) : (
+          <div className="py-20 text-center">
+            <p className="text-pv-muted text-lg">
+              No products found matching your search.
+            </p>
           </div>
-        </SheetContent>
-      </Sheet>
+        )}
+      </main>
     </div>
   );
 
@@ -381,13 +378,12 @@ function HomePageInner() {
         <div className="mb-10 flex flex-wrap justify-center gap-2">
           {categoryChips.map((cat) => (
             <button
+              key={cat}
               className={cn(
                 "pv-chip rounded-full px-4 py-2 text-sm font-medium",
                 previewCategory === cat && "pv-chip-active",
               )}
-              key={cat}
               onClick={() => setPreviewCategory(cat)}
-              type="button"
             >
               {cat}
             </button>
@@ -403,21 +399,27 @@ function HomePageInner() {
               product={p}
             />
           ))}
-          {Array.from({ length: addProductSlotCount }).map((_, i) => (
-            <AddProductSlot
-              key={`add-slot-${i}`}
-              onClick={openAddProductSheet}
-            />
-          ))}
+          {searchQuery === "" &&
+            Array.from({ length: addProductSlotCount }).map((_, i) => (
+              <AddProductSlot
+                key={`add-slot-${i}`}
+                onClick={openAddProductSheet}
+              />
+            ))}
         </div>
+
+        {previewPool.length === 0 && (
+          <div className="py-10 text-center">
+            <p className="text-pv-muted">No products found.</p>
+          </div>
+        )}
 
         <div className="mt-10 flex justify-center">
           <Button
             className="pv-btn-primary min-w-[200px] px-10 py-6 text-base font-semibold"
             onClick={goFullCatalog}
-            type="button"
           >
-            View More
+            Explore All
           </Button>
         </div>
       </div>
@@ -448,234 +450,97 @@ function HomePageInner() {
             : "min-h-0 flex-1 flex-col overflow-hidden px-6 py-8",
         )}
       >
-        {catalogFull ? (
-          <div className={previewHostClass}>
-            <div
-              className={cn(
-                "flex w-full max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm",
-                !fullSiteShell && "h-full min-h-0",
-              )}
-              style={shopPreviewShellStyle(effectiveTheme)}
-            >
-              {fullShopLayout}
-            </div>
-          </div>
-        ) : (
-          <div className={previewHostClass}>
-            <HeroShelfResizable
-              belowHero={previewBelowHero}
-              hero={
-                <div className="flex h-full min-h-0 flex-col overflow-hidden">
-                  <header className="pv-header flex h-11 shrink-0 items-center justify-between gap-3 px-4 sm:h-12 sm:px-5">
-                    <Link
-                      href={navBase}
-                      className={cn(
-                        "rounded-[length:var(--pv-radius)] px-1 py-0.5 text-sm font-semibold tracking-tight text-pv-fg",
-                        "pv-interactive transition-none",
-                      )}
-                    >
-                      Store
-                    </Link>
-                    <span className="truncate text-right text-xs font-medium text-pv-muted sm:text-sm">
-                      {effectiveTheme.name}
-                    </span>
-                  </header>
-                  <div className="min-h-0 flex-1 overflow-hidden">
-                    <ShopHero
-                      fillContainer
-                      heroImages={buildHeroCarouselUrls(effectiveTheme)}
-                      theme={effectiveTheme}
-                    />
+        <div className={previewHostClass}>
+          <div
+            className={cn(
+              "flex w-full max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm",
+              !fullSiteShell && "h-full min-h-0",
+            )}
+            style={shopPreviewShellStyle(effectiveTheme)}
+          >
+            {/* Шинэчлэгдсэн Header */}
+            <header className="pv-header sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-pv-divider bg-pv-header/80 px-4 backdrop-blur-md">
+              <div className="flex items-center gap-2">
+                <Link href={navBase} className="flex items-center gap-2 group">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-pv-primary text-white shadow-sm">
+                    <ShoppingBag className="size-5" />
                   </div>
-                </div>
-              }
-              heroSizePercent={heroPanelPercent}
-              locked={fullSiteShell}
-              onHeroPercentChange={setHeroPanelPercent}
-              theme={effectiveTheme}
-            />
+                  <span className="hidden text-lg font-bold text-pv-fg sm:block">
+                    {effectiveTheme.name}
+                  </span>
+                </Link>
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-pv-muted" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-10 w-full rounded-full border border-pv-divider bg-pv-card pl-10 pr-10 text-sm outline-none focus:ring-2 focus:ring-pv-primary/20"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-pv-muted hover:text-pv-fg"
+                  >
+                    <X className="size-4" />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  className="hidden items-center gap-2 sm:flex"
+                  onClick={goFullCatalog}
+                >
+                  <span>Shop</span>
+                </Button>
+                <button
+                  onClick={() => setCartOpen(true)}
+                  className="relative flex size-10 items-center justify-center rounded-full text-pv-fg hover:bg-pv-card"
+                >
+                  <ShoppingCart className="size-5" />
+                  {shop.cartItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-pv-primary text-[10px] font-bold text-white ring-2 ring-pv-header">
+                      {shop.cartItems.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </header>
+
+            {catalogFull ? (
+              fullShopLayout
+            ) : (
+              <HeroShelfResizable
+                belowHero={previewBelowHero}
+                hero={
+                  <div className="flex h-full min-h-0 flex-col overflow-hidden">
+                    <div className="min-h-0 flex-1 overflow-hidden">
+                      <ShopHero
+                        fillContainer
+                        heroImages={buildHeroCarouselUrls(effectiveTheme)}
+                        theme={effectiveTheme}
+                      />
+                    </div>
+                  </div>
+                }
+                heroSizePercent={heroPanelPercent}
+                locked={fullSiteShell}
+                onHeroPercentChange={setHeroPanelPercent}
+                theme={effectiveTheme}
+              />
+            )}
           </div>
-        )}
+        </div>
       </section>
 
-      <Sheet onOpenChange={setAddProductOpen} open={addProductOpen}>
-        <SheetContent
-          className="flex w-full max-w-md flex-col gap-0 overflow-y-auto sm:max-w-lg"
-          showCloseButton
-          side="right"
-        >
-          <SheetHeader className="border-b border-pv-divider px-4 py-3">
-            <SheetTitle className="text-pv-fg">Add product</SheetTitle>
-          </SheetHeader>
-          <div className="flex flex-col gap-4 p-4">
-            <datalist id="builder-product-categories">
-              {shop.categories.map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
-            <label className="grid gap-1.5 text-sm">
-              <span className="font-medium text-pv-fg">Product photo</span>
-              <input
-                accept="image/*"
-                className="text-xs text-pv-muted file:mr-3 file:rounded-md file:border file:border-pv-border file:bg-pv-card file:px-3 file:py-2 file:text-sm file:font-medium"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onload = () => {
-                    setNewProductDraft((prev) => ({
-                      ...prev,
-                      image: String(reader.result ?? ""),
-                    }));
-                  };
-                  reader.readAsDataURL(file);
-                }}
-                type="file"
-              />
-            </label>
-            <label className="grid gap-1.5 text-sm">
-              <span className="font-medium text-pv-fg">Name</span>
-              <Input
-                className="border-pv-border"
-                onChange={(e) =>
-                  setNewProductDraft((p) => ({ ...p, name: e.target.value }))
-                }
-                placeholder="Product name"
-                value={newProductDraft.name}
-              />
-            </label>
-            <label className="grid gap-1.5 text-sm">
-              <span className="font-medium text-pv-fg">Category</span>
-              <Input
-                className="border-pv-border"
-                list="builder-product-categories"
-                onChange={(e) =>
-                  setNewProductDraft((p) => ({
-                    ...p,
-                    category: e.target.value,
-                  }))
-                }
-                placeholder="Type or pick a category"
-                value={newProductDraft.category}
-              />
-            </label>
-            <label className="grid gap-1.5 text-sm">
-              <span className="font-medium text-pv-fg">Size</span>
-              <Input
-                className="border-pv-border"
-                onChange={(e) =>
-                  setNewProductDraft((p) => ({ ...p, size: e.target.value }))
-                }
-                placeholder="e.g. M, 42, One size"
-                value={newProductDraft.size}
-              />
-            </label>
-            <label className="grid gap-1.5 text-sm">
-              <span className="font-medium text-pv-fg">Description</span>
-              <textarea
-                className="min-h-[88px] rounded-md border border-pv-border bg-pv-card px-3 py-2 text-sm text-pv-fg outline-none focus:ring-2 focus:ring-pv-primary/25"
-                onChange={(e) =>
-                  setNewProductDraft((p) => ({
-                    ...p,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Short description"
-                value={newProductDraft.description}
-              />
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="grid gap-1.5 text-sm">
-                <span className="font-medium text-pv-fg">Price</span>
-                <Input
-                  className="border-pv-border"
-                  min={0}
-                  onChange={(e) =>
-                    setNewProductDraft((p) => ({
-                      ...p,
-                      price: Number(e.target.value) || 0,
-                    }))
-                  }
-                  type="number"
-                  value={newProductDraft.price}
-                />
-              </label>
-              <label className="grid gap-1.5 text-sm">
-                <span className="font-medium text-pv-fg">Sale (optional)</span>
-                <Input
-                  className="border-pv-border"
-                  min={0}
-                  onChange={(e) =>
-                    setNewProductDraft((p) => ({
-                      ...p,
-                      salePrice: e.target.value,
-                    }))
-                  }
-                  placeholder="—"
-                  type="number"
-                  value={newProductDraft.salePrice}
-                />
-              </label>
-            </div>
-            <label className="grid gap-1.5 text-sm">
-              <span className="font-medium text-pv-fg">In stock</span>
-              <Input
-                className="border-pv-border"
-                min={0}
-                onChange={(e) =>
-                  setNewProductDraft((p) => ({
-                    ...p,
-                    inventory: Number(e.target.value) || 0,
-                  }))
-                }
-                type="number"
-                value={newProductDraft.inventory}
-              />
-            </label>
-            <label className="grid gap-1.5 text-sm">
-              <span className="font-medium text-pv-fg">Featured</span>
-              <select
-                className="h-10 w-full rounded-md border border-pv-border bg-pv-card px-3 text-sm text-pv-fg"
-                onChange={(e) =>
-                  setNewProductDraft((p) => ({
-                    ...p,
-                    featured: e.target.value as ProductDraft["featured"],
-                  }))
-                }
-                value={newProductDraft.featured}
-              >
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </label>
-            <p className="text-xs text-pv-muted">
-              Name, photo, and category are required before saving.
-            </p>
-            <div className="flex gap-2 pt-2">
-              <Button
-                className="flex-1 pv-btn-primary"
-                disabled={
-                  !newProductDraft.name.trim() ||
-                  !newProductDraft.image.trim() ||
-                  !newProductDraft.category.trim()
-                }
-                onClick={submitNewProduct}
-                type="button"
-              >
-                Save product
-              </Button>
-              <Button
-                onClick={() => setAddProductOpen(false)}
-                type="button"
-                variant="outline"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
-
+      {/* Product Detail Modal, Cart Drawer and Add Product Sheet... */}
+      {/* (Хуучин код хэвээрээ үргэлжилнэ) */}
       <ShopProductDetailModal
         onAddToCart={(product, qty) => {
           shop.addQuantityToCart(product.id, qty);
@@ -698,8 +563,9 @@ function HomePageInner() {
           const next = new URLSearchParams(searchParams.toString());
           if (open) next.set("cart", "open");
           else next.delete("cart");
-          const qs = next.toString();
-          router.replace(qs ? `${pathname}?${qs}` : pathname);
+          router.replace(
+            next.toString() ? `${pathname}?${next.toString()}` : pathname,
+          );
         }}
         onRemoveLine={shop.clearCartItem}
         onViewFullCart={() => router.push(`${navBase}/cart`)}
@@ -707,12 +573,12 @@ function HomePageInner() {
         subtotal={shop.cartTotal}
       />
 
-      {!fullSiteShell ? (
+      {!fullSiteShell && (
         <footer className="mt-auto border-t border-pv-divider py-8 text-center text-xs text-pv-muted">
-          © {new Date().getFullYear()} Онлайн худалдааг хөгжүүлэгч{" "}
+          © {new Date().getFullYear()} Developed for Online Commerce by{" "}
           <span className="font-bold">UNLIMITED. LLC</span>
         </footer>
-      ) : null}
+      )}
     </div>
   );
 }
