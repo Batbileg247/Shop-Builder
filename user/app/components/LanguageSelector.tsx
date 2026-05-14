@@ -64,45 +64,9 @@ export default function TranslateWidget() {
       document.head.appendChild(style);
     }
 
-    // 3. MutationObserver — hover highlight DOM-оос хүчээр арилгана
-    const observer = new MutationObserver(() => {
-      // class-аар нэмэгддэг highlight
-      document
-        .querySelectorAll<HTMLElement>(".goog-text-highlight")
-        .forEach((el) => {
-          el.style.cssText = "";
-          el.classList.remove("goog-text-highlight");
-        });
-
-      // inline style-аар нэмэгддэг цагаан background
-      document
-        .querySelectorAll<HTMLElement>("[style*='background']")
-        .forEach((el) => {
-          const bg = el.style.backgroundColor;
-          if (
-            bg === "rgb(255, 255, 255)" ||
-            bg === "white" ||
-            bg === "#fff" ||
-            bg === "rgba(255, 255, 255, 1)"
-          ) {
-            el.style.backgroundColor = "";
-            el.style.boxShadow = "";
-          }
-        });
-
-      // body top арилгах
-      if (document.body.style.top && document.body.style.top !== "0px") {
-        document.body.style.top = "";
-      }
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      subtree: true,
-      attributeFilter: ["class", "style"],
-    });
-
-    return () => observer.disconnect();
+    // Avoid a body-wide MutationObserver on class/style: it runs on every React
+    // paint and mutating those nodes causes "removeChild: node is not a child"
+    // reconciliation errors. UI cleanup is handled by #gt-override CSS above.
   }, []);
 
   // Гадна дарахад хаах

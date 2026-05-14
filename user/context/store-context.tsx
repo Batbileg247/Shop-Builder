@@ -8,7 +8,7 @@ export type StoreState = {
   currentTheme: ThemeId;
   heroTitle: string;
   heroImage: string;
-  /** Дэлгүүрийн route base path (builder дээр `/builder`, public дээр `/s/:slug`) */
+  /** Дэлгүүрийн route base path (theme studio дээр preview base, public дээр `/s/:slug`) */
   basePath: string;
   /** true бол `data-theme`-ийн `--pv-radius` ашиглана (inline override байхгүй) */
   cardRadiusFollowsTheme: boolean;
@@ -51,7 +51,7 @@ const defaultCardRadiusPx = 16;
 const defaultCardContentPaddingRem = 1;
 const defaultProductGridGapRem = 1;
 const defaultStoreName = "My Store";
-const defaultBasePath = "/builder";
+const defaultBasePath = "/admin/customize";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [currentTheme, setCurrentTheme] = React.useState<ThemeId>("minimal");

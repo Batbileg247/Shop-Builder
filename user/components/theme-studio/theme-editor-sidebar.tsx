@@ -1,12 +1,12 @@
-"use client";
-
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Box, Layers, Sparkles } from "lucide-react";
 
 import { useShop } from "@/app/hooks/useShop";
 import { getAuthSession } from "@/lib/auth-session";
 import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
+import { buildHeroCarouselUrls } from "@/lib/shop-theme";
 import { useThemeStore, type ThemePresetId } from "@/stores/useThemeStore";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -41,6 +41,9 @@ export function ThemeEditorSidebar() {
   const setHeroTitle = useThemeStore((s) => s.setHeroTitle);
   const heroImage = useThemeStore((s) => s.heroImage);
   const setHeroImage = useThemeStore((s) => s.setHeroImage);
+  const heroGallery = useThemeStore((s) => s.heroGallery);
+  const addHeroGalleryImage = useThemeStore((s) => s.addHeroGalleryImage);
+  const removeHeroGalleryAt = useThemeStore((s) => s.removeHeroGalleryAt);
   const shopName = useThemeStore((s) => s.shopName);
   const setShopName = useThemeStore((s) => s.setShopName);
   const heroAnnouncement = useThemeStore((s) => s.heroAnnouncement);
@@ -61,6 +64,11 @@ export function ThemeEditorSidebar() {
 
   const shop = useShop();
   const cartCount = shop.cartItems.reduce((s, i) => s + i.quantity, 0);
+
+  const heroSlideCount = React.useMemo(
+    () => buildHeroCarouselUrls({ heroImage, heroGallery }).length,
+    [heroImage, heroGallery],
+  );
 
   const [ownerId, setOwnerId] = React.useState("");
   const [storeName, setStoreName] = React.useState("My Store");
@@ -90,6 +98,15 @@ export function ThemeEditorSidebar() {
       return;
     }
 
+    const slides = buildHeroCarouselUrls({ heroImage, heroGallery }).length;
+    if (slides < 3) {
+      setPublishError(
+        "Hero зураг дор хаяж 3 шаардлагатай (primary + gallery нийлбэрээр).",
+      );
+      setPublishStatus("error");
+      return;
+    }
+
     setPublishError(null);
     setPublishStatus("creating");
 
@@ -108,6 +125,7 @@ export function ThemeEditorSidebar() {
             builderTheme: preset,
             heroTitle,
             heroImage,
+            heroGallery,
             shopName,
             heroAnnouncement,
             primaryColor,
@@ -231,9 +249,82 @@ export function ThemeEditorSidebar() {
                   id="hero-image"
                   value={heroImage}
                   onChange={(e) => setHeroImage(e.target.value)}
-                  placeholder="/background1.png or https://…"
+                  placeholder="Optional: https://… or /path or leave empty if uploading"
                   className={cn(inputClass, "font-mono text-xs")}
                 />
+              </div>
+              <div className="space-y-1.5">
+                <span className={fieldLabelClass}>Primary hero upload</span>
+                <input
+                  accept="image/*"
+                  className="block w-full text-xs text-zinc-600 file:mr-3 file:rounded-lg file:border file:border-zinc-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = "";
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () =>
+                      setHeroImage(String(reader.result ?? ""));
+                    reader.readAsDataURL(file);
+                  }}
+                  type="file"
+                />
+              </div>
+              <div className="space-y-2">
+                <span className={fieldLabelClass}>Hero gallery (extra slides)</span>
+                <div className="flex flex-wrap gap-2">
+                  {heroGallery.map((url, index) => (
+                    <div
+                      className="relative size-14 overflow-hidden rounded-lg border border-zinc-200 bg-white"
+                      key={`${url.slice(0, 48)}-${index}`}
+                    >
+                      <Image
+                        alt=""
+                        className="object-cover"
+                        fill
+                        sizes="56px"
+                        src={url}
+                        unoptimized
+                      />
+                      <button
+                        className="absolute inset-0 flex items-center justify-center bg-black/50 text-[10px] font-bold text-white opacity-0 transition hover:opacity-100"
+                        onClick={() => removeHeroGalleryAt(index)}
+                        type="button"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <input
+                  accept="image/*"
+                  className="block w-full text-xs text-zinc-600 file:mr-3 file:rounded-lg file:border file:border-zinc-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = "";
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () =>
+                      addHeroGalleryImage(String(reader.result ?? ""));
+                    reader.readAsDataURL(file);
+                  }}
+                  type="file"
+                />
+              </div>
+              <div className="rounded-xl border border-zinc-200 bg-white px-3 py-2.5">
+                <p className="text-xs font-semibold text-zinc-800">
+                  Hero slides: {heroSlideCount} / 3 minimum
+                </p>
+                {heroSlideCount < 3 ? (
+                  <p className="mt-1 text-xs font-medium text-amber-800">
+                    Primary + gallery together must reach three distinct images
+                    for the storefront demo and publishing.
+                  </p>
+                ) : (
+                  <p className="mt-1 text-xs font-medium text-emerald-700">
+                    Ready: carousel has enough slides.
+                  </p>
+                )}
               </div>
             </div>
           </section>

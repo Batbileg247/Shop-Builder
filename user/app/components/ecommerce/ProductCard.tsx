@@ -48,7 +48,7 @@ export function ProductCard({
       role="button"
       tabIndex={soldOut ? -1 : 0}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-pv-placeholder">
+      <div className="relative aspect-3/4 overflow-hidden bg-pv-placeholder">
         <Image
           alt={product.name}
           className="object-cover transition duration-500 group-hover:scale-[1.02]"
@@ -65,13 +65,18 @@ export function ProductCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-[length:var(--pv-card-content-pad,1rem)]">
+      <div className="flex flex-1 flex-col gap-2 p-(--pv-card-content-pad,1rem)">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="font-inter text-xl font-semibold leading-snug text-pv-fg">
               {product.name}
             </h3>
             <p className="mt-0.5 text-xs text-pv-muted">{brandLabel}</p>
+            {product.size.trim() ? (
+              <p className="mt-0.5 text-xs text-pv-muted">
+                Size {product.size}
+              </p>
+            ) : null}
             <p className="mt-1 text-[11px] text-pv-muted">
               ({reviewLabel}) Customer Reviews
             </p>

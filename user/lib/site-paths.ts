@@ -18,8 +18,8 @@ export const PATHS = {
   // User account
   user: "/user",
 
-  // Store builder (theme studio)
-  builder: "/builder",
+  // Theme studio / storefront preview (embedded on Customize)
+  builder: "/admin/customize",
 
   // Live storefront helpers
   storefront: (slug: string) => `/s/${slug}` as const,
@@ -30,8 +30,8 @@ export const PATHS = {
   storefrontCheckout: (slug: string) => `/s/${slug}/checkout` as const,
 } as const;
 
-/** @deprecated Use PATHS.builder instead. Kept for backward-compat. */
-export const BUILDER_PREVIEW_BASE = PATHS.builder;
+/** Nav base for theme preview links (same route as customize). */
+export const BUILDER_PREVIEW_BASE = PATHS.adminCustomize;
 
 /** Where to send a user after successful login / signup. */
 export const DEFAULT_AFTER_LOGIN = PATHS.adminOverview;
@@ -41,11 +41,11 @@ export const LOGIN_PAGE = PATHS.signIn;
 
 /**
  * Returns the nav base prefix for storefront links.
- * Inside the builder preview (/builder/*) links stay under /builder.
- * Inside the live storefront (/s/:slug/*) links use /s/:slug.
+ * On customize preview, links stay under `/admin/customize`.
+ * On `/s/:slug/*`, links use `/s/:slug`.
  */
 export function storefrontNavBase(pathname: string | null): string {
-  if (!pathname) return PATHS.builder;
+  if (!pathname) return PATHS.adminCustomize;
   const m = pathname.match(/^\/s\/([^/]+)/);
-  return m ? `/s/${m[1]}` : PATHS.builder;
+  return m ? `/s/${m[1]}` : PATHS.adminCustomize;
 }

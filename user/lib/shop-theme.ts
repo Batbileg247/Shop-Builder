@@ -1,8 +1,10 @@
 import type { CSSProperties } from "react";
 import type { ShopTheme } from "@/types";
 
-/** Hero carousel: primary image plus admin-configured gallery only (no product photos). */
-export function buildHeroCarouselUrls(theme: ShopTheme): string[] {
+/** Distinct hero slide URLs (primary + gallery only). */
+export function buildHeroCarouselUrls(
+  theme: Pick<ShopTheme, "heroImage" | "heroGallery">,
+): string[] {
   const primary = theme.heroImage?.trim();
   const extras = (theme.heroGallery ?? [])
     .map((s) => String(s).trim())

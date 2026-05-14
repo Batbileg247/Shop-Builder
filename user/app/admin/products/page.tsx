@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useDashboard } from "@/context/DashboardContext";
 import type { NewProductInput, Product, ProductStatus } from "@/types/dashboard";
+import { safeImage } from "@/lib/utils";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -23,6 +24,8 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 const defaultProductForm: NewProductInput = {
   name: "",
   sku: "",
+  category: "",
+  size: "",
   description: "",
   imageUrl: "",
   status: "Live",
@@ -51,14 +54,20 @@ function ProductModal({
   onSubmit,
   brandColor,
   product,
+  categories,
+  addCategory,
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (product: NewProductInput) => void;
   brandColor: string;
   product?: Product | null;
+  categories: string[];
+  addCategory: (name: string) => void;
 }) {
   const [form, setForm] = React.useState<NewProductInput>(defaultProductForm);
+  const [newCategoryName, setNewCategoryName] = React.useState("");
+  const [formError, setFormError] = React.useState<string | null>(null);
   const isEditing = Boolean(product);
 
   React.useEffect(() => {
@@ -71,6 +80,8 @@ function ProductModal({
       setForm({
         name: product.name,
         sku: product.sku,
+        category: product.category,
+        size: product.size,
         description: product.description,
         imageUrl: product.imageUrl,
         status: product.status,
@@ -117,6 +128,11 @@ function ProductModal({
           className="space-y-5 px-7 pb-7"
           onSubmit={(event) => {
             event.preventDefault();
+            setFormError(null);
+            if (!isEditing && !form.imageUrl.trim()) {
+              setFormError("Add a product photo (upload or image URL).");
+              return;
+            }
             onSubmit(form);
             onClose();
           }}
@@ -134,12 +150,63 @@ function ProductModal({
             <label className="space-y-2 text-sm font-bold text-slate-500">
               SKU
               <input
-                required
                 value={form.sku}
                 onChange={(event) => updateField("sku", event.target.value)}
+                placeholder="Auto-generated if left blank"
                 className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-slate-200 focus:bg-white focus:ring-4 focus:ring-slate-100"
               />
             </label>
+          </div>
+
+          <datalist id="admin-product-categories">
+            {categories.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="space-y-2 text-sm font-bold text-slate-500">
+              Category
+              <input
+                required
+                list="admin-product-categories"
+                value={form.category}
+                onChange={(event) => updateField("category", event.target.value)}
+                placeholder="Select or type a category"
+                className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-slate-200 focus:bg-white focus:ring-4 focus:ring-slate-100"
+              />
+            </label>
+            <label className="space-y-2 text-sm font-bold text-slate-500">
+              Size
+              <input
+                value={form.size}
+                onChange={(event) => updateField("size", event.target.value)}
+                placeholder="e.g. M, 42, One size"
+                className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-slate-200 focus:bg-white focus:ring-4 focus:ring-slate-100"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-wrap items-end gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
+            <label className="min-w-[200px] flex-1 space-y-1 text-xs font-bold text-slate-500">
+              New category name
+              <input
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="Add to list for later products"
+                className="h-10 w-full rounded-xl border border-slate-100 bg-white px-3 text-sm font-semibold text-slate-900 outline-none"
+              />
+            </label>
+            <button
+              type="button"
+              className="h-10 shrink-0 rounded-xl bg-slate-900 px-4 text-xs font-black text-white"
+              onClick={() => {
+                addCategory(newCategoryName);
+                setNewCategoryName("");
+              }}
+            >
+              Add category
+            </button>
           </div>
 
           <label className="space-y-2 text-sm font-bold text-slate-500">
@@ -197,14 +264,36 @@ function ProductModal({
           </div>
 
           <label className="space-y-2 text-sm font-bold text-slate-500">
-            Image URL
+            Product photo
+            <input
+              accept="image/*"
+              type="file"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () =>
+                  updateField("imageUrl", String(reader.result ?? ""));
+                reader.readAsDataURL(file);
+              }}
+              className="block w-full text-xs font-semibold text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-xs file:font-black file:text-white"
+            />
+          </label>
+
+          <label className="space-y-2 text-sm font-bold text-slate-500">
+            Image URL (optional if uploaded)
             <input
               value={form.imageUrl}
               onChange={(event) => updateField("imageUrl", event.target.value)}
-              placeholder="Optional Unsplash or product image URL"
+              placeholder="https://… or data URL"
               className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-slate-200 focus:bg-white focus:ring-4 focus:ring-slate-100"
             />
           </label>
+
+          {formError ? (
+            <p className="text-sm font-semibold text-rose-600">{formError}</p>
+          ) : null}
 
           <div className="flex justify-end gap-3 pt-2">
             <button
@@ -235,7 +324,7 @@ function ProductThumbnail({ product }: { product: Product }) {
   return (
     <div className="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100">
       <img
-        src={product.imageUrl}
+        src={safeImage(product.imageUrl)}
         alt={product.name}
         className="h-full w-full object-cover"
       />
@@ -244,8 +333,16 @@ function ProductThumbnail({ product }: { product: Product }) {
 }
 
 export default function ProductsPage() {
-  const { activeShop, products, addProduct, updateProduct, deleteProduct } =
-    useDashboard();
+  const {
+    activeShop,
+    products,
+    categories,
+    addCategory,
+    removeCategory,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+  } = useDashboard();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editingProduct, setEditingProduct] = React.useState<Product | null>(
     null,
@@ -286,7 +383,8 @@ export default function ProductsPage() {
     return products.filter(
       (product) =>
         product.name.toLowerCase().includes(normalizedSearch) ||
-        product.sku.toLowerCase().includes(normalizedSearch),
+        product.sku.toLowerCase().includes(normalizedSearch) ||
+        product.category.toLowerCase().includes(normalizedSearch),
     );
   }, [products, search]);
 
@@ -330,6 +428,45 @@ export default function ProductsPage() {
             </div>
           </div>
         </header>
+
+        <section className="rounded-[2rem] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.07)] sm:p-7">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-bold text-slate-400">Categories</p>
+              <h2 className="mt-1 text-xl font-black text-slate-950">
+                Manual list for this shop
+              </h2>
+              <p className="mt-1 text-xs font-medium text-slate-400">
+                Used in product pickers. Removing a category does not delete
+                products.
+              </p>
+            </div>
+          </div>
+          {categories.length === 0 ? (
+            <p className="mt-4 text-sm font-semibold text-slate-400">
+              No categories yet — add one below or when creating a product.
+            </p>
+          ) : (
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {categories.map((c) => (
+                <li
+                  key={c}
+                  className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700"
+                >
+                  {c}
+                  <button
+                    type="button"
+                    className="text-slate-400 hover:text-rose-600"
+                    aria-label={`Remove category ${c}`}
+                    onClick={() => removeCategory(c)}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
         <section className="rounded-[2rem] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.07)] sm:p-7">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -378,7 +515,8 @@ export default function ProductsPage() {
                             {product.name}
                           </p>
                           <p className="mt-1 text-xs font-bold text-slate-400">
-                            {product.sku}
+                            {product.sku} · {product.category}
+                            {product.size ? ` · ${product.size}` : ""}
                           </p>
                         </div>
                       </div>
@@ -423,7 +561,9 @@ export default function ProductsPage() {
             {filteredProducts.length === 0 ? (
               <div className="rounded-[1.5rem] bg-slate-50 px-6 py-12 text-center">
                 <p className="text-sm font-bold text-slate-400">
-                  No products match this search.
+                  {!search.trim() && products.length === 0
+                    ? "No products yet. Add your first product above."
+                    : "No products match this search."}
                 </p>
               </div>
             ) : null}
@@ -438,6 +578,8 @@ export default function ProductsPage() {
         onSubmit={saveProduct}
         brandColor={activeShop.brandColor}
         product={editingProduct}
+        categories={categories}
+        addCategory={addCategory}
       />
     </>
   );

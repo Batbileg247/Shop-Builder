@@ -22,6 +22,8 @@ export type Product = {
   id: string;
   name: string;
   category: string;
+  /** Display / variant size (e.g. apparel); persisted for future DB sync. */
+  size: string;
   description: string;
   price: number;
   salePrice?: number;
