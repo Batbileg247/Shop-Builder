@@ -8,7 +8,6 @@ import { useStore } from "@/context/store-context";
 import { useStorefrontProducts } from "@/lib/use-storefront-products";
 
 import { ProductCard } from "./product-card";
-import { SiteHeader } from "./site-header";
 
 function parsePrice(v: string): number | null {
   const t = v.trim();
@@ -43,8 +42,6 @@ export function ShopPage() {
 
   return (
     <div className="pv-storefront">
-      <SiteHeader />
-
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-6 py-10 lg:flex-row lg:gap-10">
         <aside className="pv-card w-full shrink-0 p-[length:var(--pv-card-content-pad,1rem)] lg:w-56">
           <h2 className="border-b border-pv-divider pb-3 text-sm font-semibold uppercase tracking-wide text-pv-fg">

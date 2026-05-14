@@ -14,8 +14,6 @@ import { useStorefrontProducts } from "@/lib/use-storefront-products";
 import { useCartStore } from "@/stores/cart-store";
 import { cn } from "@/lib/utils";
 
-import { SiteHeader } from "./site-header";
-
 export function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -41,7 +39,6 @@ export function ProductDetailPage() {
   if (!product) {
     return (
       <div className="pv-storefront">
-        <SiteHeader />
         <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-16">
           <p className="text-sm text-pv-muted">Бараа олдсонгүй.</p>
           <Link
@@ -72,8 +69,6 @@ export function ProductDetailPage() {
 
   return (
     <div className="pv-storefront">
-      <SiteHeader />
-
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8 sm:py-10">
         <nav className="mb-8 text-xs text-pv-muted">
           <Link

@@ -11,8 +11,6 @@ import {
 } from "@/stores/cart-store";
 import { cn } from "@/lib/utils";
 
-import { SiteHeader } from "./site-header";
-
 export function SiteCartPage() {
   const router = useRouter();
   const { basePath } = useStore();
@@ -30,7 +28,6 @@ export function SiteCartPage() {
 
   return (
     <div className="pv-storefront">
-      <SiteHeader />
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-6 py-10 sm:py-12">
         <div className="border-b border-pv-divider pb-4">
           <h1 className="text-2xl font-semibold tracking-tight text-pv-fg sm:text-3xl">

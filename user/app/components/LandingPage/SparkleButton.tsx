@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { Sparkles } from "lucide-react";
 
@@ -7,6 +7,8 @@ interface SparkleButtonProps {
   icon?: LucideIcon;
   onClick?: () => void;
   className?: string;
+  /** When set, renders as a Next.js link with the same visual style as the button. */
+  href?: string;
 }
 
 const styles = `
@@ -98,37 +100,53 @@ const styles = `
   }
 `;
 
+const sparkleSurfaceClassName =
+  "generate-btn relative flex items-center gap-2 border-none bg-transparent px-5 py-5 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-110";
+
+function SparkleInner({
+  label,
+  Icon,
+}: {
+  label: string;
+  Icon: LucideIcon;
+}) {
+  return (
+    <>
+      <div
+        className="dots-border overflow-hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-transparent rounded-full -z-10"
+        style={{ width: "calc(100% + 2px)", height: "calc(100% + 2px)" }}
+      />
+      <Icon
+        className="relative z-10 text-white"
+        size={22}
+        aria-hidden="true"
+      />
+      <span className="btn-text relative z-10 text-base">{label}</span>
+    </>
+  );
+}
+
 export default function SparkleButton({
   label = "Generate Site",
   icon: Icon = Sparkles,
   onClick,
   className = "",
+  href,
 }: SparkleButtonProps) {
+  const surface = `${sparkleSurfaceClassName} ${className}`.trim();
+
   return (
     <>
       <style>{styles}</style>
-
-      <button
-        type="button"
-        onClick={onClick}
-        className={`generate-btn relative flex items-center gap-2 cursor-pointer border-none bg-transparent px-5 py-5 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-110 ${className}`}
-      >
-        {/* Spinning border */}
-        <div
-          className="dots-border overflow-hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-transparent rounded-full -z-10"
-          style={{ width: "calc(100% + 2px)", height: "calc(100% + 2px)" }}
-        />
-
-        {/* Icon */}
-        <Icon
-          className="relative z-10 text-white"
-          size={22}
-          aria-hidden="true"
-        />
-
-        {/* Label */}
-        <span className="btn-text relative z-10 text-base">{label}</span>
-      </button>
+      {href ? (
+        <Link href={href} className={`${surface} cursor-pointer no-underline`}>
+          <SparkleInner label={label} Icon={Icon} />
+        </Link>
+      ) : (
+        <button type="button" onClick={onClick} className={`${surface} cursor-pointer`}>
+          <SparkleInner label={label} Icon={Icon} />
+        </button>
+      )}
     </>
   );
 }

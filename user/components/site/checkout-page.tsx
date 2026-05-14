@@ -4,14 +4,11 @@ import Link from "next/link";
 
 import { useStore } from "@/context/store-context";
 
-import { SiteHeader } from "./site-header";
-
 export function CheckoutPage() {
   const { basePath } = useStore();
 
   return (
     <div className="pv-storefront">
-      <SiteHeader />
       <main className="mx-auto w-full max-w-lg flex-1 px-6 py-16 text-center">
         <h1 className="border-b border-pv-divider pb-4 text-xl font-semibold tracking-tight text-pv-fg sm:text-2xl">
           Checkout
@@ -29,4 +26,3 @@ export function CheckoutPage() {
     </div>
   );
 }
-

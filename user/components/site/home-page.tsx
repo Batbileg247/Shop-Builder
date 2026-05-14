@@ -38,7 +38,6 @@ import {
   SheetTitle,
 } from "@/ui/sheet";
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
-import { SiteHeader } from "./site-header";
 import { useBuilderUi } from "@/context/builder-ui-context";
 import { isBuilderPreviewPath, storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
@@ -458,21 +457,19 @@ function HomePageInner() {
         fullSiteShell
           ? isStorefront
             ? "min-h-svh w-full"
-            : "w-full pt-16"
+            : "w-full"
           : isEmbeddedDashboardPreview
             ? "h-full min-h-0 min-w-0 flex-1"
             : "min-h-svh",
       )}
       data-theme={preset}
     >
-      {!isDemo || isStorefront ? <SiteHeader /> : null}
-
       <section
         className={cn(
           "flex w-full flex-col",
           fullSiteShell
             ? "w-full"
-            : "min-h-0 flex-1 flex-col overflow-hidden px-6 py-8",
+            : "min-h-0 flex-1 flex-col overflow-hidden",
         )}
       >
         <div className={previewHostClass}>
