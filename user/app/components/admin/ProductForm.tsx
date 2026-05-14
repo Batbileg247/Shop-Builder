@@ -147,17 +147,13 @@ export function ProductForm({
             value={draft.category}
           />
         </Field>
-        <Field label="Featured">
-          <select
+        <Field label="Size">
+          <input
             className="input"
-            onChange={(e) =>
-              update("featured", e.target.value as ProductDraft["featured"])
-            }
-            value={draft.featured}
-          >
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
+            onChange={(e) => update("size", e.target.value)}
+            placeholder="e.g. M, 42, One size"
+            value={draft.size}
+          />
         </Field>
       </div>
 
@@ -202,11 +198,24 @@ export function ProductForm({
         />
       </Field>
 
-      <Field label="Image URL (Unsplash only)">
+      <Field label="Featured">
+        <select
+          className="input"
+          onChange={(e) =>
+            update("featured", e.target.value as ProductDraft["featured"])
+          }
+          value={draft.featured}
+        >
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </Field>
+
+      <Field label="Image URL or upload path">
         <input
           className="input"
           onChange={(e) => update("image", e.target.value)}
-          placeholder="https://images.unsplash.com/..."
+          placeholder="https://… or /path or data URL"
           value={draft.image}
         />
       </Field>

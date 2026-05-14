@@ -5,9 +5,8 @@ import * as React from "react";
 import { ShopProvider } from "@/app/hooks/useShop";
 import { BuilderUiProvider } from "@/context/builder-ui-context";
 import { ensureAuthCookieFromSession } from "@/lib/auth-session";
-import { ThemeStudioLayout } from "@/components/theme-studio/theme-studio-layout";
 
-export default function BuilderLayout({
+export default function CustomizeLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -18,9 +17,7 @@ export default function BuilderLayout({
 
   return (
     <ShopProvider>
-      <BuilderUiProvider>
-        <ThemeStudioLayout>{children}</ThemeStudioLayout>
-      </BuilderUiProvider>
+      <BuilderUiProvider>{children}</BuilderUiProvider>
     </ShopProvider>
   );
 }

@@ -9,9 +9,12 @@ export type ThemeState = {
   /** Theme Studio preset (maps to `.site-preview-root[data-theme]`). */
   preset: ThemePresetId;
 
-  /** Storefront hero text + image. */
+  /** Tagline under the shop name on `ShopHero`. */
   heroTitle: string;
+  /** Primary hero slide (URL, path, or data URL). */
   heroImage: string;
+  /** Extra carousel slides (owner-provided). */
+  heroGallery: string[];
   /** Shown as large title on `ShopHero` (e.g. Nomad Goods). */
   shopName: string;
   /** Banner above the title on `ShopHero`. */
@@ -35,6 +38,9 @@ export type ThemeActions = {
   setPreset: (preset: ThemePresetId) => void;
   setHeroTitle: (value: string) => void;
   setHeroImage: (value: string) => void;
+  setHeroGallery: (urls: string[]) => void;
+  addHeroGalleryImage: (url: string) => void;
+  removeHeroGalleryAt: (index: number) => void;
   setShopName: (value: string) => void;
   setHeroAnnouncement: (value: string) => void;
   setPrimaryColor: (value: string) => void;
@@ -78,7 +84,8 @@ function presetDefaults(preset: ThemePresetId): Partial<ThemeState> {
 const defaults: ThemeState = {
   preset: "minimal",
   heroTitle: "Everyday pieces with a Mongolian point of view.",
-  heroImage: "/background1.png",
+  heroImage: "",
+  heroGallery: [],
   shopName: "Nomad Goods",
   heroAnnouncement: "Free delivery in Ulaanbaatar this week",
   primaryColor: "#0a0a0a",
@@ -90,7 +97,7 @@ const defaults: ThemeState = {
   productGridGapRem: 1,
 };
 
-const THEME_STORE_VERSION = 1;
+const THEME_STORE_VERSION = 2;
 
 function themePatchFromPersisted(value: unknown): Partial<ThemeState> {
   if (!value || typeof value !== "object") return {};
@@ -108,6 +115,11 @@ function themePatchFromPersisted(value: unknown): Partial<ThemeState> {
 
   if (typeof source.heroTitle === "string") patch.heroTitle = source.heroTitle;
   if (typeof source.heroImage === "string") patch.heroImage = source.heroImage;
+  if (Array.isArray(source.heroGallery)) {
+    patch.heroGallery = source.heroGallery.filter(
+      (u): u is string => typeof u === "string",
+    );
+  }
   if (typeof source.shopName === "string") patch.shopName = source.shopName;
   if (typeof source.heroAnnouncement === "string") {
     patch.heroAnnouncement = source.heroAnnouncement;
@@ -149,6 +161,15 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
         })),
       setHeroTitle: (heroTitle) => set({ heroTitle }),
       setHeroImage: (heroImage) => set({ heroImage }),
+      setHeroGallery: (heroGallery) => set({ heroGallery }),
+      addHeroGalleryImage: (url) =>
+        set((s) => ({
+          heroGallery: url.trim() ? [...s.heroGallery, url.trim()] : s.heroGallery,
+        })),
+      removeHeroGalleryAt: (index) =>
+        set((s) => ({
+          heroGallery: s.heroGallery.filter((_, i) => i !== index),
+        })),
       setShopName: (shopName) => set({ shopName }),
       setHeroAnnouncement: (heroAnnouncement) => set({ heroAnnouncement }),
       setPrimaryColor: (primaryColor) => set({ primaryColor }),
@@ -176,6 +197,7 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
         preset: s.preset,
         heroTitle: s.heroTitle,
         heroImage: s.heroImage,
+        heroGallery: s.heroGallery,
         shopName: s.shopName,
         heroAnnouncement: s.heroAnnouncement,
         primaryColor: s.primaryColor,

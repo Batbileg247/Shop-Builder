@@ -11,6 +11,8 @@ const DEFAULT_MERCHANT_API =
 
 const nextConfig: NextConfig = {
   images: {
+    // Owner-provided product/hero URLs may be any HTTPS host, data URLs, or blobs.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

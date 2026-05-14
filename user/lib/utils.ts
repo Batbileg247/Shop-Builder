@@ -4,11 +4,29 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export const IMAGE_FALLBACK =
-  "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=80";
+/** Neutral placeholder for missing product/hero images (local asset, not stock photography). */
+export const IMAGE_PLACEHOLDER = "/file.svg";
 
+/** @deprecated Use IMAGE_PLACEHOLDER; kept for any legacy imports. */
+export const IMAGE_FALLBACK = IMAGE_PLACEHOLDER;
+
+/**
+ * Returns a usable image URL for Next/Image and <img>.
+ * Allows owner uploads (`data:`, `blob:`), app-relative paths, and http(s) URLs.
+ */
 export function safeImage(url: string): string {
-  return url.startsWith("https://images.unsplash.com/") ? url : IMAGE_FALLBACK;
+  const t = (url ?? "").trim();
+  if (!t) return IMAGE_PLACEHOLDER;
+  if (
+    t.startsWith("data:") ||
+    t.startsWith("blob:") ||
+    t.startsWith("/") ||
+    t.startsWith("https://") ||
+    t.startsWith("http://")
+  ) {
+    return t;
+  }
+  return IMAGE_PLACEHOLDER;
 }
 
 export function formatMoney(value: number, currency: string): string {

@@ -9,7 +9,6 @@ import { formatStorefrontPrice } from "@/app/components/ecommerce/storefront-pri
 import { StarRating } from "@/app/components/ecommerce/StarRating";
 import { XIcon } from "lucide-react";
 
-const SIZES = ["M", "L", "XL", "XXL"] as const;
 const COLORS = [
   { id: "blue", label: "Blue", swatch: "bg-sky-300" },
   { id: "black", label: "Black", swatch: "bg-zinc-900" },
@@ -36,14 +35,12 @@ export function ProductDetail({
   onAddToCart: (product: Product, quantity: number) => void;
 }) {
   const titleId = useId();
-  const [size, setSize] = useState<(typeof SIZES)[number]>("M");
   const [colorId, setColorId] = useState<(typeof COLORS)[number]["id"]>("blue");
   const [qty, setQty] = useState(1);
   const [activeThumb, setActiveThumb] = useState(0);
 
   useEffect(() => {
     if (open && product) {
-      setSize("M");
       setColorId("blue");
       setQty(1);
       setActiveThumb(0);
@@ -76,10 +73,7 @@ export function ProductDetail({
     product.salePrice != null
       ? Math.round((1 - product.salePrice / product.price) * 100)
       : 0;
-  const thumbs = [0, 1, 2, 3, 4, 5].map((i) => ({
-    key: i,
-    src: product.image,
-  }));
+  const thumbs = [{ key: 0, src: product.image }];
 
   return (
     <div
@@ -222,24 +216,11 @@ export function ProductDetail({
             </p>
 
             <div>
-              <p className="text-sm font-medium text-pv-fg">Size: {size}</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {SIZES.map((s) => (
-                  <button
-                    className={cn(
-                      "min-w-10 rounded border px-3 py-2 text-sm font-medium transition",
-                      size === s
-                        ? "border-pv-primary bg-pv-primary text-pv-primary-fg"
-                        : "border-pv-border bg-pv-card text-pv-fg hover:bg-pv-empty",
-                    )}
-                    key={s}
-                    onClick={() => setSize(s)}
-                    type="button"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
+              {product.size.trim() ? (
+                <p className="text-sm font-medium text-pv-fg">
+                  Size: {product.size}
+                </p>
+              ) : null}
             </div>
 
             <div>

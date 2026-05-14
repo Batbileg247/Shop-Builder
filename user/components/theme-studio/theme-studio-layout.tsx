@@ -6,14 +6,24 @@ import { useBuilderUi } from "@/context/builder-ui-context";
 import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { cn } from "@/lib/utils";
-import { Button } from "@/ui/button";
-import { PanelLeftClose, Space } from "lucide-react";
+import { PanelLeftClose } from "lucide-react";
 
 import { ThemeEditorSidebar } from "./theme-editor-sidebar";
 import SparkleButton from "@/app/components/LandingPage/SparkleButton";
 
-/** Theme Studio shell for `/builder` routes. */
-export function ThemeStudioLayout({ children }: { children: React.ReactNode }) {
+export type ThemeStudioLayoutVariant = "fullscreen" | "embedded";
+
+type ThemeStudioLayoutProps = {
+  children: React.ReactNode;
+  /** `embedded` = inside admin `/admin/customize` (no fixed viewport chrome). */
+  variant?: ThemeStudioLayoutVariant;
+};
+
+/** Theme Studio shell: fullscreen (legacy full-viewport) or embedded in admin main. */
+export function ThemeStudioLayout({
+  children,
+  variant = "fullscreen",
+}: ThemeStudioLayoutProps) {
   const { isDemo, setIsDemo } = useBuilderUi();
   const preset = useThemeStore((s) => s.preset);
   const radius = useThemeStore((s) => s.radius);
@@ -55,7 +65,10 @@ export function ThemeStudioLayout({ children }: { children: React.ReactNode }) {
     return (
       <main
         data-theme={preset}
-        className="site-preview-root relative z-50 w-full min-h-screen overflow-y-auto bg-pv-bg"
+        className={cn(
+          "site-preview-root relative z-50 w-full overflow-y-auto bg-pv-bg",
+          variant === "embedded" ? "min-h-[min(100dvh,920px)]" : "min-h-screen",
+        )}
         style={previewCssVars}
       >
         <div className="flex justify-end p-2">
@@ -64,13 +77,34 @@ export function ThemeStudioLayout({ children }: { children: React.ReactNode }) {
             icon={PanelLeftClose}
             className={cn(
               builderDemoCtaButtonClassName(),
-              "fixed right-4 top-4 z-60",
+              variant === "embedded"
+                ? "absolute right-4 top-4 z-60"
+                : "fixed right-4 top-4 z-60",
             )}
             onClick={() => setIsDemo(false)}
-          ></SparkleButton>
+          />
         </div>
         {children}
       </main>
+    );
+  }
+
+  if (variant === "embedded") {
+    return (
+      <div className="flex min-h-full w-full min-w-0 flex-1 bg-zinc-100">
+        <div className="min-h-full w-[350px] shrink-0 overflow-y-auto bg-white">
+          <ThemeEditorSidebar />
+        </div>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div
+            data-theme={preset}
+            className="site-preview-root min-h-0 flex-1 overflow-y-auto"
+            style={previewCssVars}
+          >
+            {children}
+          </div>
+        </div>
+      </div>
     );
   }
 

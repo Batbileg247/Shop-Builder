@@ -18,6 +18,8 @@ export interface Product {
   shopId: string;
   name: string;
   sku: string;
+  category: string;
+  size: string;
   description: string;
   imageUrl: string;
   status: ProductStatus;
@@ -43,7 +45,15 @@ export interface Customer {
 
 export type NewProductInput = Pick<
   Product,
-  "name" | "sku" | "description" | "imageUrl" | "status" | "price" | "inventory"
+  | "name"
+  | "sku"
+  | "category"
+  | "size"
+  | "description"
+  | "imageUrl"
+  | "status"
+  | "price"
+  | "inventory"
 >;
 
 export type ProductUpdateInput = Partial<NewProductInput>;
