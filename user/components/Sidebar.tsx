@@ -21,20 +21,12 @@ const navItems = [
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Theme studio", href: PATHS.builder, icon: Sparkles },
-  { label: "Shop", href: PATHS.adminShop, icon: Store },
 ];
 
 function navItemIsActive(pathname: string, href: string) {
   if (href === PATHS.builder) {
     return (
-      pathname === PATHS.builder ||
-      pathname.startsWith(`${PATHS.builder}/`)
-    );
-  }
-  if (href === PATHS.adminShop) {
-    return (
-      pathname === PATHS.adminShop ||
-      pathname.startsWith(`${PATHS.adminShop}/`)
+      pathname === PATHS.builder || pathname.startsWith(`${PATHS.builder}/`)
     );
   }
   return pathname === href;
@@ -47,7 +39,7 @@ export function Sidebar() {
   return (
     <>
       {/* ── Mobile bar ── */}
-      <div className="p-4 pb-0 lg:hidden">
+      <div className="w-full p-4 pb-0 lg:hidden">
         <div className="rounded-2xl border border-zinc-200 bg-white p-4">
           {/* Brand */}
           <div className="flex items-center gap-3">
@@ -114,7 +106,7 @@ export function Sidebar() {
       </div>
 
       {/* ── Desktop sidebar ── */}
-      <aside className="hidden w-[320px] shrink-0 p-6 lg:block">
+      <aside className="hidden w-fit shrink-0 p-6 lg:block">
         <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col rounded-2xl border border-zinc-200 bg-white">
           {/* Brand header */}
           <div className="border-b border-zinc-100 px-7 py-6">

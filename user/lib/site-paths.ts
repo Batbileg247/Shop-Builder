@@ -13,8 +13,6 @@ export const PATHS = {
   adminProducts: "/admin/products",
   adminCustomers: "/admin/customers",
   adminAnalytics: "/admin/analytics",
-  /** Branding / identity for the active shop (sidebar switcher). */
-  adminShop: "/admin/shop",
 
   // User account
   user: "/user",
@@ -46,12 +44,11 @@ export const LOGIN_PAGE = PATHS.signIn;
  * On `/s/:slug/*`, links use `/s/:slug`.
  * Else admin (e.g. shop settings) falls back to `PATHS.adminShop` for legacy relative paths.
  */
-export function storefrontNavBase(pathname: string | null): string {
+export function storefrontNavBase(pathname: string | null) {
   if (!pathname) return PATHS.builder;
   const m = pathname.match(/^\/s\/([^/]+)/);
   if (m) return `/s/${m[1]}`;
   if (pathname === "/builder" || pathname.startsWith("/builder/")) {
     return PATHS.builder;
   }
-  return PATHS.adminShop;
 }

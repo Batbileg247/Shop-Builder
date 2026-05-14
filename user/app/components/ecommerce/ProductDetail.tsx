@@ -6,7 +6,6 @@ import type { Product } from "@/types";
 import { cn, safeImage } from "@/lib/utils";
 import { Button } from "@/ui/button";
 import { formatStorefrontPrice } from "@/app/components/ecommerce/storefront-price";
-import { StarRating } from "@/app/components/ecommerce/StarRating";
 import { XIcon } from "lucide-react";
 
 const COLORS = [
@@ -144,7 +143,7 @@ export function ProductDetail({
 
           <div className="flex min-w-0 flex-col gap-5">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-black">
+              <p className="text-xs font-medium uppercase tracking-wider text-(--pv-text)">
                 {brandLabel}
               </p>
               <div className="mt-1 flex items-start justify-between gap-3">
@@ -154,20 +153,6 @@ export function ProductDetail({
                 >
                   {product.name}
                 </h2>
-                <button
-                  aria-label="Save to wishlist"
-                  className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border border-pv-border text-black transition hover:text-pv-fg"
-                  type="button"
-                >
-                  ☆
-                </button>
-              </div>
-              <div className="mt-2 flex items-center gap-2 text-sm">
-                <StarRating
-                  className="text-base"
-                  rating={Math.min(5, rating)}
-                />
-                <span className="text-black">({count})</span>
               </div>
             </div>
 
@@ -187,16 +172,6 @@ export function ProductDetail({
               )}
             </div>
 
-            <p className="flex items-center gap-2 text-sm text-black">
-              <span aria-hidden>👁</span>
-              24 people are viewing this right now
-            </p>
-
-            <div className="rounded-(--pv-radius) border border-red-100 bg-red-50/80 px-3 py-2 text-sm text-red-800">
-              Hurry up! Sale ends in:{" "}
-              <span className="font-mono font-semibold">00 : 05 : 59 : 47</span>
-            </div>
-
             <div>
               <p className="text-sm font-medium text-pv-fg">
                 Only {product.inventory} item(s) left in stock!
@@ -211,7 +186,7 @@ export function ProductDetail({
               </div>
             </div>
 
-            <p className="text-sm leading-relaxed text-black">
+            <p className="text-sm leading-relaxed text-(--pv-text)">
               {product.description}
             </p>
 
@@ -285,22 +260,6 @@ export function ProductDetail({
             >
               Add to cart
             </Button>
-
-            <div className="flex flex-wrap gap-4 text-sm text-black">
-              <span>Compare</span>
-              <span>Ask a question</span>
-              <span>Share</span>
-            </div>
-
-            <div className="mt-2 space-y-2 border-t border-pv-divider pt-4 text-sm text-black">
-              <p>🚚 Estimated Delivery: Jul 30 – Aug 03</p>
-              <p>📦 Free Shipping &amp; Returns on orders over $75</p>
-            </div>
-
-            <div className="rounded-(--pv-radius) bg-pv-empty px-3 py-2 text-center text-xs text-black">
-              Guarantee safe &amp; secure checkout — Visa · Mastercard · Amex ·
-              PayPal
-            </div>
           </div>
         </div>
       </div>
