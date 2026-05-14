@@ -26,14 +26,6 @@ function navItemIsActive(pathname: string, href: string) {
   if (href === PATHS.builder) {
     return (
       pathname === PATHS.builder || pathname.startsWith(`${PATHS.builder}/`)
-<<<<<<< HEAD
-    );
-  }
-  if (href === PATHS.adminShop) {
-    return (
-      pathname === PATHS.adminShop || pathname.startsWith(`${PATHS.adminShop}/`)
-=======
->>>>>>> 8cd12e3fce305a2ea9189d89484cc743c52d9b61
     );
   }
   return pathname === href;
