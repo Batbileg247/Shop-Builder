@@ -20,7 +20,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarInput,
   SidebarProvider,
   SidebarSeparator,
@@ -126,7 +125,6 @@ export function BuilderEditorSidebar() {
 
   React.useEffect(() => {
     const s = getAuthSession();
-
     if (s?.user?.id) {
       setOwnerId((prev) => (prev.trim() ? prev : s.user.id));
     }
@@ -224,9 +222,9 @@ export function BuilderEditorSidebar() {
   }
 
   const sectionLabelClass =
-    "mb-3 text-[10px] font-bold uppercase tracking-widest text-neutral-400";
+    "mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-400";
 
-  const fieldLabelClass = "text-sm font-medium text-neutral-500";
+  const fieldLabelClass = "text-sm font-medium text-zinc-500";
 
   const inputClass =
     "h-11 rounded-2xl border-slate-100 bg-slate-50 text-sm font-semibold text-slate-900 shadow-none placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-200";
@@ -259,23 +257,9 @@ export function BuilderEditorSidebar() {
     >
       <Sidebar
         collapsible="none"
-        className="h-full w-72 shrink-0 border-r border-neutral-200 bg-white text-neutral-900"
+        className="h-full w-full shrink-0 border-0 bg-white text-zinc-900"
         data-theme="minimal"
       >
-        {/* HEADER */}
-
-        <SidebarHeader className="border-b border-neutral-200 bg-white px-5 py-4">
-          <div className="flex items-center gap-3">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
-                Theme editor
-              </p>
-            </div>
-          </div>
-        </SidebarHeader>
-
-        {/* CONTENT */}
-
         <SidebarContent className="overflow-y-auto bg-white">
           {/* SITE SETTINGS */}
 
@@ -339,7 +323,7 @@ export function BuilderEditorSidebar() {
                 <input
                   accept="image/*"
                   type="file"
-                  className="block w-full text-xs text-neutral-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-neutral-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-neutral-700 file:transition file:hover:bg-neutral-50"
+                  className="block w-full text-xs text-zinc-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-zinc-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-zinc-700 file:transition file:hover:bg-zinc-50"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
 
@@ -367,7 +351,7 @@ export function BuilderEditorSidebar() {
                     {heroGallery.map((url, index) => (
                       <div
                         key={`${url.slice(0, 48)}-${index}`}
-                        className="relative size-14 overflow-hidden rounded-xl border border-neutral-200"
+                        className="relative size-14 overflow-hidden rounded-xl border border-zinc-200"
                       >
                         <Image
                           alt=""
@@ -393,7 +377,7 @@ export function BuilderEditorSidebar() {
                 <input
                   accept="image/*"
                   type="file"
-                  className="block w-full text-xs text-neutral-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-neutral-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-neutral-700 file:transition file:hover:bg-neutral-50"
+                  className="block w-full text-xs text-zinc-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-zinc-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-zinc-700 file:transition file:hover:bg-zinc-50"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
 
@@ -432,7 +416,7 @@ export function BuilderEditorSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarSeparator className="bg-neutral-100" />
+          <SidebarSeparator className="bg-zinc-100" />
 
           {/* STYLE */}
 
@@ -453,8 +437,8 @@ export function BuilderEditorSidebar() {
                     className={cn(
                       "flex h-11 w-full items-center gap-3 rounded-xl px-4 text-sm font-semibold transition",
                       active
-                        ? "bg-neutral-900 text-white"
-                        : "border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900",
+                        ? "bg-zinc-900 text-white"
+                        : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900",
                     )}
                   >
                     <span
@@ -462,7 +446,7 @@ export function BuilderEditorSidebar() {
                         "flex size-7 items-center justify-center rounded-lg",
                         active
                           ? "bg-white/15 text-white"
-                          : "bg-neutral-100 text-neutral-500",
+                          : "bg-zinc-100 text-zinc-500",
                       )}
                     >
                       <Icon className="size-4 shrink-0" aria-hidden />
@@ -475,7 +459,7 @@ export function BuilderEditorSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarSeparator className="bg-neutral-100" />
+          <SidebarSeparator className="bg-zinc-100" />
 
           {/* LAYOUT */}
 
@@ -559,12 +543,12 @@ export function BuilderEditorSidebar() {
                     <div className="flex items-center justify-between">
                       <label
                         htmlFor={id}
-                        className="text-sm font-medium text-neutral-600"
+                        className="text-sm font-medium text-zinc-600"
                       >
                         {label}
                       </label>
 
-                      <span className="text-xs font-semibold tabular-nums text-neutral-400">
+                      <span className="text-xs font-semibold tabular-nums text-zinc-400">
                         {display}
                       </span>
                     </div>
@@ -579,7 +563,7 @@ export function BuilderEditorSidebar() {
                       onChange={(e) =>
                         onChange(Number.parseFloat(e.target.value))
                       }
-                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-neutral-200 accent-neutral-900"
+                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-zinc-200 accent-zinc-900"
                     />
                   </div>
                 ),
@@ -587,7 +571,7 @@ export function BuilderEditorSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarSeparator className="bg-neutral-100" />
+          <SidebarSeparator className="bg-zinc-100" />
 
           {/* PUBLISH */}
 
@@ -597,7 +581,7 @@ export function BuilderEditorSidebar() {
             </SidebarGroupLabel>
 
             <SidebarGroupContent className="space-y-4">
-              <p className="text-xs leading-relaxed text-neutral-400">
+              <p className="text-xs leading-relaxed text-zinc-400">
                 Platform API дээр дэлгүүр үүсгээд public storefront нээнэ.
               </p>
 
@@ -641,7 +625,7 @@ export function BuilderEditorSidebar() {
                 type="button"
                 onClick={handleCreateStore}
                 disabled={publishStatus === "creating"}
-                className="h-11 w-full rounded-xl bg-neutral-900 text-sm font-bold text-white transition hover:bg-neutral-800 disabled:opacity-40"
+                className="h-11 w-full rounded-xl bg-zinc-900 text-sm font-bold text-white transition hover:bg-zinc-800 disabled:opacity-40"
               >
                 {publishStatus === "creating"
                   ? "Үүсгэж байна..."
@@ -649,12 +633,12 @@ export function BuilderEditorSidebar() {
               </button>
 
               {publishStatus === "created" && storeSlug && (
-                <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-                  <p className="text-sm font-bold text-neutral-900">
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+                  <p className="text-sm font-bold text-zinc-900">
                     Дэлгүүр үүслээ
                   </p>
 
-                  <p className="mt-1 break-all font-mono text-xs text-neutral-400">
+                  <p className="mt-1 break-all font-mono text-xs text-zinc-400">
                     slug: {storeSlug}
                   </p>
 
@@ -662,7 +646,7 @@ export function BuilderEditorSidebar() {
                     href={`/s/${encodeURIComponent(storeSlug)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-3 flex w-full items-center justify-center rounded-xl border border-neutral-900 bg-neutral-900 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-neutral-800"
+                    className="mt-3 flex w-full items-center justify-center rounded-xl border border-zinc-900 bg-zinc-900 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-zinc-800"
                   >
                     Public дэлгүүр нээх
                   </Link>
@@ -680,12 +664,12 @@ export function BuilderEditorSidebar() {
 
         {/* FOOTER */}
 
-        <SidebarFooter className="border-t border-neutral-200 bg-white px-5 py-4">
+        <SidebarFooter className="border-t border-zinc-200 bg-white px-5 py-4">
           <Button
             type="button"
             variant="outline"
             onClick={() => resetTheme()}
-            className="h-10 w-full rounded-xl border-neutral-200 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
+            className="h-10 w-full rounded-xl border-zinc-200 text-sm font-semibold text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
           >
             Reset to default
           </Button>

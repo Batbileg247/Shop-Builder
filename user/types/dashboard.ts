@@ -50,6 +50,23 @@ export interface Customer {
   updatedAt: Date;
 }
 
+/** Admin orders timeline (mock seed + future API). */
+export interface DashboardOrderLine {
+  productName: string;
+  quantity: number;
+}
+
+export interface DashboardOrder {
+  id: string;
+  shopId: string;
+  placedAt: Date;
+  customerName: string;
+  customerEmail: string;
+  lines: DashboardOrderLine[];
+  /** Final total in shop currency (same units as product prices). */
+  total: number;
+}
+
 export type NewProductInput = Pick<
   Product,
   | "name"

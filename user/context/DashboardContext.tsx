@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ThemeStoreShopPersistenceSync } from "@/context/theme-store-shop-persistence-sync";
 import type {
-  Customer,
+  DashboardOrder,
   NewProductInput,
   Product,
   ProductUpdateInput,
@@ -23,7 +23,7 @@ type DashboardContextValue = {
   activeShop: Shop;
   activeShopId: string;
   products: Product[];
-  customers: Customer[];
+  orders: DashboardOrder[];
   metrics: ShopMetrics;
   /** Owner-defined category names for the active shop (filters / pickers). */
   categories: string[];
@@ -38,7 +38,7 @@ type DashboardContextValue = {
   dataSource: DashboardDataSource;
   remoteStatus: DashboardRemoteStatus;
   remoteError: string | null;
-  /** Reload shops, products, customers, categories from the API. */
+  /** Reload shops, products, categories from the API. */
   refreshFromApi: () => Promise<void>;
 };
 
@@ -275,42 +275,60 @@ const shopCategoriesSeed: Record<string, string[]> = {
   shop_terra: ["Kitchen", "Decor"],
 };
 
-const customersSeed: Customer[] = [
+const ordersSeed: DashboardOrder[] = [
   {
-    id: "cust_luma_01",
+    id: "ord_luma_01",
     shopId: "shop_luma",
-    name: "Avery Cole",
-    email: "avery.cole@example.com",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=80",
-    totalOrders: 18,
-    lifetimeValue: 3420,
-    createdAt: now,
-    updatedAt: now,
+    placedAt: new Date("2026-05-14T14:32:00.000Z"),
+    customerName: "Avery Cole",
+    customerEmail: "avery.cole@example.com",
+    lines: [
+      { productName: "Merino wrap scarf", quantity: 2 },
+      { productName: "Studio tote", quantity: 1 },
+    ],
+    total: 128 * 2 + 72,
   },
   {
-    id: "cust_nova_01",
+    id: "ord_luma_02",
+    shopId: "shop_luma",
+    placedAt: new Date("2026-05-11T09:05:00.000Z"),
+    customerName: "Jordan Lee",
+    customerEmail: "jordan.lee@example.com",
+    lines: [{ productName: "Linen chore coat", quantity: 1 }],
+    total: 245,
+  },
+  {
+    id: "ord_nova_01",
     shopId: "shop_nova",
-    name: "Mika Tan",
-    email: "mika.tan@example.com",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=80",
-    totalOrders: 11,
-    lifetimeValue: 2810,
-    createdAt: now,
-    updatedAt: now,
+    placedAt: new Date("2026-05-13T18:20:00.000Z"),
+    customerName: "Mika Tan",
+    customerEmail: "mika.tan@example.com",
+    lines: [
+      { productName: "USB-C hub 7-in-1", quantity: 1 },
+      { productName: "Desk mat XL", quantity: 1 },
+    ],
+    total: 59 + 34,
   },
   {
-    id: "cust_terra_01",
+    id: "ord_nova_02",
+    shopId: "shop_nova",
+    placedAt: new Date("2026-05-09T11:45:00.000Z"),
+    customerName: "Sam Rivera",
+    customerEmail: "sam.rivera@example.com",
+    lines: [{ productName: "Mechanical keyboard", quantity: 1 }],
+    total: 149,
+  },
+  {
+    id: "ord_terra_01",
     shopId: "shop_terra",
-    name: "Noah Stone",
-    email: "noah.stone@example.com",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=80",
-    totalOrders: 9,
-    lifetimeValue: 1368,
-    createdAt: now,
-    updatedAt: now,
+    placedAt: new Date("2026-05-12T07:55:00.000Z"),
+    customerName: "Noah Stone",
+    customerEmail: "noah.stone@example.com",
+    lines: [
+      { productName: "Ceramic pour-over set", quantity: 2 },
+      { productName: "Linen table runner", quantity: 1 },
+    ],
+    total: 62 * 2 + 54,
   },
 ];
 
@@ -344,8 +362,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [activeShopId, setActiveShopId] =
     React.useState<string>(DEFAULT_ACTIVE_SHOP_ID);
   const [allProducts, setAllProducts] = React.useState<Product[]>(productsSeed);
-  const [allCustomers, setAllCustomers] =
-    React.useState<Customer[]>(customersSeed);
+  const [allOrders, setAllOrders] = React.useState<DashboardOrder[]>(() =>
+    isShopBuilderApiMock() ? ordersSeed : [],
+  );
   const [shopCategories, setShopCategories] = React.useState<
     Record<string, string[]>
   >(() => ({ ...shopCategoriesSeed }));
@@ -381,10 +400,12 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     [activeShop.id, allProducts],
   );
 
-  const customers = React.useMemo(
-    () => allCustomers.filter((customer) => customer.shopId === activeShop.id),
-    [activeShop.id, allCustomers],
-  );
+  const orders = React.useMemo(() => {
+    const list = allOrders.filter((order) => order.shopId === activeShop.id);
+    return [...list].sort(
+      (a, b) => b.placedAt.getTime() - a.placedAt.getTime(),
+    );
+  }, [activeShop.id, allOrders]);
 
   const metrics = React.useMemo(() => calculateMetrics(products), [products]);
 
@@ -401,7 +422,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       const bundle = await shopApi.apiLoadFullDashboard();
       setShops(bundle.shops);
       setAllProducts(bundle.allProducts);
-      setAllCustomers(bundle.allCustomers);
+      setAllOrders([]);
       setShopCategories(bundle.shopCategories);
       setActiveShopId((prev) => {
         const ids = new Set(bundle.shops.map((s) => s.id));
@@ -659,7 +680,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       activeShop,
       activeShopId,
       products,
-      customers,
+      orders,
       metrics,
       categories,
       addCategory,
@@ -679,7 +700,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       activeShop,
       activeShopId,
       products,
-      customers,
+      orders,
       metrics,
       categories,
       addCategory,

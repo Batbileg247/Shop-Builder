@@ -30,6 +30,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  if (pathname === "/admin/customers") {
+    url.pathname = PATHS.adminOrders;
+    return NextResponse.redirect(url, 308);
+  }
+
   // Legacy `/admin/customize` → shop settings
   if (pathname === "/admin/customize" || pathname.startsWith("/admin/customize/")) {
     const suffix =

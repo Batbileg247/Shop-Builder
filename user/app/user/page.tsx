@@ -70,7 +70,7 @@ export default function UserAccountPage() {
 
   if (!mounted || !session) {
     return (
-      <div className="flex min-h-svh items-center justify-center bg-slate-50 px-6 text-slate-500">
+      <div className="flex h-svh items-center justify-center bg-slate-50 px-6 text-slate-500">
         <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm">
           <span className="size-2 animate-pulse rounded-full bg-teal-500" />
           Ачааллаж байна...
@@ -104,9 +104,9 @@ export default function UserAccountPage() {
   ];
 
   return (
-    <div className="min-h-svh bg-slate-50 text-slate-950">
-      <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
-        <header className="flex flex-wrap items-center justify-between gap-3">
+    <div className="flex h-svh flex-col overflow-hidden bg-slate-50 text-slate-950">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
+        <header className="flex shrink-0 flex-wrap items-center justify-between gap-3">
           <Link
             href="/"
             className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-white hover:text-slate-950"
@@ -116,8 +116,8 @@ export default function UserAccountPage() {
           </Link>
         </header>
 
-        <main className="grid flex-1 gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]">
-          <section className="flex flex-col justify-between overflow-hidden rounded-lg bg-[linear-gradient(135deg,#0f172a_0%,#115e59_56%,#7c2d12_100%)] p-6 text-white shadow-sm sm:p-8">
+        <main className="flex min-h-0 flex-1 flex-col gap-5 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)] lg:grid-rows-[minmax(0,1fr)] lg:items-stretch">
+          <section className="flex min-h-0 flex-col justify-between overflow-y-auto rounded-lg bg-[linear-gradient(135deg,#0f172a_0%,#115e59_56%,#7c2d12_100%)] p-6 text-white shadow-sm sm:p-8 lg:min-h-0">
             <div>
               <div className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/85">
                 <BadgeCheck className="size-3.5 text-emerald-200" aria-hidden />
@@ -190,8 +190,8 @@ export default function UserAccountPage() {
             </div>
           </section>
 
-          <section className="grid gap-5">
-            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <section className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden lg:min-h-0">
+            <div className="shrink-0 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h2 className="mt-1 text-2xl font-black tracking-tight">
@@ -225,8 +225,8 @@ export default function UserAccountPage() {
               </dl>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex min-h-0 flex-1 flex-col gap-5 md:grid md:grid-cols-2 md:items-stretch md:gap-5">
+              <div className="shrink-0 rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:min-h-0">
                 <h2 className="mt-1 text-xl font-black tracking-tight">
                   Дэлгүүрээ үргэлжлүүлэх
                 </h2>
@@ -234,12 +234,12 @@ export default function UserAccountPage() {
                   3агвар, бүтээгдэхүүн, дэлгүүрийн тохиргоогоо үргэлжлүүлэн
                   засах боломжтой.
                 </p>
-                <div className="flex gap-1">
+                <div className="mt-5 flex w-full max-w-sm flex-col gap-3">
                   <Link
                     href={PATHS.builderUpdate}
                     className={cn(
                       buttonVariants({ variant: "default", size: "lg" }),
-                      "mt-5",
+                      "w-full justify-center",
                     )}
                   >
                     Shop нээх
@@ -249,7 +249,7 @@ export default function UserAccountPage() {
                     href="/admin/overview"
                     className={cn(
                       buttonVariants({ variant: "outline", size: "lg" }),
-                      "mt-5",
+                      "w-full justify-center",
                     )}
                   >
                     <LayoutDashboard className="size-4" aria-hidden />
@@ -259,50 +259,52 @@ export default function UserAccountPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="text-xl font-black tracking-tight">
+              <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:h-full md:min-h-0">
+                <h2 className="shrink-0 text-xl font-black tracking-tight">
                   Миний дэлгүүрүүд
                 </h2>
-                {shops && shops.length > 0 ? (
-                  <div className="mt-4 grid gap-4">
-                    {shops.map((shop) => (
-                      <Link
-                        key={shop.id}
-                        href={`/admin/overview?shop=${shop.id}`}
-                        className="group rounded-lg border border-slate-200 bg-slate-50 p-4 transition hover:bg-white hover:shadow-md"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-slate-200">
-                            <Image
-                              src={shop.logoUrl}
-                              alt={shop.name}
-                              width={64}
-                              height={64}
-                              className="object-cover"
-                            />
+                <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-0.5">
+                  {shops && shops.length > 0 ? (
+                    <div className="grid gap-4">
+                      {shops.map((shop) => (
+                        <Link
+                          key={shop.id}
+                          href={`/admin/overview?shop=${shop.id}`}
+                          className="group rounded-lg border border-slate-200 bg-slate-50 p-4 transition hover:bg-white hover:shadow-md"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-slate-200">
+                              <Image
+                                src={shop.logoUrl}
+                                alt={shop.name}
+                                width={64}
+                                height={64}
+                                className="object-cover"
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-bold text-slate-950 group-hover:text-slate-700">
+                                {shop.name}
+                              </h3>
+                              <p className="mt-1 text-xs text-slate-500">
+                                {shop.id}
+                              </p>
+                              <div
+                                className="mt-2 h-1.5 w-20 rounded-full"
+                                style={{ backgroundColor: shop.brandColor }}
+                              />
+                            </div>
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="font-bold text-slate-950 group-hover:text-slate-700">
-                              {shop.name}
-                            </h3>
-                            <p className="mt-1 text-xs text-slate-500">
-                              {shop.id}
-                            </p>
-                            <div
-                              className="mt-2 h-1.5 w-20 rounded-full"
-                              style={{ backgroundColor: shop.brandColor }}
-                            />
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="mt-4 text-sm text-slate-600">
-                    Та дэлгүүр үүсээгүй байна. Builder хэсэгээр шинэ дэлгүүр
-                    үүсгэнэ үү.
-                  </p>
-                )}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-600">
+                      Та дэлгүүр үүсээгүй байна. Builder хэсэгээр шинэ дэлгүүр
+                      үүсгэнэ үү.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </section>
