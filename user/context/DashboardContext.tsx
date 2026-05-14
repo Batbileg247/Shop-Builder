@@ -7,6 +7,7 @@ import {
   deleteAdminCategory,
   deleteAdminProduct,
   fetchAdminDashboard,
+  fetchAdminOrders,
   fetchAdminStores,
   patchAdminProduct,
   patchAdminStore,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/admin-api";
 import type {
   Customer,
+  DashboardOrder,
   NewProductInput,
   Product,
   ProductUpdateInput,
@@ -24,18 +26,23 @@ import type {
   ShopUpdateInput,
 } from "@/types/dashboard";
 
+export type DashboardRemoteStatus = "idle" | "loading" | "ready";
+
 type DashboardContextValue = {
   shops: Shop[];
   activeShop: Shop;
   activeShopId: string;
   products: Product[];
   customers: Customer[];
+  orders: DashboardOrder[];
   metrics: ShopMetrics;
   monthlySales: MonthlySalesPoint[];
   categories: string[];
   isLoadingStores: boolean;
   isLoadingDashboard: boolean;
   loadError: string | null;
+  /** Admin orders хуудас — `isLoadingDashboard`-тай тааруулна. */
+  remoteStatus: DashboardRemoteStatus;
   addCategory: (name: string) => Promise<void>;
   removeCategory: (name: string) => Promise<void>;
   switchShop: (shopId: string) => void;
@@ -94,6 +101,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [monthlySales, setMonthlySales] = React.useState<MonthlySalesPoint[]>(
     [],
   );
+  const [orders, setOrders] = React.useState<DashboardOrder[]>([]);
   const [isLoadingStores, setIsLoadingStores] = React.useState(true);
   const [isLoadingDashboard, setIsLoadingDashboard] = React.useState(true);
   const [loadError, setLoadError] = React.useState<string | null>(null);
@@ -117,6 +125,11 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     [products],
   );
 
+  const remoteStatus = React.useMemo<DashboardRemoteStatus>(
+    () => (isLoadingDashboard ? "loading" : "ready"),
+    [isLoadingDashboard],
+  );
+
   const refreshDashboard = React.useCallback(async () => {
     setIsLoadingDashboard(true);
     if (!effectiveShopId) {
@@ -124,6 +137,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setCustomers([]);
       setCategories([]);
       setMonthlySales([]);
+      setOrders([]);
       setIsLoadingDashboard(false);
       return;
     }
@@ -143,6 +157,14 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setCustomers(d.customers);
       setCategories(d.categories);
       setMonthlySales(d.monthlySales);
+      let nextOrders: DashboardOrder[] = [];
+      try {
+        nextOrders = await fetchAdminOrders(effectiveShopId);
+      } catch {
+        nextOrders = [];
+      }
+      if (n !== dashboardReq.current) return;
+      setOrders(nextOrders);
     } catch (e) {
       if (n !== dashboardReq.current) return;
       const msg = e instanceof Error ? e.message : String(e);
@@ -151,6 +173,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setCustomers([]);
       setCategories([]);
       setMonthlySales([]);
+      setOrders([]);
     } finally {
       if (n === dashboardReq.current) setIsLoadingDashboard(false);
     }
@@ -320,12 +343,14 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       activeShopId: effectiveShopId || activeShop.id,
       products,
       customers,
+      orders,
       metrics,
       monthlySales,
       categories,
       isLoadingStores,
       isLoadingDashboard,
       loadError,
+      remoteStatus,
       addCategory,
       removeCategory,
       switchShop,
@@ -343,12 +368,14 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       effectiveShopId,
       products,
       customers,
+      orders,
       metrics,
       monthlySales,
       categories,
       isLoadingStores,
       isLoadingDashboard,
       loadError,
+      remoteStatus,
       addCategory,
       removeCategory,
       switchShop,

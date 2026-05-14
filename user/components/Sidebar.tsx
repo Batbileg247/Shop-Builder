@@ -7,10 +7,10 @@ import { usePathname } from "next/navigation";
 import {
   BarChart3,
   ChevronDown,
+  ClipboardList,
   LayoutDashboard,
   Sparkles,
   Store,
-  Users,
 } from "lucide-react";
 import { getAuthSession, type AuthSession } from "@/lib/auth-session";
 import { useDashboard } from "@/context/DashboardContext";
@@ -19,7 +19,7 @@ import { PATHS } from "@/lib/site-paths";
 
 const navItems = [
   { label: "Overview", href: "/admin/overview", icon: LayoutDashboard },
-  { label: "Customers", href: "/admin/customers", icon: Users },
+  { label: "Orders", href: PATHS.adminOrders, icon: ClipboardList },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Theme studio", href: PATHS.builderUpdate, icon: Sparkles },
   { label: "Shop", href: PATHS.adminShop, icon: Store },

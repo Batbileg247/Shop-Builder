@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Box, Palette, Users } from "lucide-react";
+import { Home, Box, ClipboardList, Palette } from "lucide-react";
 import type { ReactNode } from "react";
 import { ShopSwitcher } from "./ShopSwitcher";
 import { useDashboard } from "@/context/DashboardContext";
@@ -9,7 +9,7 @@ const navItems = [
   { label: "Dashboard", href: "#overview", icon: Home },
   { label: "Products", href: "#products", icon: Box },
   { label: "Customization", href: "#customization", icon: Palette },
-  { label: "Customers", href: "#customers", icon: Users },
+  { label: "Orders", href: "#orders", icon: ClipboardList },
 ];
 
 export function MainLayout({ children }: { children: ReactNode }) {

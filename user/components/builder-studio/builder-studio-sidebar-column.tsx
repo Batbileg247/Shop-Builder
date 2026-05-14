@@ -5,11 +5,53 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { BuilderEditorSidebar } from "@/components/builder-studio/builder-editor-sidebar";
+import { getAuthSession, type AuthSession } from "@/lib/auth-session";
 import { PATHS } from "@/lib/site-paths";
-import { cn } from "@/lib/utils";
+
+function initialsFor(session: AuthSession) {
+  const name =
+    [session.user.lastName, session.user.firstName]
+      .filter(Boolean)
+      .join(" ")
+      .trim() || session.user.email;
+  return name
+    .split(/\s|@/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function BuilderSidebarProfileLink() {
+  const [session, setSession] = React.useState<AuthSession | null>(null);
+
+  React.useEffect(() => {
+    const s = getAuthSession();
+    if (s) setSession(s);
+  }, []);
+
+  return (
+    <Link
+      href="/user"
+      className="border-b border-zinc-100 px-7 py-6 block transition-colors hover:bg-zinc-50"
+    >
+      <div className="flex items-center gap-4">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-sm font-black tracking-tight text-zinc-900">
+          {session ? initialsFor(session) : "SB"}
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
+            Shop Builder
+          </p>
+          <h1 className="text-base font-bold text-zinc-900">Dashboard</h1>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 function backToAdminLinkClassName() {
-  return "inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950";
+  return "inline-flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-900 outline-none transition hover:bg-zinc-50 focus-visible:border-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900/10";
 }
 
 /**
@@ -17,43 +59,30 @@ function backToAdminLinkClassName() {
  * large screens, stacked card on small screens. Renders the live theme editor only.
  */
 export function BuilderStudioSidebarColumn() {
-  const [entered, setEntered] = React.useState(false);
-
-  React.useEffect(() => {
-    const id = requestAnimationFrame(() => setEntered(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
   return (
     <>
-      <div
-        className={cn(
-          "p-4 pb-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:opacity-100 lg:hidden",
-          entered ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0",
-        )}
-      >
-        <div className="mb-3 rounded-[2rem] bg-white px-4 py-3 shadow-[0_18px_50px_rgba(15,23,42,0.07)]">
-          <Link
-            href={PATHS.adminOverview}
-            className={backToAdminLinkClassName()}
-          >
-            <ArrowLeft className="size-4 shrink-0" aria-hidden />
-            Back to admin
-          </Link>
+      <div className="p-4 pb-0 lg:hidden">
+        <div className="mb-3 overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+          <BuilderSidebarProfileLink />
+          <div className="px-4 py-4">
+            <Link
+              href={PATHS.adminOverview}
+              className={backToAdminLinkClassName()}
+            >
+              <ArrowLeft className="size-4 shrink-0" aria-hidden />
+              Back to admin
+            </Link>
+          </div>
         </div>
-        <div className="max-h-[min(70vh,520px)] overflow-y-auto rounded-[2rem] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.07)]">
+        <div className="max-h-[min(70vh,520px)] overflow-y-auto rounded-2xl border border-zinc-200 bg-white">
           <BuilderEditorSidebar />
         </div>
       </div>
 
-      <aside className="hidden w-fit shrink-0 p-5 lg:block">
-        <div
-          className={cn(
-            "sticky top-5 flex h-[calc(100vh-2.5rem)] max-h-[calc(100vh-2.5rem)] flex-col overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_70px_rgba(15,23,42,0.07)] transition-[opacity,transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:opacity-100",
-            entered ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0",
-          )}
-        >
-          <div className="shrink-0 border-b border-slate-100 p-3">
+      <aside className="hidden w-[320px] shrink-0 p-6 lg:block">
+        <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+          <BuilderSidebarProfileLink />
+          <div className="shrink-0 border-b border-zinc-100 px-6 py-5">
             <Link
               href={PATHS.adminOverview}
               className={backToAdminLinkClassName()}

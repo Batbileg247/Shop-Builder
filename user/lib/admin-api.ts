@@ -1,4 +1,10 @@
-import type { Customer, Product, Shop } from "@/types/dashboard";
+import type {
+  Customer,
+  DashboardOrder,
+  DashboardOrderLine,
+  Product,
+  Shop,
+} from "@/types/dashboard";
 import { getMerchantBaseUrl } from "@/lib/storefront-api";
 
 export type MonthlySalesPoint = {
@@ -90,6 +96,46 @@ function parseCustomer(raw: Record<string, unknown>): Customer {
   };
 }
 
+function parseDashboardOrder(row: Record<string, unknown>): DashboardOrder {
+  const ci = row.customerInfo;
+  const info =
+    ci && typeof ci === "object" && !Array.isArray(ci)
+      ? (ci as Record<string, unknown>)
+      : {};
+  const linesRaw = info.lines;
+  const lines: DashboardOrderLine[] = Array.isArray(linesRaw)
+    ? linesRaw.map((l) => {
+        const o = l as Record<string, unknown>;
+        const name =
+          typeof o.name === "string" && o.name.trim()
+            ? o.name
+            : typeof o.productId === "string"
+              ? o.productId
+              : "Item";
+        return {
+          productName: name,
+          quantity:
+            typeof o.quantity === "number" && Number.isFinite(o.quantity)
+              ? Math.max(1, Math.round(o.quantity))
+              : 1,
+        };
+      })
+    : [];
+  return {
+    id: String(row.id),
+    shopId: String(row.storeId),
+    placedAt: new Date(String(row.createdAt ?? "")),
+    customerName:
+      typeof info.name === "string" && info.name.trim()
+        ? info.name.trim()
+        : "Customer",
+    customerEmail:
+      typeof info.email === "string" && info.email.trim() ? info.email.trim() : "",
+    lines,
+    total: Number(row.totalPrice ?? 0),
+  };
+}
+
 export async function fetchAdminStores(opts?: {
   signal?: AbortSignal;
 }): Promise<Shop[]> {
@@ -151,6 +197,26 @@ export async function fetchAdminDashboard(
       })
     : [];
   return { store, products, categories, customers, monthlySales };
+}
+
+export async function fetchAdminOrders(
+  storeId: string,
+  opts?: { signal?: AbortSignal },
+): Promise<DashboardOrder[]> {
+  const res = await fetch(
+    `${merchantBase()}/orders/${encodeURIComponent(storeId)}`,
+    {
+      method: "GET",
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+      signal: opts?.signal,
+    },
+  );
+  const raw = await readJson<{ items?: unknown[] }>(res);
+  const items = Array.isArray(raw.items) ? raw.items : [];
+  return items
+    .map((x) => parseDashboardOrder(x as Record<string, unknown>))
+    .sort((a, b) => b.placedAt.getTime() - a.placedAt.getTime());
 }
 
 export async function patchAdminStore(

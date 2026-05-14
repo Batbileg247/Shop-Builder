@@ -11,7 +11,7 @@ export const PATHS = {
 
   // Admin sub-pages
   adminProducts: "/admin/products",
-  adminCustomers: "/admin/customers",
+  adminOrders: "/admin/orders",
   adminAnalytics: "/admin/analytics",
   adminShop: "/admin/shop",
 
