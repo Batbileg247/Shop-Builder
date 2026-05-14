@@ -27,28 +27,29 @@ export function Sidebar() {
 
   return (
     <>
+      {/* ── Mobile bar ── */}
       <div className="p-4 pb-0 lg:hidden">
-        <div className="rounded-[2rem] bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)]">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+          {/* Brand */}
           <div className="flex items-center gap-3">
-            <div
-              className="flex h-11 w-11 items-center justify-center rounded-2xl text-xs font-black text-white"
-              style={{ backgroundColor: activeShop.brandColor }}
-            >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-900 bg-zinc-900 text-xs font-black tracking-tight text-white">
               SB
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400">
                 Shop Builder
               </p>
-              <h1 className="text-base font-black text-slate-950">Dashboard</h1>
+              <h1 className="text-sm font-bold text-zinc-900">Dashboard</h1>
             </div>
           </div>
-          <div className="relative mt-4 rounded-[1.5rem] bg-slate-50 p-2">
+
+          {/* Shop switcher */}
+          <div className="relative mt-4">
             <select
               value={activeShop.id}
-              onChange={(event) => switchShop(event.target.value)}
+              onChange={(e) => switchShop(e.target.value)}
               aria-label="Pick the shop you are editing"
-              className="h-12 w-full appearance-none rounded-[1.15rem] border border-white bg-white px-4 pr-10 text-sm font-bold text-slate-900 outline-none"
+              className="h-11 w-full appearance-none rounded-xl border border-zinc-200 bg-white px-4 pr-10 text-sm font-semibold text-zinc-900 outline-none focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
             >
               {shops.map((shop) => (
                 <option key={shop.id} value={shop.id}>
@@ -56,24 +57,25 @@ export function Sidebar() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-6 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
           </div>
-          <nav className="mt-4 grid grid-cols-2 gap-2">
+
+          {/* Nav grid */}
+          <nav className="mt-4 grid grid-cols-2 gap-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-
               return (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`flex items-center gap-2 rounded-2xl px-3 py-3 text-xs font-bold transition ${
+                  className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold transition-colors ${
                     isActive
-                      ? "bg-slate-950 text-white"
-                      : "bg-slate-50 text-slate-500"
+                      ? "bg-zinc-900 text-white"
+                      : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5" />
                   {item.label}
                 </Link>
               );
@@ -82,45 +84,47 @@ export function Sidebar() {
         </div>
       </div>
 
-      <aside className="hidden w-[292px] shrink-0 p-5 lg:block">
-        <div className="sticky top-5 flex h-[calc(100vh-2.5rem)] flex-col rounded-[2rem] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.07)]">
-          <div className="flex items-center gap-3 px-2">
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-black text-white shadow-lg shadow-slate-200"
-              style={{ backgroundColor: activeShop.brandColor }}
-            >
-              SB
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                Shop Builder
-              </p>
-              <h1 className="text-lg font-bold text-slate-950">Dashboard</h1>
+      {/* ── Desktop sidebar ── */}
+      <aside className="hidden w-[320px] shrink-0 p-6 lg:block">
+        <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col rounded-2xl border border-zinc-200 bg-white">
+          {/* Brand header */}
+          <div className="border-b border-zinc-100 px-7 py-6">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-sm font-black tracking-tight text-white">
+                SB
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
+                  Shop Builder
+                </p>
+                <h1 className="text-base font-bold text-zinc-900">Dashboard</h1>
+              </div>
             </div>
           </div>
 
-          <div className="mt-8">
+          {/* Shop switcher */}
+          <div className="border-b border-zinc-100 px-6 py-5">
             <label
               htmlFor="shop-switcher"
-              className="mb-3 block px-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-400"
+              className="mb-2.5 block text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400"
             >
-              Switch shop
+              Active shop
             </label>
-            <div className="relative rounded-[1.5rem] bg-slate-50 p-2">
-              <div className="pointer-events-none absolute left-4 top-1/2 z-10 h-10 w-10 -translate-y-1/2 overflow-hidden rounded-2xl bg-white shadow-sm">
+            <div className="relative">
+              <div className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-8 w-8 -translate-y-1/2 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50">
                 <Image
                   src={activeShop.logoUrl}
                   alt=""
                   fill
-                  sizes="40px"
+                  sizes="32px"
                   className="object-cover"
                 />
               </div>
               <select
                 id="shop-switcher"
                 value={activeShop.id}
-                onChange={(event) => switchShop(event.target.value)}
-                className="h-14 w-full appearance-none rounded-[1.25rem] border border-white bg-white py-2 pl-14 pr-10 text-sm font-bold text-slate-900 outline-none transition focus:border-slate-200 focus:ring-4 focus:ring-slate-100"
+                onChange={(e) => switchShop(e.target.value)}
+                className="h-13 w-full appearance-none rounded-xl border border-zinc-200 bg-white py-3 pl-14 pr-10 text-sm font-semibold text-zinc-900 outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
               >
                 {shops.map((shop) => (
                   <option key={shop.id} value={shop.id}>
@@ -128,51 +132,58 @@ export function Sidebar() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute right-6 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
             </div>
           </div>
 
-          <nav className="mt-8 space-y-2" aria-label="Main">
-            <p className="mb-2 px-2 text-xs font-semibold text-slate-400">
-              Jump to
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto px-4 py-5" aria-label="Main">
+            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+              Navigation
             </p>
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className={`flex items-center gap-3 rounded-[1.35rem] px-4 py-3 text-sm font-bold transition ${
-                    isActive
-                      ? "bg-white text-slate-950 shadow-[0_16px_38px_rgba(15,23,42,0.08)]"
-                      : "text-slate-400 hover:bg-slate-50 hover:text-slate-700"
-                  }`}
-                >
-                  <span
-                    className="flex h-9 w-9 items-center justify-center rounded-2xl"
-                    style={{
-                      backgroundColor: isActive
-                        ? activeShop.accentColor
-                        : "#f8fafc",
-                      color: isActive ? activeShop.brandColor : "#94a3b8",
-                    }}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  {item.label}
-                </Link>
-              );
-            })}
+            <ul className="space-y-1">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-3.5 rounded-xl px-4 py-3.5 text-sm font-semibold transition-colors ${
+                        isActive
+                          ? "bg-zinc-900 text-white"
+                          : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
+                      }`}
+                    >
+                      <span
+                        className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
+                          isActive
+                            ? "bg-white/10 text-white"
+                            : "bg-zinc-100 text-zinc-400"
+                        }`}
+                      >
+                        <Icon className="h-4.5 w-4.5" />
+                      </span>
+                      {item.label}
+                      {isActive && (
+                        <span className="ml-auto h-2 w-2 rounded-full bg-white/60" />
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </nav>
 
-          <div className="mt-auto space-y-3">
+          {/* Footer */}
+          <div className="border-t border-zinc-100 px-4 py-4">
             <Link
               href="/user"
-              className="flex items-center gap-3 rounded-[1.35rem] bg-slate-50 px-4 py-3 text-sm font-bold text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="flex items-center gap-3.5 rounded-xl px-4 py-3.5 text-sm font-semibold text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
             >
-              <User className="h-4 w-4" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 text-zinc-400">
+                <User className="h-4.5 w-4.5" />
+              </span>
               My Profile
             </Link>
           </div>

@@ -72,7 +72,9 @@ function AddProductSlot({ onClick }: { onClick: () => void }) {
             Add product
           </h3>
           <p className="mt-0.5 text-xs text-pv-muted">New listing</p>
-          <p className="mt-1 text-[11px] text-pv-muted">Same form for every slot</p>
+          <p className="mt-1 text-[11px] text-pv-muted">
+            Same form for every slot
+          </p>
         </div>
         <div className="mt-auto flex items-end justify-between gap-2 border-t border-pv-divider pt-3">
           <p className="text-sm font-medium text-pv-muted">Demo slot</p>
@@ -402,7 +404,10 @@ function HomePageInner() {
             />
           ))}
           {Array.from({ length: addProductSlotCount }).map((_, i) => (
-            <AddProductSlot key={`add-slot-${i}`} onClick={openAddProductSheet} />
+            <AddProductSlot
+              key={`add-slot-${i}`}
+              onClick={openAddProductSheet}
+            />
           ))}
         </div>
 
