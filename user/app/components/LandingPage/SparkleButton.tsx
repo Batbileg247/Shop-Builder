@@ -34,21 +34,22 @@ const styles = `
       inset 0 0.5px hsl(0, 0%, 100%),
       inset 0 -1px 2px 0 hsl(0, 0%, 0%),
       0px 4px 10px -4px hsla(0 0% 0% / calc(1 - var(--active))),
-      0 0 0 calc(var(--active) * 0.375rem) hsl(260 97% 50% / 0.75);
+      0 0 0 calc(var(--active) * 0.12rem) hsla(255, 55%, 55%, 0.9),
+      0 0 0 calc(var(--active) * 0.28rem) hsla(250, 45%, 35%, 0.4);
     transition: all var(--transition);
     z-index: 0;
   }
 
-  /* Purple glow overlay */
+  /* Deep indigo-purple glow overlay */
   .generate-btn::after {
     content: "";
     position: absolute;
     inset: 0;
-    background-color: hsla(260 97% 61% / 0.75);
+    background-color: hsla(250, 45%, 22%, 0.85);
     background-image:
-      radial-gradient(at 51% 89%, hsla(266, 45%, 74%, 1) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(266, 36%, 60%, 1) 0px, transparent 50%),
-      radial-gradient(at 22% 91%, hsla(266, 36%, 60%, 1) 0px, transparent 50%);
+      radial-gradient(at 51% 89%, hsla(258, 40%, 38%, 1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(245, 35%, 30%, 1) 0px, transparent 50%),
+      radial-gradient(at 22% 91%, hsla(255, 38%, 32%, 1) 0px, transparent 50%);
     opacity: var(--active);
     border-radius: var(--border_radius);
     transition: opacity var(--transition);
@@ -91,16 +92,9 @@ const styles = `
     83%  { transform: scale(var(--scale-p, 1)); }
   }
 
-  /* Gradient text */
+  /* Text — always white */
   .btn-text {
-    background-image: linear-gradient(
-      90deg,
-      hsla(0 0% 100% / 1) 0%,
-      hsla(0 0% 100% / var(--active)) 120%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: white;
   }
 `;
 
@@ -116,7 +110,7 @@ export default function SparkleButton({
 
       <button
         onClick={onClick}
-        className={`generate-btn relative flex items-center gap-2 cursor-pointer border-none bg-transparent px-8 py-4 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-110 ${className}`}
+        className={`generate-btn relative flex items-center gap-2 cursor-pointer border-none bg-transparent px-5 py-5 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-110 ${className}`}
       >
         {/* Spinning border */}
         <div
@@ -127,7 +121,7 @@ export default function SparkleButton({
         {/* Icon */}
         <Icon
           className="relative z-10 text-white"
-          size={28}
+          size={22}
           aria-hidden="true"
         />
 
