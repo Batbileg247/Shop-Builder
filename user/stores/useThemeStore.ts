@@ -90,31 +90,51 @@ const defaults: ThemeState = {
   productGridGapRem: 1,
 };
 
-/** Persist-ийн `partialize` талбаруудтай адил хэлбэр (migrate буцаах). */
-type PersistedThemeSlice = Pick<
-  ThemeState,
-  | "preset"
-  | "heroTitle"
-  | "heroImage"
-  | "shopName"
-  | "heroAnnouncement"
-  | "primaryColor"
-  | "backgroundColor"
-  | "textColor"
-  | "font"
-  | "radius"
-  | "cardContentPaddingRem"
-  | "productGridGapRem"
->;
+const THEME_STORE_VERSION = 1;
 
-function migratePersistedTheme(
-  persistedState: unknown,
-): PersistedThemeSlice {
-  const p = (persistedState ?? {}) as Partial<PersistedThemeSlice>;
-  return {
-    ...defaults,
-    ...p,
-  };
+function themePatchFromPersisted(value: unknown): Partial<ThemeState> {
+  if (!value || typeof value !== "object") return {};
+
+  const source = value as Record<string, unknown>;
+  const patch: Partial<ThemeState> = {};
+
+  if (
+    source.preset === "minimal" ||
+    source.preset === "glass" ||
+    source.preset === "neumorph"
+  ) {
+    patch.preset = source.preset;
+  }
+
+  if (typeof source.heroTitle === "string") patch.heroTitle = source.heroTitle;
+  if (typeof source.heroImage === "string") patch.heroImage = source.heroImage;
+  if (typeof source.shopName === "string") patch.shopName = source.shopName;
+  if (typeof source.heroAnnouncement === "string") {
+    patch.heroAnnouncement = source.heroAnnouncement;
+  }
+  if (typeof source.primaryColor === "string") {
+    patch.primaryColor = source.primaryColor;
+  }
+  if (typeof source.backgroundColor === "string") {
+    patch.backgroundColor = source.backgroundColor;
+  }
+  if (typeof source.textColor === "string") patch.textColor = source.textColor;
+  if (
+    source.font === "sans" ||
+    source.font === "serif" ||
+    source.font === "mono"
+  ) {
+    patch.font = source.font;
+  }
+  if (typeof source.radius === "number") patch.radius = source.radius;
+  if (typeof source.cardContentPaddingRem === "number") {
+    patch.cardContentPaddingRem = source.cardContentPaddingRem;
+  }
+  if (typeof source.productGridGapRem === "number") {
+    patch.productGridGapRem = source.productGridGapRem;
+  }
+
+  return patch;
 }
 
 export const useThemeStore = create<ThemeState & ThemeActions>()(
@@ -143,16 +163,14 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
     }),
     {
       name: "shop-builder-theme-v1",
-      version: 1,
-      migrate: (persistedState) => migratePersistedTheme(persistedState),
+      version: THEME_STORE_VERSION,
+      migrate: (persisted) => ({
+        ...defaults,
+        ...themePatchFromPersisted(persisted),
+      }),
       merge: (persisted, current) => ({
         ...current,
-        ...(persisted as Partial<ThemeState>),
-        shopName:
-          (persisted as Partial<ThemeState>).shopName ?? current.shopName,
-        heroAnnouncement:
-          (persisted as Partial<ThemeState>).heroAnnouncement ??
-          current.heroAnnouncement,
+        ...themePatchFromPersisted(persisted),
       }),
       partialize: (s) => ({
         preset: s.preset,
@@ -171,4 +189,3 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
     },
   ),
 );
-
