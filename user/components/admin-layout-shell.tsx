@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
 
 import SparkleButton from "@/app/components/LandingPage/SparkleButton";
+import { BuilderChromeMyShopButton } from "@/components/builder-studio/builder-chrome-my-shop-button";
 import { BuilderChromeViewDemoButton } from "@/components/builder-studio/builder-chrome-view-demo-button";
 import { Sidebar } from "@/components/Sidebar";
 import { PATHS } from "@/lib/site-paths";
@@ -21,7 +22,12 @@ export function AdminDashboardChrome({
       <div className="mb-6 flex shrink-0 items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-950">{title}</h1>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          {showViewDemo ? <BuilderChromeViewDemoButton /> : null}
+          {showViewDemo ? (
+            <>
+              <BuilderChromeViewDemoButton />
+              <BuilderChromeMyShopButton />
+            </>
+          ) : null}
           <SparkleButton
             label="Create New Shop"
             icon={Plus}

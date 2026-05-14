@@ -104,7 +104,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
       <Blobs />
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
+      <div className="notranslate relative w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
         <Shine />
 
         <div className="mb-4">
@@ -125,7 +125,11 @@ export default function SignUp() {
           <h1 className="text-2xl font-semibold text-white">Sign up</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-3.5"
+          translate="no"
+        >
           <div className="grid grid-cols-2 gap-3">
             <Field label="First name">
               <input
