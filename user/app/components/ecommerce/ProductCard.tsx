@@ -81,10 +81,6 @@ export function ProductCard({
               ({reviewLabel}) Customer Reviews
             </p>
           </div>
-          <StarRating
-            className="shrink-0 text-sm leading-none"
-            rating={rating}
-          />
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-2 border-t border-pv-divider pt-3">

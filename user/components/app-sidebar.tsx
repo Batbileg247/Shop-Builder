@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
 import {
   Sidebar,
@@ -10,10 +10,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { LayoutPanelTopIcon, ShieldIcon, ShoppingBagIcon } from "lucide-react"
+} from "@/components/ui/sidebar";
+import { LayoutPanelTopIcon, ShieldIcon, ShoppingBagIcon } from "lucide-react";
 
-type Surface = "builder" | "admin" | "client"
+type Surface = "builder" | "admin" | "client";
 
 export function AppSidebar({
   surface,
@@ -21,10 +21,10 @@ export function AppSidebar({
   shopName,
   className,
 }: {
-  surface: Surface
-  setSurface: (surface: Surface) => void
-  shopName: string
-  className?: string
+  surface: Surface;
+  setSurface: (surface: Surface) => void;
+  shopName: string;
+  className?: string;
 }) {
   return (
     <Sidebar collapsible="icon" variant="inset" className={className}>
@@ -87,5 +87,5 @@ export function AppSidebar({
 
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
