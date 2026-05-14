@@ -38,6 +38,7 @@ import {
   buildHeroCarouselUrls,
   shopPreviewShellStyle,
 } from "@/lib/shop-theme";
+import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
 
 const INITIAL_GRID = 6;
 
@@ -96,7 +97,7 @@ export function EcommerceStorefront({
   clearLastOrder,
   lastOrderId,
   catalogLayout = "preview",
-  allProductsHref = "/builder",
+  allProductsHref = BUILDER_PREVIEW_BASE,
   resizableHero = true,
   deeplinkProductId,
   deeplinkCartOpen = false,

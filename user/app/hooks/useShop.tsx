@@ -9,7 +9,6 @@ import {
 } from "react";
 import type {
   CartItem,
-  CatalogFilterDefinition,
   Order,
   OrderStatus,
   Product,
@@ -17,7 +16,11 @@ import type {
   ShopTheme,
   Surface,
 } from "@/types";
-import { defaultProducts, defaultTheme, emptyDraft, defaultCatalogFilterDefinitions } from "@/lib/defaults";
+import {
+  buildCatalogFilterDefinitions,
+  defaultTheme,
+  emptyDraft,
+} from "@/lib/defaults";
 import { safeImage, slugify } from "@/lib/utils";
 
 const ShopContext = createContext<ReturnType<typeof useShopState> | null>(null);
@@ -40,7 +43,7 @@ export function useShop() {
 function useShopState() {
   const [surface, setSurface] = useState<Surface>("builder");
   const [theme, setTheme] = useState<ShopTheme>(defaultTheme);
-  const [products, setProducts] = useState<Product[]>(defaultProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [draft, setDraft] = useState<ProductDraft>(emptyDraft);
@@ -48,9 +51,12 @@ function useShopState() {
   const [buyerName, setBuyerName] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
   const [lastOrderId, setLastOrderId] = useState("");
-  const [catalogFilterDefinitions, setCatalogFilterDefinitions] = useState<
-    CatalogFilterDefinition[]
-  >(() => [...defaultCatalogFilterDefinitions]);
+  const [categories, setCategories] = useState<string[]>([]);
+
+  const catalogFilterDefinitions = useMemo(
+    () => buildCatalogFilterDefinitions(categories),
+    [categories],
+  );
 
   const cartItems: CartItem[] = useMemo(
     () =>
@@ -73,19 +79,44 @@ function useShopState() {
     setTheme((t) => ({ ...t, [key]: value }));
   }
 
-  function addProduct() {
-    if (!draft.name.trim()) return;
+  function addCategory(name: string) {
+    const n = name.trim();
+    if (!n) return;
+    setCategories((prev) => (prev.includes(n) ? prev : [...prev, n].sort((a, b) => a.localeCompare(b))));
+  }
+
+  function removeCategory(name: string) {
+    const n = name.trim();
+    if (!n) return;
+    setCategories((prev) => prev.filter((c) => c !== n));
+  }
+
+  function ensureCategoryListed(category: string) {
+    const c = category.trim();
+    if (!c) return;
+    setCategories((prev) =>
+      prev.includes(c) ? prev : [...prev, c].sort((a, b) => a.localeCompare(b)),
+    );
+  }
+
+  function addProduct(overrideDraft?: ProductDraft) {
+    const d = overrideDraft ?? draft;
+    if (!d.name.trim() || !d.image.trim()) return;
+
+    const category = d.category.trim() || "Uncategorized";
+    ensureCategoryListed(category);
 
     const next: Product = {
-      id: `${slugify(draft.name)}-${Date.now()}`,
-      name: draft.name.trim(),
-      category: draft.category.trim() || "General",
-      description: draft.description.trim() || "",
-      price: Number(draft.price) || 0,
-      salePrice: draft.salePrice ? Number(draft.salePrice) : undefined,
-      inventory: Number(draft.inventory) || 0,
-      image: safeImage(draft.image),
-      featured: draft.featured === "yes",
+      id: `${slugify(d.name)}-${Date.now()}`,
+      name: d.name.trim(),
+      category,
+      size: d.size.trim(),
+      description: d.description.trim() || "",
+      price: Number(d.price) || 0,
+      salePrice: d.salePrice ? Number(d.salePrice) : undefined,
+      inventory: Number(d.inventory) || 0,
+      image: safeImage(d.image.trim()),
+      featured: d.featured === "yes",
     };
 
     setProducts((prev) => [next, ...prev]);
@@ -93,22 +124,27 @@ function useShopState() {
   }
 
   function saveEdit(id: string) {
+    const existing = products.find((p) => p.id === id);
+    if (!existing) return;
+    const category = draft.category.trim() || existing.category;
+    ensureCategoryListed(category);
+
     setProducts((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              name: draft.name.trim() || p.name,
-              category: draft.category.trim() || p.category,
-              description: draft.description.trim(),
-              price: Number(draft.price) || p.price,
-              salePrice: draft.salePrice ? Number(draft.salePrice) : undefined,
-              inventory: Number(draft.inventory),
-              image: safeImage(draft.image),
-              featured: draft.featured === "yes",
-            }
-          : p,
-      ),
+      prev.map((p) => {
+        if (p.id !== id) return p;
+        return {
+          ...p,
+          name: draft.name.trim() || p.name,
+          category,
+          size: draft.size.trim(),
+          description: draft.description.trim(),
+          price: Number(draft.price) || p.price,
+          salePrice: draft.salePrice ? Number(draft.salePrice) : undefined,
+          inventory: Number(draft.inventory),
+          image: safeImage(draft.image.trim()),
+          featured: draft.featured === "yes",
+        };
+      }),
     );
     setEditingId(null);
     setDraft(emptyDraft);
@@ -119,6 +155,7 @@ function useShopState() {
     setDraft({
       name: product.name,
       category: product.category,
+      size: product.size,
       description: product.description,
       price: product.price,
       salePrice: product.salePrice?.toString() ?? "",
@@ -253,7 +290,9 @@ function useShopState() {
     setBuyerEmail,
     lastOrderId,
     catalogFilterDefinitions,
-    setCatalogFilterDefinitions,
+    categories,
+    addCategory,
+    removeCategory,
     inStockProducts,
     featuredProducts,
     addProduct,

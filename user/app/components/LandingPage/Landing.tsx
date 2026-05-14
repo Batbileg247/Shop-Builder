@@ -11,20 +11,23 @@ import { Footer } from "./Footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/ui/avatar";
 import TranslateWidget from "../LanguageSelector";
 import { getAuthSession } from "@/lib/auth-session";
+import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
 import { useEffect, useState } from "react";
 
 export const LandingPage = () => {
   const [generateHref, setGenerateHref] = useState(
-    "/signin?redirect=%2Fbuilder",
+    `/signin?redirect=${encodeURIComponent(BUILDER_PREVIEW_BASE)}`,
   );
   const [avatarHref, setAvatarHref] = useState("/signin");
 
   useEffect(() => {
     if (getAuthSession()) {
-      setGenerateHref("/builder");
-      setAvatarHref("/user");
+      setGenerateHref(BUILDER_PREVIEW_BASE);
+      setAvatarHref(`/admin`);
     } else {
-      setGenerateHref("/signin?redirect=%2Fbuilder");
+      setGenerateHref(
+        `/signin?redirect=${encodeURIComponent(BUILDER_PREVIEW_BASE)}`,
+      );
       setAvatarHref("/signin");
     }
   }, []);

@@ -18,6 +18,10 @@ type DashboardContextValue = {
   products: Product[];
   customers: Customer[];
   metrics: ShopMetrics;
+  /** Owner-defined category names for the active shop (filters / pickers). */
+  categories: string[];
+  addCategory: (name: string) => void;
+  removeCategory: (name: string) => void;
   switchShop: (shopId: string) => void;
   updateShop: (shopId: string, shop: ShopUpdateInput) => void;
   addProduct: (product: NewProductInput) => void;
@@ -25,7 +29,9 @@ type DashboardContextValue = {
   deleteProduct: (productId: string) => void;
 };
 
-const DashboardContext = React.createContext<DashboardContextValue | null>(null);
+const DashboardContext = React.createContext<DashboardContextValue | null>(
+  null,
+);
 
 const now = new Date("2026-05-13T00:00:00.000Z");
 
@@ -71,120 +77,7 @@ const shopsSeed: Shop[] = [
   },
 ];
 
-const productsSeed: Product[] = [
-  {
-    id: "prod_luma_01",
-    shopId: "shop_luma",
-    name: "Oversized Wool Blazer",
-    sku: "LUM-OWB-001",
-    description: "Structured wool blazer with soft lining.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?auto=format&fit=crop&w=640&q=80",
-    status: "Live",
-    price: 168,
-    inventory: 42,
-    sales: 274,
-    earning: 46032,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod_luma_02",
-    shopId: "shop_luma",
-    name: "Silk Ribbon Flats",
-    sku: "LUM-SRF-014",
-    description: "Low profile flats with satin ribbon detail.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=640&q=80",
-    status: "Live",
-    price: 92,
-    inventory: 68,
-    sales: 198,
-    earning: 18216,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod_luma_03",
-    shopId: "shop_luma",
-    name: "Pearl Handle Mini Bag",
-    sku: "LUM-PMB-021",
-    description: "Compact evening bag with pearl handle.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=640&q=80",
-    status: "Draft",
-    price: 124,
-    inventory: 20,
-    sales: 0,
-    earning: 0,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod_nova_01",
-    shopId: "shop_nova",
-    name: "Studio Wireless Headphones",
-    sku: "NOV-SWH-009",
-    description: "Bluetooth headphones with active noise cancellation.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=640&q=80",
-    status: "Live",
-    price: 229,
-    inventory: 36,
-    sales: 331,
-    earning: 75799,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod_nova_02",
-    shopId: "shop_nova",
-    name: "Compact Desk Dock",
-    sku: "NOV-CDD-018",
-    description: "Multi-port desk dock for compact workspaces.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=640&q=80",
-    status: "Draft",
-    price: 149,
-    inventory: 18,
-    sales: 47,
-    earning: 7003,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod_terra_01",
-    shopId: "shop_terra",
-    name: "Ceramic Pour-Over Set",
-    sku: "TER-CPO-004",
-    description: "Glazed ceramic dripper with matching server.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=640&q=80",
-    status: "Live",
-    price: 78,
-    inventory: 57,
-    sales: 219,
-    earning: 17082,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod_terra_02",
-    shopId: "shop_terra",
-    name: "Linen Storage Basket",
-    sku: "TER-LSB-011",
-    description: "Soft-sided storage basket with leather handles.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=640&q=80",
-    status: "Live",
-    price: 64,
-    inventory: 74,
-    sales: 156,
-    earning: 9984,
-    createdAt: now,
-    updatedAt: now,
-  },
-];
+const productsSeed: Product[] = [];
 
 const customersSeed: Customer[] = [
   {
@@ -247,6 +140,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [activeShopId, setActiveShopId] = React.useState(shopsSeed[0].id);
   const [allProducts, setAllProducts] = React.useState<Product[]>(productsSeed);
   const [allCustomers] = React.useState<Customer[]>(customersSeed);
+  const [shopCategories, setShopCategories] = React.useState<
+    Record<string, string[]>
+  >({});
 
   const activeShop = React.useMemo(
     () => shops.find((shop) => shop.id === activeShopId) ?? shops[0],
@@ -264,6 +160,39 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   );
 
   const metrics = React.useMemo(() => calculateMetrics(products), [products]);
+
+  const categories = React.useMemo(
+    () => shopCategories[activeShop.id] ?? [],
+    [activeShop.id, shopCategories],
+  );
+
+  const addCategory = React.useCallback(
+    (name: string) => {
+      const n = name.trim();
+      if (!n) return;
+      setShopCategories((prev) => {
+        const cur = prev[activeShop.id] ?? [];
+        if (cur.includes(n)) return prev;
+        return {
+          ...prev,
+          [activeShop.id]: [...cur, n].sort((a, b) => a.localeCompare(b)),
+        };
+      });
+    },
+    [activeShop.id],
+  );
+
+  const removeCategory = React.useCallback(
+    (name: string) => {
+      const n = name.trim();
+      if (!n) return;
+      setShopCategories((prev) => {
+        const cur = prev[activeShop.id] ?? [];
+        return { ...prev, [activeShop.id]: cur.filter((c) => c !== n) };
+      });
+    },
+    [activeShop.id],
+  );
 
   const switchShop = React.useCallback((shopId: string) => {
     setActiveShopId(shopId);
@@ -285,22 +214,44 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const addProduct = React.useCallback(
     (product: NewProductInput) => {
       const createdAt = new Date();
+      const category = product.category.trim() || "Uncategorized";
+      const sku =
+        product.sku.trim() ||
+        `SKU-${activeShop.slug.slice(0, 4).toUpperCase()}-${Date.now().toString().slice(-6)}`;
       const nextProduct: Product = {
         id: createId("prod"),
         shopId: activeShop.id,
-        ...product,
-        imageUrl:
-          product.imageUrl ||
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=640&q=80",
+        name: product.name.trim(),
+        sku,
+        category,
+        size: product.size.trim(),
+        description: product.description.trim(),
+        imageUrl: product.imageUrl.trim(),
+        status: product.status,
+        price: product.price,
+        inventory: product.inventory,
         sales: 0,
         earning: 0,
         createdAt,
         updatedAt: createdAt,
       };
 
+      if (category) {
+        setShopCategories((prev) => {
+          const cur = prev[activeShop.id] ?? [];
+          if (cur.includes(category)) return prev;
+          return {
+            ...prev,
+            [activeShop.id]: [...cur, category].sort((a, b) =>
+              a.localeCompare(b),
+            ),
+          };
+        });
+      }
+
       setAllProducts((currentProducts) => [nextProduct, ...currentProducts]);
     },
-    [activeShop.id],
+    [activeShop.id, activeShop.slug],
   );
 
   const updateProduct = React.useCallback(
@@ -330,6 +281,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       products,
       customers,
       metrics,
+      categories,
+      addCategory,
+      removeCategory,
       switchShop,
       updateShop,
       addProduct,
@@ -343,6 +297,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       products,
       customers,
       metrics,
+      categories,
+      addCategory,
+      removeCategory,
       switchShop,
       updateShop,
       addProduct,

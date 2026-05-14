@@ -23,8 +23,13 @@ export function ShopHero({
   heroImages?: string[];
   fillContainer?: boolean;
 }) {
-  const slides =
-    heroImages && heroImages.length > 0 ? heroImages : [theme.heroImage];
+  const slides = (() => {
+    if (heroImages && heroImages.length > 0) {
+      return heroImages.map((s) => String(s).trim()).filter(Boolean);
+    }
+    const primary = theme.heroImage?.trim();
+    return primary ? [primary] : [];
+  })();
   const slidesKey = slides.join("|");
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
@@ -38,6 +43,101 @@ export function ShopHero({
     }, intervalMs);
     return () => window.clearInterval(id);
   }, [carouselApi, multiSlide, slidesKey]);
+
+  if (slides.length === 0) {
+    const threeSlots = (
+      <div className="mt-5 flex justify-center gap-2 sm:gap-3">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className={
+              fillContainer
+                ? "h-10 w-14 shrink-0 rounded-md border border-dashed border-white/25 bg-white/5 sm:h-12 sm:w-20"
+                : "h-10 w-14 shrink-0 rounded-md border border-dashed border-zinc-300 bg-white sm:h-12 sm:w-20"
+            }
+            aria-hidden
+          />
+        ))}
+      </div>
+    );
+
+    return (
+      <section
+        className={
+          fillContainer
+            ? "flex h-full min-h-0 flex-1 flex-col overflow-hidden"
+            : "relative flex min-h-[300px] flex-col overflow-hidden"
+        }
+      >
+        <div
+          className={
+            fillContainer
+              ? "flex min-h-0 flex-1 flex-col items-center justify-center border-b border-white/10 bg-zinc-900/40 px-4 py-6 text-center sm:px-8"
+              : "flex flex-1 flex-col items-center justify-center border-b border-zinc-200 bg-zinc-100 px-6 py-10 text-center"
+          }
+        >
+          <p
+            className={
+              fillContainer
+                ? "text-sm font-semibold text-white"
+                : "text-sm font-semibold text-zinc-800"
+            }
+          >
+            Add at least 3 hero images
+          </p>
+          <p
+            className={
+              fillContainer
+                ? "mt-2 max-w-md text-xs leading-relaxed text-white/75"
+                : "mt-2 max-w-md text-xs leading-relaxed text-zinc-600"
+            }
+          >
+            Use the theme panel: primary upload or URL, then add gallery files
+            until you have three slides for the carousel demo.
+          </p>
+          {threeSlots}
+        </div>
+
+        <div
+          className={
+            fillContainer
+              ? "shrink-0 border-t border-white/10 bg-black/55 px-4 py-4 text-white sm:px-6 sm:py-5"
+              : "shrink-0 border-t border-zinc-200 bg-white px-4 py-4 text-zinc-900 sm:px-6 sm:py-5"
+          }
+        >
+          {theme.announcement ? (
+            <p
+              className={
+                fillContainer
+                  ? "mb-2 w-fit rounded-md bg-white/10 px-2.5 py-1.5 text-xs font-medium text-white/95"
+                  : "mb-2 w-fit rounded-md bg-zinc-100 px-2.5 py-1.5 text-xs font-medium text-zinc-800"
+              }
+            >
+              {theme.announcement}
+            </p>
+          ) : null}
+          <h2
+            className={
+              fillContainer
+                ? "text-2xl font-semibold tracking-tight sm:text-3xl"
+                : "text-2xl font-semibold tracking-tight text-zinc-950 sm:text-3xl"
+            }
+          >
+            {theme.name}
+          </h2>
+          <p
+            className={
+              fillContainer
+                ? "mt-2 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base"
+                : "mt-2 max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base"
+            }
+          >
+            {theme.tagline}
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -162,6 +262,9 @@ export function ProductCard({
         <h4 className="mt-1 text-base font-semibold tracking-normal">
           {product.name}
         </h4>
+        {product.size.trim() ? (
+          <p className="mt-0.5 text-xs text-zinc-400">Size {product.size}</p>
+        ) : null}
         <p className="mt-1.5 text-sm leading-6 text-zinc-500">
           {product.description}
         </p>

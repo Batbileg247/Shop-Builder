@@ -22,6 +22,7 @@ import {
   type AuthSession,
 } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
+import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
 import { buttonVariants } from "@/ui/button";
 
 function displayName(session: AuthSession) {
@@ -115,7 +116,7 @@ export default function UserAccountPage() {
               Admin
             </Link>
             <Link
-              href="/builder"
+              href={BUILDER_PREVIEW_BASE}
               className={cn(buttonVariants({ variant: "default", size: "sm" }))}
             >
               <Store className="size-4" aria-hidden />
@@ -215,7 +216,7 @@ export default function UserAccountPage() {
                   үргэлжлүүлэн засах боломжтой.
                 </p>
                 <Link
-                  href="/builder"
+                  href={BUILDER_PREVIEW_BASE}
                   className={cn(
                     buttonVariants({ variant: "default", size: "lg" }),
                     "mt-5",

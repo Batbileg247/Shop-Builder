@@ -57,7 +57,10 @@ export function ProductRow({
             <p className="text-sm font-semibold truncate">{product.name}</p>
             {product.featured && <Badge color="blue">Featured</Badge>}
           </div>
-          <p className="mt-0.5 text-xs text-zinc-500">{product.category}</p>
+          <p className="mt-0.5 text-xs text-zinc-500">
+            {product.category}
+            {product.size ? ` · ${product.size}` : ""}
+          </p>
           <div className="mt-1 flex items-center gap-2">
             {product.salePrice ? (
               <>
