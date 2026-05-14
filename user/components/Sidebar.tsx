@@ -50,7 +50,7 @@ export function Sidebar() {
               value={activeShop.id}
               onChange={(event) => switchShop(event.target.value)}
               aria-label="Select active shop"
-              className="h-12 w-full appearance-none rounded-[1.15rem] border border-white bg-white px-4 pr-10 text-sm font-bold text-slate-900 outline-none"
+              className="h-12 w-full appearance-none rounded-[1.15rem] border border-white bg-white px-4 text-sm font-bold text-slate-900 outline-none"
             >
               {shops.map((shop) => (
                 <option key={shop.id} value={shop.id}>
