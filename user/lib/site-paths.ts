@@ -13,7 +13,6 @@ export const PATHS = {
   adminProducts: "/admin/products",
   adminCustomers: "/admin/customers",
   adminAnalytics: "/admin/analytics",
-  adminShop: "/admin/shop",
 
   // User account
   user: "/user",
@@ -55,7 +54,7 @@ export function isBuilderPreviewPath(pathname: string | null): boolean {
  * Returns the nav base prefix for storefront links (cart, shop, etc.).
  * Uses the current `/builder/...` or `/building/...` path so cart opens on the same mode.
  */
-export function storefrontNavBase(pathname: string | null): string {
+export function storefrontNavBase(pathname: string | null) {
   if (!pathname) return PATHS.builderUpdate;
   const m = pathname.match(/^\/s\/([^/]+)/);
   if (m) return `/s/${m[1]}`;
@@ -63,5 +62,4 @@ export function storefrontNavBase(pathname: string | null): string {
     const clean = pathname.split("?")[0].replace(/\/$/, "");
     return clean || PATHS.builder;
   }
-  return PATHS.adminShop;
 }

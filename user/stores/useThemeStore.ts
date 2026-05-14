@@ -87,7 +87,7 @@ const defaults: ThemeState = {
   heroImage: "",
   heroGallery: [],
   shopName: "Nomad Goods",
-  heroAnnouncement: "Free delivery in Ulaanbaatar this week",
+  heroAnnouncement: "",
   primaryColor: "#0a0a0a",
   backgroundColor: "#ffffff",
   textColor: "#0a0a0a",
@@ -206,7 +206,9 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
       setHeroGallery: (heroGallery) => set({ heroGallery }),
       addHeroGalleryImage: (url) =>
         set((s) => ({
-          heroGallery: url.trim() ? [...s.heroGallery, url.trim()] : s.heroGallery,
+          heroGallery: url.trim()
+            ? [...s.heroGallery, url.trim()]
+            : s.heroGallery,
         })),
       removeHeroGalleryAt: (index) =>
         set((s) => ({

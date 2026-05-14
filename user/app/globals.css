@@ -251,6 +251,7 @@ body {
   --pv-glow-hover: none;
   --pv-card-inset: none;
   --pv-primary-inset: none;
+  --pv-text: rgb(40, 40, 40);
 }
 
 .site-preview-root[data-theme="glass"] {
@@ -296,6 +297,7 @@ body {
   --pv-glow-hover: 0 0 28px rgba(255, 255, 255, 0.18);
   --pv-card-inset: none;
   --pv-primary-inset: none;
+  --pv-text: rgb(255, 255, 255);
 }
 
 .site-preview-root[data-theme="neumorph"] {
@@ -334,6 +336,7 @@ body {
   --pv-empty-bg: #d8dee8;
   --pv-outline-hover: transparent;
   --pv-glow-hover: none;
+  --pv-text: rgb(0, 0, 0);
 }
 
 @layer components {

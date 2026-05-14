@@ -76,8 +76,6 @@ export function BuilderStudioLayout({
     [cardContentPaddingRem, productGridGapRem, radius],
   );
 
-  // The cart drawer and other overlays render in a portal (document.body),
-  // so we mirror the preview theme tokens onto <body> as well.
   React.useEffect(() => {
     const el = document.body;
     el.classList.add("site-preview-root");
@@ -130,7 +128,10 @@ export function BuilderStudioLayout({
 
   if (variant === "previewOnly") {
     return (
-      <PreviewOnlyAnimatedSurface preset={preset} previewCssVars={previewCssVars}>
+      <PreviewOnlyAnimatedSurface
+        preset={preset}
+        previewCssVars={previewCssVars}
+      >
         {children}
       </PreviewOnlyAnimatedSurface>
     );

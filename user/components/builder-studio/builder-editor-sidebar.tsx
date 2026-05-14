@@ -51,54 +51,75 @@ export function BuilderEditorSidebar() {
   const pathname = usePathname();
   const base = storefrontNavBase(pathname);
   const { activeShop } = useDashboard();
+
   const brand = activeShop.brandColor;
-  const accent = activeShop.accentColor;
 
   const preset = useThemeStore((s) => s.preset);
   const setPreset = useThemeStore((s) => s.setPreset);
+
   const heroTitle = useThemeStore((s) => s.heroTitle);
   const setHeroTitle = useThemeStore((s) => s.setHeroTitle);
+
   const heroImage = useThemeStore((s) => s.heroImage);
   const setHeroImage = useThemeStore((s) => s.setHeroImage);
+
   const heroGallery = useThemeStore((s) => s.heroGallery);
   const addHeroGalleryImage = useThemeStore((s) => s.addHeroGalleryImage);
   const removeHeroGalleryAt = useThemeStore((s) => s.removeHeroGalleryAt);
+
   const shopName = useThemeStore((s) => s.shopName);
   const setShopName = useThemeStore((s) => s.setShopName);
+
   const heroAnnouncement = useThemeStore((s) => s.heroAnnouncement);
   const setHeroAnnouncement = useThemeStore((s) => s.setHeroAnnouncement);
+
   const radius = useThemeStore((s) => s.radius);
   const setRadius = useThemeStore((s) => s.setRadius);
+
   const cardContentPaddingRem = useThemeStore((s) => s.cardContentPaddingRem);
+
   const setCardContentPaddingRem = useThemeStore(
     (s) => s.setCardContentPaddingRem,
   );
+
   const productGridGapRem = useThemeStore((s) => s.productGridGapRem);
+
   const setProductGridGapRem = useThemeStore((s) => s.setProductGridGapRem);
+
   const primaryColor = useThemeStore((s) => s.primaryColor);
   const backgroundColor = useThemeStore((s) => s.backgroundColor);
   const textColor = useThemeStore((s) => s.textColor);
   const font = useThemeStore((s) => s.font);
+
   const resetTheme = useThemeStore((s) => s.reset);
 
   const shop = useShop();
+
   const cartCount = shop.cartItems.reduce((s, i) => s + i.quantity, 0);
 
   const heroSlideCount = React.useMemo(
-    () => buildHeroCarouselUrls({ heroImage, heroGallery }).length,
+    () =>
+      buildHeroCarouselUrls({
+        heroImage,
+        heroGallery,
+      }).length,
     [heroImage, heroGallery],
   );
 
   const [ownerId, setOwnerId] = React.useState("");
   const [storeName, setStoreName] = React.useState("My Store");
+
   const [storeSlug, setStoreSlug] = React.useState("");
+
   const [publishStatus, setPublishStatus] = React.useState<
     "idle" | "creating" | "created" | "error"
   >("idle");
+
   const [publishError, setPublishError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const s = getAuthSession();
+
     if (s?.user?.id) {
       setOwnerId((prev) => (prev.trim() ? prev : s.user.id));
     }
@@ -106,22 +127,29 @@ export function BuilderEditorSidebar() {
 
   async function handleCreateStore() {
     const platformBase = process.env.NEXT_PUBLIC_PLATFORM_API_URL?.trim();
+
     if (!platformBase) {
       setPublishError("NEXT_PUBLIC_PLATFORM_API_URL тохируулаагүй байна.");
-      setPublishStatus("error");
-      return;
-    }
-    if (!ownerId.trim()) {
-      setPublishError("Owner ID (merchant user UUID) шаардлагатай.");
+
       setPublishStatus("error");
       return;
     }
 
-    const slides = buildHeroCarouselUrls({ heroImage, heroGallery }).length;
+    if (!ownerId.trim()) {
+      setPublishError("Owner ID (merchant user UUID) шаардлагатай.");
+
+      setPublishStatus("error");
+      return;
+    }
+
+    const slides = buildHeroCarouselUrls({
+      heroImage,
+      heroGallery,
+    }).length;
+
     if (slides < 3) {
-      setPublishError(
-        "Hero зураг дор хаяж 3 шаардлагатай (primary + gallery нийлбэрээр).",
-      );
+      setPublishError("Hero зураг дор хаяж 3 шаардлагатай.");
+
       setPublishStatus("error");
       return;
     }
@@ -130,16 +158,21 @@ export function BuilderEditorSidebar() {
     setPublishStatus("creating");
 
     const rawSlug = normalizeSlug(storeName) || `my-store-${shortId()}`;
+
     const slug = `${rawSlug}-${shortId()}`;
 
     try {
       const res = await fetch(`${platformBase}/stores`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
+
         body: JSON.stringify({
           ownerId: ownerId.trim(),
           name: storeName.trim() || "My Store",
           slug,
+
           themeConfig: {
             builderTheme: preset,
             heroTitle,
@@ -151,6 +184,7 @@ export function BuilderEditorSidebar() {
             backgroundColor,
             textColor,
             font,
+
             layout: {
               radiusPx: radius,
               cardContentPaddingRem,
@@ -164,8 +198,10 @@ export function BuilderEditorSidebar() {
         error?: string;
         slug?: string;
       } | null;
+
       if (!res.ok) {
         setPublishError(data?.error || `Алдаа (${res.status})`);
+
         setPublishStatus("error");
         return;
       }
@@ -174,14 +210,18 @@ export function BuilderEditorSidebar() {
       setPublishStatus("created");
     } catch (e) {
       setPublishError(e instanceof Error ? e.message : "Сүлжээний алдаа");
+
       setPublishStatus("error");
     }
   }
 
   const sectionLabelClass =
-    "text-xs font-bold uppercase tracking-[0.16em] text-slate-400";
-  const fieldLabelClass = "text-sm font-bold text-slate-600";
+    "mb-3 text-[10px] font-bold uppercase tracking-widest text-neutral-400";
+
+  const fieldLabelClass = "text-sm font-medium text-neutral-500";
+
   const inputClass =
+<<<<<<< HEAD
     "h-11 rounded-2xl border-slate-100 bg-slate-50 text-sm font-semibold text-slate-900 shadow-none placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-200";
 
   const sliderStyle = React.useMemo(
@@ -199,232 +239,231 @@ export function BuilderEditorSidebar() {
 
   const sliderClass =
     "h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200/90";
+=======
+    "h-10 rounded-xl border-neutral-200 bg-neutral-50 text-sm text-neutral-900 placeholder:text-neutral-300 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-neutral-300";
+>>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
 
   return (
     <SidebarProvider
       defaultOpen
-      sidebarLabel="Live theme editor"
-      className="flex h-full min-h-0 w-full min-w-0 shrink-0 flex-col"
+      style={
+        {
+          "--sidebar-width": "20rem",
+        } as React.CSSProperties
+      }
+      className="h-full w-full "
     >
       <Sidebar
         collapsible="none"
-        className="h-full min-h-0 border-r border-slate-100 bg-white text-slate-900 shadow-[4px_0_28px_rgba(15,23,42,0.06)]"
+        className="h-full w-72 shrink-0 border-r border-neutral-200 bg-white text-neutral-900"
         data-theme="minimal"
       >
-        <SidebarHeader
-          className="border-b border-slate-100 px-3 pb-3 pt-3"
-          style={headerBg}
-        >
-          <div className="flex items-center gap-3 px-1">
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-xs font-black text-white shadow-lg shadow-slate-200/80"
-              style={{ backgroundColor: brand }}
-            >
-              TS
-            </div>
-            <div className="min-w-0">
-              <p className={sectionLabelClass}>Live theme editor</p>
-              <p className="mt-0.5 truncate text-base font-black tracking-tight text-slate-950">
-                Shop Builder
+        {/* HEADER */}
+
+        <SidebarHeader className="border-b border-neutral-200 bg-white px-5 py-4">
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                Theme editor
               </p>
             </div>
           </div>
-          <div className="mt-3 flex items-center justify-between gap-2 px-1">
-            <Link
-              href={`${base}?cart=open`}
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/80 bg-white/90 px-3 py-2 text-xs font-bold text-slate-800 shadow-sm backdrop-blur-sm transition hover:bg-white"
-              style={{ boxShadow: `0 8px 20px ${brand}22` }}
-            >
-              Сагс
-              {cartCount > 0 ? (
-                <span
-                  className="rounded-xl px-2 py-0.5 text-[11px] font-black tabular-nums text-white"
-                  style={{ backgroundColor: brand }}
-                >
-                  {cartCount}
-                </span>
-              ) : (
-                <span className="tabular-nums text-slate-400">0</span>
-              )}
-            </Link>
-            <Link
-              href={base}
-              className="rounded-2xl px-3 py-2 text-xs font-bold text-slate-700 underline-offset-2 transition hover:bg-white/80 hover:text-slate-950 hover:underline"
-            >
-              Дэлгүүр
-            </Link>
-          </div>
         </SidebarHeader>
 
-        <SidebarContent className="bg-[#f8f9fe]/80">
-          <SidebarGroup>
-            <SidebarGroupLabel className={sectionLabelClass}>
-              Site settings
-            </SidebarGroupLabel>
-            <SidebarGroupContent className="space-y-3">
-              <div className="space-y-1.5">
-                <label htmlFor="shop-name" className={fieldLabelClass}>
-                  Shop name
-                </label>
-                <SidebarInput
-                  id="shop-name"
-                  value={shopName}
-                  onChange={(e) => setShopName(e.target.value)}
-                  placeholder="Nomad Goods"
-                  className={inputClass}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label htmlFor="hero-announcement" className={fieldLabelClass}>
-                  Announcement
-                </label>
-                <SidebarInput
-                  id="hero-announcement"
-                  value={heroAnnouncement}
-                  onChange={(e) => setHeroAnnouncement(e.target.value)}
-                  placeholder="Free delivery in Ulaanbaatar this week"
-                  className={inputClass}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label htmlFor="hero-title" className={fieldLabelClass}>
-                  Tagline
-                </label>
-                <SidebarInput
-                  id="hero-title"
-                  value={heroTitle}
-                  onChange={(e) => setHeroTitle(e.target.value)}
-                  placeholder="Subtitle under the shop name…"
-                  className={inputClass}
-                />
-              </div>
+        {/* CONTENT */}
+
+        <SidebarContent className="overflow-y-auto bg-white">
+          {/* SITE SETTINGS */}
+
+          <SidebarGroup className="px-5 py-5">
+            <SidebarGroupContent className="space-y-4">
+              {(
+                [
+                  {
+                    id: "shop-name",
+                    label: "Shop name",
+                    val: shopName,
+                    set: setShopName,
+                    ph: "Nomad Goods",
+                  },
+
+                  {
+                    id: "hero-title",
+                    label: "Tagline",
+                    val: heroTitle,
+                    set: setHeroTitle,
+                    ph: "Subtitle under shop name…",
+                  },
+                ] as const
+              ).map(({ id, label, val, set, ph }) => (
+                <div key={id} className="space-y-1.5">
+                  <label htmlFor={id} className={fieldLabelClass}>
+                    {label}
+                  </label>
+
+                  <SidebarInput
+                    id={id}
+                    value={val}
+                    placeholder={ph}
+                    onChange={(e) => set(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+              ))}
+
+              {/* HERO URL */}
+
               <div className="space-y-1.5">
                 <label htmlFor="hero-image" className={fieldLabelClass}>
                   Hero image URL
                 </label>
+
                 <SidebarInput
                   id="hero-image"
                   value={heroImage}
+                  placeholder="https://..."
                   onChange={(e) => setHeroImage(e.target.value)}
-                  placeholder="Optional: https://… or /path or leave empty if uploading"
                   className={cn(inputClass, "font-mono text-xs")}
                 />
               </div>
+
+              {/* PRIMARY UPLOAD */}
+
               <div className="space-y-1.5">
                 <span className={fieldLabelClass}>Primary hero upload</span>
+
                 <input
                   accept="image/*"
-                  className="block w-full text-xs text-slate-500 file:mr-3 file:rounded-2xl file:border file:border-slate-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-800"
+                  type="file"
+                  className="block w-full text-xs text-neutral-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-neutral-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-neutral-700 file:transition file:hover:bg-neutral-50"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
+
                     e.target.value = "";
+
                     if (!file) return;
+
                     const reader = new FileReader();
+
                     reader.onload = () =>
                       setHeroImage(String(reader.result ?? ""));
+
                     reader.readAsDataURL(file);
                   }}
-                  type="file"
                 />
               </div>
+
+              {/* HERO GALLERY */}
+
               <div className="space-y-2">
-                <span className={fieldLabelClass}>
-                  Hero gallery (extra slides)
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {heroGallery.map((url, index) => (
-                    <div
-                      className="relative size-14 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-                      key={`${url.slice(0, 48)}-${index}`}
-                    >
-                      <Image
-                        alt=""
-                        className="object-cover"
-                        fill
-                        sizes="56px"
-                        src={url}
-                        unoptimized
-                      />
-                      <button
-                        className="absolute inset-0 flex items-center justify-center bg-black/50 text-[10px] font-bold text-white opacity-0 transition hover:opacity-100"
-                        onClick={() => removeHeroGalleryAt(index)}
-                        type="button"
+                <span className={fieldLabelClass}>Hero gallery</span>
+
+                {heroGallery.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {heroGallery.map((url, index) => (
+                      <div
+                        key={`${url.slice(0, 48)}-${index}`}
+                        className="relative size-14 overflow-hidden rounded-xl border border-neutral-200"
                       >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                        <Image
+                          alt=""
+                          className="object-cover"
+                          fill
+                          sizes="56px"
+                          src={url}
+                          unoptimized
+                        />
+
+                        <button
+                          type="button"
+                          className="absolute inset-0 flex items-center justify-center bg-black/50 text-[10px] font-bold text-white opacity-0 transition hover:opacity-100"
+                          onClick={() => removeHeroGalleryAt(index)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <input
                   accept="image/*"
-                  className="block w-full text-xs text-slate-500 file:mr-3 file:rounded-2xl file:border file:border-slate-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-bold file:text-slate-800"
+                  type="file"
+                  className="block w-full text-xs text-neutral-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-neutral-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-neutral-700 file:transition file:hover:bg-neutral-50"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
+
                     e.target.value = "";
+
                     if (!file) return;
+
                     const reader = new FileReader();
+
                     reader.onload = () =>
                       addHeroGalleryImage(String(reader.result ?? ""));
+
                     reader.readAsDataURL(file);
                   }}
-                  type="file"
                 />
               </div>
+
+              {/* SLIDE COUNTER */}
+
               <div
-                className="rounded-2xl border border-slate-100 bg-white px-3 py-2.5 shadow-sm"
-                style={{ borderLeftWidth: 4, borderLeftColor: brand }}
-              >
-                <p className="text-xs font-bold text-slate-900">
-                  Hero slides: {heroSlideCount} / 3 minimum
-                </p>
-                {heroSlideCount < 3 ? (
-                  <p className="mt-1 text-xs font-medium text-amber-800 dark:text-amber-200">
-                    Primary + gallery together must reach three distinct images
-                    for the storefront demo and publishing.
-                  </p>
-                ) : (
-                  <p className="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                    Ready: carousel has enough slides.
-                  </p>
+                className={cn(
+                  "rounded-xl px-3.5 py-3 text-sm",
+                  heroSlideCount >= 3
+                    ? "border border-green-100 bg-green-50 text-green-800"
+                    : "border border-amber-100 bg-amber-50 text-amber-800",
                 )}
+              >
+                <p className="font-bold">Hero slides: {heroSlideCount} / 3</p>
+
+                <p className="mt-0.5 text-xs font-medium opacity-80">
+                  {heroSlideCount >= 3
+                    ? "Ready — carousel has enough slides."
+                    : "Primary + gallery must reach 3 images."}
+                </p>
               </div>
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarSeparator className="bg-slate-200/90" />
+          <SidebarSeparator className="bg-neutral-100" />
 
-          <SidebarGroup>
+          {/* STYLE */}
+
+          <SidebarGroup className="px-5 py-5">
             <SidebarGroupLabel className={sectionLabelClass}>
-              Style selection
+              Style
             </SidebarGroupLabel>
-            <SidebarGroupContent className="space-y-2 pt-1">
+
+            <SidebarGroupContent className="space-y-2">
               {themes.map(({ id, label, icon: Icon }) => {
                 const active = preset === id;
+
                 return (
                   <button
                     key={id}
                     type="button"
                     onClick={() => setPreset(id)}
                     className={cn(
-                      "flex h-11 w-full items-center gap-2.5 rounded-2xl px-4 text-sm font-bold transition",
+                      "flex h-11 w-full items-center gap-3 rounded-xl px-4 text-sm font-semibold transition",
                       active
-                        ? "bg-slate-950 text-white shadow-[0_12px_28px_rgba(15,23,42,0.18)]"
-                        : "bg-white text-slate-600 shadow-sm ring-1 ring-slate-100 hover:bg-slate-50 hover:text-slate-900",
+                        ? "bg-neutral-900 text-white"
+                        : "border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900",
                     )}
                   >
                     <span
-                      className="flex size-8 items-center justify-center rounded-xl"
-                      style={
+                      className={cn(
+                        "flex size-7 items-center justify-center rounded-lg",
                         active
-                          ? {
-                              backgroundColor: "rgba(255,255,255,0.2)",
-                              color: "#ffffff",
-                            }
-                          : { backgroundColor: accent, color: brand }
-                      }
+                          ? "bg-white/15 text-white"
+                          : "bg-neutral-100 text-neutral-500",
+                      )}
                     >
                       <Icon className="size-4 shrink-0" aria-hidden />
                     </span>
+
                     {label}
                   </button>
                 );
@@ -432,12 +471,15 @@ export function BuilderEditorSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarSeparator className="bg-slate-200/90" />
+          <SidebarSeparator className="bg-neutral-100" />
 
-          <SidebarGroup>
+          {/* LAYOUT */}
+
+          <SidebarGroup className="px-5 py-5">
             <SidebarGroupLabel className={sectionLabelClass}>
-              Карт ба layout
+              Layout
             </SidebarGroupLabel>
+<<<<<<< HEAD
             <SidebarGroupContent className="space-y-5 pt-1">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
@@ -462,145 +504,197 @@ export function BuilderEditorSidebar() {
                   style={sliderStyle}
                 />
               </div>
+=======
+>>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between gap-3">
-                  <label htmlFor="card-pad" className={fieldLabelClass}>
-                    Картын доторх зай
-                  </label>
-                  <span className="text-xs tabular-nums font-semibold text-slate-500">
-                    {cardContentPaddingRem.toFixed(2)}rem
-                  </span>
-                </div>
-                <input
-                  id="card-pad"
-                  type="range"
-                  min={0.5}
-                  max={2}
-                  step={0.0625}
-                  value={cardContentPaddingRem}
-                  onChange={(e) =>
-                    setCardContentPaddingRem(Number.parseFloat(e.target.value))
-                  }
-                  className={sliderClass}
-                  style={sliderStyle}
-                />
-              </div>
+            <SidebarGroupContent className="space-y-5">
+              {[
+                {
+                  id: "radius-theme",
+                  label: "Булангийн радиус",
+                  value: radius,
+                  display: `${radius}px`,
+                  min: 2,
+                  max: 40,
+                  step: 1,
+                  onChange: (v: number) => setRadius(v),
+                },
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between gap-3">
-                  <label htmlFor="grid-gap" className={fieldLabelClass}>
-                    Торын хоорондын зай
-                  </label>
-                  <span className="text-xs tabular-nums font-semibold text-slate-500">
-                    {productGridGapRem.toFixed(2)}rem
-                  </span>
-                </div>
-                <input
-                  id="grid-gap"
-                  type="range"
-                  min={0.375}
-                  max={2.5}
-                  step={0.0625}
-                  value={productGridGapRem}
-                  onChange={(e) =>
-                    setProductGridGapRem(Number.parseFloat(e.target.value))
-                  }
-                  className={sliderClass}
-                  style={sliderStyle}
-                />
-              </div>
+                {
+                  id: "card-pad",
+                  label: "Картын доторх зай",
+                  value: cardContentPaddingRem,
+                  display: `${cardContentPaddingRem.toFixed(2)}rem`,
+                  min: 0.5,
+                  max: 2,
+                  step: 0.0625,
+                  onChange: (v: number) => setCardContentPaddingRem(v),
+                },
+
+                {
+                  id: "grid-gap",
+                  label: "Торын зай",
+                  value: productGridGapRem,
+                  display: `${productGridGapRem.toFixed(2)}rem`,
+                  min: 0.375,
+                  max: 2.5,
+                  step: 0.0625,
+                  onChange: (v: number) => setProductGridGapRem(v),
+                },
+              ].map(
+                ({ id, label, value, display, min, max, step, onChange }) => (
+                  <div key={id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor={id}
+                        className="text-sm font-medium text-neutral-600"
+                      >
+                        {label}
+                      </label>
+
+                      <span className="text-xs font-semibold tabular-nums text-neutral-400">
+                        {display}
+                      </span>
+                    </div>
+
+                    <input
+                      id={id}
+                      type="range"
+                      min={min}
+                      max={max}
+                      step={step}
+                      value={value}
+                      onChange={(e) =>
+                        onChange(Number.parseFloat(e.target.value))
+                      }
+                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-neutral-200 accent-neutral-900"
+                    />
+                  </div>
+                ),
+              )}
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarSeparator className="bg-slate-200/90" />
+          <SidebarSeparator className="bg-neutral-100" />
 
-          <SidebarGroup>
+          {/* PUBLISH */}
+
+          <SidebarGroup className="px-5 py-5">
             <SidebarGroupLabel className={sectionLabelClass}>
-              Өөрийн дэлгүүр (backend)
+              Дэлгүүр үүсгэх
             </SidebarGroupLabel>
-            <SidebarGroupContent className="space-y-3 pt-1">
-              <p className="text-xs font-medium text-slate-500">
+
+            <SidebarGroupContent className="space-y-4">
+              <p className="text-xs leading-relaxed text-neutral-400">
                 Platform API дээр дэлгүүр үүсгээд public storefront нээнэ.
               </p>
-              <div className="space-y-1.5">
-                <label htmlFor="owner-id" className={fieldLabelClass}>
-                  Owner ID
-                </label>
-                <SidebarInput
-                  id="owner-id"
-                  value={ownerId}
-                  onChange={(e) => setOwnerId(e.target.value)}
-                  placeholder="merchant user UUID"
-                  className={cn(inputClass, "font-mono text-xs")}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label htmlFor="store-name" className={fieldLabelClass}>
-                  Дэлгүүрийн нэр
-                </label>
-                <SidebarInput
-                  id="store-name"
-                  value={storeName}
-                  onChange={(e) => setStoreName(e.target.value)}
-                  placeholder="My Store"
-                  className={inputClass}
-                />
-              </div>
 
-              <Button
+              {(
+                [
+                  {
+                    id: "owner-id",
+                    label: "Owner ID",
+                    val: ownerId,
+                    set: setOwnerId,
+                    ph: "merchant user UUID",
+                    mono: true,
+                  },
+
+                  {
+                    id: "store-name",
+                    label: "Дэлгүүрийн нэр",
+                    val: storeName,
+                    set: setStoreName,
+                    ph: "My Store",
+                    mono: false,
+                  },
+                ] as const
+              ).map(({ id, label, val, set, ph, mono }) => (
+                <div key={id} className="space-y-1.5">
+                  <label htmlFor={id} className={fieldLabelClass}>
+                    {label}
+                  </label>
+
+                  <SidebarInput
+                    id={id}
+                    value={val}
+                    placeholder={ph}
+                    onChange={(e) => set(e.target.value)}
+                    className={cn(inputClass, mono && "font-mono text-xs")}
+                  />
+                </div>
+              ))}
+
+              <button
                 type="button"
                 onClick={handleCreateStore}
                 disabled={publishStatus === "creating"}
-                className="h-11 w-full rounded-2xl text-sm font-black text-white shadow-lg transition hover:opacity-90 disabled:opacity-60"
-                style={{
-                  backgroundColor: brand,
-                  boxShadow: `0 14px 28px ${brand}44`,
-                }}
+                className="h-11 w-full rounded-xl bg-neutral-900 text-sm font-bold text-white transition hover:bg-neutral-800 disabled:opacity-40"
               >
                 {publishStatus === "creating"
-                  ? "Үүсгэж байна…"
+                  ? "Үүсгэж байна..."
                   : "Шинэ дэлгүүр үүсгэх"}
-              </Button>
+              </button>
 
-              {publishStatus === "created" && storeSlug ? (
-                <div className="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm ring-1 ring-slate-100">
-                  <p className="text-xs font-bold text-slate-900">
+              {publishStatus === "created" && storeSlug && (
+                <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+                  <p className="text-sm font-bold text-neutral-900">
                     Дэлгүүр үүслээ
                   </p>
-                  <p className="mt-1 break-all font-mono text-[11px] text-slate-500">
+
+                  <p className="mt-1 break-all font-mono text-xs text-neutral-400">
                     slug: {storeSlug}
                   </p>
+
                   <Link
                     href={`/s/${encodeURIComponent(storeSlug)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-900 transition hover:bg-white"
-                    style={{ borderColor: brand, color: brand }}
+                    className="mt-3 flex w-full items-center justify-center rounded-xl border border-neutral-900 bg-neutral-900 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-neutral-800"
                   >
                     Public дэлгүүр нээх
                   </Link>
                 </div>
-              ) : null}
+              )}
 
+<<<<<<< HEAD
               {publishError ? (
                 <p className="text-xs font-semibold text-red-600">
                   {publishError}
                 </p>
               ) : null}
+=======
+              {publishError && (
+                <p className="text-xs font-semibold text-red-500">
+                  {publishError}
+                </p>
+              )}
+>>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-slate-100 bg-white px-2 pb-3 pt-2">
+        {/* FOOTER */}
+
+        <SidebarFooter className="border-t border-neutral-200 bg-white px-5 py-4">
           <Button
-            className="mb-2 h-11 w-full rounded-2xl border-slate-200 font-bold text-slate-700"
-            onClick={() => resetTheme()}
             type="button"
             variant="outline"
+            onClick={() => resetTheme()}
+            className="h-10 w-full rounded-xl border-neutral-200 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
           >
             Reset to default
           </Button>
+<<<<<<< HEAD
+=======
+
+          <Link
+            href={PATHS.adminOverview}
+            className="mt-2 block rounded-lg py-2 text-center text-xs font-semibold text-neutral-400 transition hover:text-neutral-700"
+          >
+            Shop settings
+          </Link>
+>>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
         </SidebarFooter>
       </Sidebar>
     </SidebarProvider>

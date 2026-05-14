@@ -17,7 +17,6 @@ import { PATHS } from "@/lib/site-paths";
 
 const navItems = [
   { label: "Overview", href: "/admin/overview", icon: LayoutDashboard },
-  { label: "Shop", href: PATHS.adminShop, icon: Store },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Theme studio", href: PATHS.builderUpdate, icon: Sparkles },

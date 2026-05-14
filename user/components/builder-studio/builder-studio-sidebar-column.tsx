@@ -46,7 +46,7 @@ export function BuilderStudioSidebarColumn() {
         </div>
       </div>
 
-      <aside className="hidden w-[292px] shrink-0 p-5 lg:block">
+      <aside className="hidden w-fit shrink-0 p-5 lg:block">
         <div
           className={cn(
             "sticky top-5 flex h-[calc(100vh-2.5rem)] max-h-[calc(100vh-2.5rem)] flex-col overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_70px_rgba(15,23,42,0.07)] transition-[opacity,transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:opacity-100",
