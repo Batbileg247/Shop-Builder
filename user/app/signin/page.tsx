@@ -12,6 +12,7 @@ import {
   setAuthSession,
 } from "@/lib/auth-session";
 import { loginWithPassword } from "@/lib/platform-auth";
+import { DEFAULT_AFTER_LOGIN, PATHS } from "@/lib/site-paths";
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -53,7 +54,10 @@ function safeRedirectPath(raw: string | null, fallback: string): string {
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const afterLogin = safeRedirectPath(searchParams.get("redirect"), "/builder");
+  const afterLogin = safeRedirectPath(
+    searchParams.get("redirect"),
+    DEFAULT_AFTER_LOGIN,
+  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -104,7 +108,7 @@ function SignInForm() {
               Welcome back
             </span>
             <Link
-              href="/signup"
+              href={PATHS.signUp}
               className="text-sm font-medium text-white/60 transition hover:text-white px-2 py-1 rounded"
             >
               Sign up
@@ -218,7 +222,7 @@ export default function SignIn() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-svh bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900" />
+        <div className="min-h-svh bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900" />
       }
     >
       <SignInForm />

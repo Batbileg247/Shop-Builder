@@ -14,17 +14,15 @@ import { getAuthSession } from "@/lib/auth-session";
 import { useEffect, useState } from "react";
 
 export const LandingPage = () => {
-  const [generateHref, setGenerateHref] = useState(
-    "/signin?redirect=%2Fbuilder",
-  );
+  const [generateHref, setGenerateHref] = useState("/signin");
   const [avatarHref, setAvatarHref] = useState("/signin");
 
   useEffect(() => {
     if (getAuthSession()) {
       setGenerateHref("/builder");
-      setAvatarHref("/user");
+      setAvatarHref(`/admin`);
     } else {
-      setGenerateHref("/signin?redirect=%2Fbuilder");
+      setGenerateHref("/signin");
       setAvatarHref("/signin");
     }
   }, []);

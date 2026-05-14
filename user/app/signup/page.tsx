@@ -7,6 +7,7 @@ import TranslateWidget from "../components/LanguageSelector";
 
 import { setAuthSession } from "@/lib/auth-session";
 import { registerMerchant } from "@/lib/platform-auth";
+import { DEFAULT_AFTER_LOGIN, PATHS } from "@/lib/site-paths";
 
 const EyeIcon = ({ open }: { open: boolean }) =>
   open ? (
@@ -80,10 +81,8 @@ export default function SignUp() {
       setError("Нууц үг таарахгүй байна");
       return;
     }
-
     setLoading(true);
     setError("");
-
     try {
       const session = await registerMerchant(form.email, form.password, {
         firstName: form.firstName,
@@ -91,7 +90,7 @@ export default function SignUp() {
         phone: form.phone,
       });
       setAuthSession(session);
-      router.push("/builder");
+      router.push(DEFAULT_AFTER_LOGIN);
       router.refresh();
     } catch (err) {
       setError(
@@ -103,7 +102,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
       <Blobs />
       <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl">
         <Shine />
@@ -117,13 +116,12 @@ export default function SignUp() {
               Let&apos;s start
             </p>
             <Link
-              href="/signin"
+              href={PATHS.signIn}
               className="text-sm font-medium text-white/80 transition hover:text-white py-1 px-2 rounded"
             >
               Sign in
             </Link>
           </div>
-
           <h1 className="text-2xl font-semibold text-white">Sign up</h1>
         </div>
 
@@ -205,11 +203,7 @@ export default function SignUp() {
                 onChange={set("confirmPassword")}
                 required
                 autoComplete="new-password"
-                className={`${inputCls} pr-10 ${
-                  passwordMatchError
-                    ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-                    : ""
-                }`}
+                className={`${inputCls} pr-10 ${passwordMatchError ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20" : ""}`}
               />
               <ToggleEye
                 show={showConfirm}
@@ -308,6 +302,6 @@ function Blobs() {
 
 function Shine() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/30 to-transparent rounded-t-2xl" />
+    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-t-2xl" />
   );
 }
