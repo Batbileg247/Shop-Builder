@@ -136,7 +136,6 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Storefront: Tailwind → CSS variable (site-preview-root доторх --pv-*) */
   --color-pv-bg: var(--pv-bg);
   --color-pv-fg: var(--pv-fg);
   --color-pv-muted: var(--pv-muted);
@@ -326,9 +325,10 @@ body {
   --pv-chip-fg: #2d3748;
   --pv-chip-active-bg: #e0e5ec;
   --pv-chip-active-border: transparent;
-  --pv-chip-active-shadow:
-    inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
-  --pv-chip-shadow: 5px 5px 10px #a3b1c6, -4px -4px 8px #ffffff;
+  /* active = raised */
+  --pv-chip-active-shadow: 5px 5px 10px #a3b1c6, -4px -4px 8px #ffffff;
+  /* inactive = pressed */
+  --pv-chip-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
   --pv-link-hover: #1a202c;
   --pv-divider: rgba(163, 177, 198, 0.5);
   --pv-empty-bg: #d8dee8;

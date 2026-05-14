@@ -213,7 +213,9 @@ function HomePageInner() {
     <div
       className={cn(
         "flex flex-col border-t border-pv-divider bg-pv-bg",
-        fullSiteShell ? "w-full lg:flex-row lg:items-start" : "flex-1 lg:flex-row",
+        fullSiteShell
+          ? "w-full lg:flex-row lg:items-start"
+          : "flex-1 lg:flex-row",
         !fullSiteShell && "h-full min-h-0 overflow-hidden",
       )}
     >
@@ -307,10 +309,8 @@ function HomePageInner() {
           {categoryChips.map((cat) => (
             <button
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-medium transition",
-                previewCategory === cat
-                  ? "bg-pv-primary text-pv-primary-fg shadow-pv-primary"
-                  : "bg-pv-card text-pv-fg ring-1 ring-pv-border hover:bg-pv-empty",
+                "pv-chip rounded-full px-4 py-2 text-sm font-medium",
+                previewCategory === cat && "pv-chip-active",
               )}
               key={cat}
               onClick={() => setPreviewCategory(cat)}
