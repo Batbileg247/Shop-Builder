@@ -7,6 +7,7 @@ import { Check, ExternalLink, RotateCcw, Sparkles } from "lucide-react";
 
 import { useDashboard } from "@/context/DashboardContext";
 import { PATHS } from "@/lib/site-paths";
+import { safeImage } from "@/lib/utils";
 import type { ShopUpdateInput } from "@/types/dashboard";
 
 const presets = [
@@ -51,14 +52,20 @@ export function ShopEditor() {
     setForm((current) => ({ ...current, [key]: value }));
   };
 
-  const saveChanges = () => {
-    updateShop(activeShop.id, {
-      name: form.name?.trim() || activeShop.name,
-      slug: form.slug?.trim() || activeShop.slug,
-      logoUrl: form.logoUrl?.trim() || activeShop.logoUrl,
-      brandColor: form.brandColor || activeShop.brandColor,
-      accentColor: form.accentColor || activeShop.accentColor,
-    });
+  const saveChanges = async () => {
+    try {
+      await updateShop(activeShop.id, {
+        name: form.name?.trim() || activeShop.name,
+        slug: form.slug?.trim() || activeShop.slug,
+        logoUrl: form.logoUrl?.trim() || activeShop.logoUrl,
+        brandColor: form.brandColor || activeShop.brandColor,
+        accentColor: form.accentColor || activeShop.accentColor,
+      });
+    } catch (e) {
+      window.alert(
+        e instanceof Error ? e.message : "Дэлгүүрийн тохиргоо хадгалахад алдаа гарлаа.",
+      );
+    }
   };
 
   const resetChanges = () => {
@@ -118,7 +125,7 @@ export function ShopEditor() {
               style={{ borderColor: previewBrand }}
             >
               <Image
-                src={form.logoUrl || activeShop.logoUrl}
+                src={safeImage(form.logoUrl || activeShop.logoUrl)}
                 alt=""
                 fill
                 sizes="64px"

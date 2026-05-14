@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import { useDashboard } from "@/context/DashboardContext";
+import { safeImage } from "@/lib/utils";
 import { PATHS } from "@/lib/site-paths";
 
 const navItems = [
@@ -41,7 +42,7 @@ function navItemIsActive(pathname: string, href: string) {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { shops, activeShop, switchShop } = useDashboard();
+  const { shops, activeShop, switchShop, isLoadingStores } = useDashboard();
 
   return (
     <>
@@ -63,19 +64,29 @@ export function Sidebar() {
 
           {/* Shop switcher */}
           <div className="relative mt-4">
-            <select
-              value={activeShop.id}
-              onChange={(e) => switchShop(e.target.value)}
-              aria-label="Pick the shop you are editing"
-              className="h-11 w-full appearance-none rounded-xl border border-zinc-200 bg-white px-4 pr-10 text-sm font-semibold text-zinc-900 outline-none focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
-            >
-              {shops.map((shop) => (
-                <option key={shop.id} value={shop.id}>
-                  {shop.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+            {shops.length === 0 ? (
+              <p className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-500">
+                {isLoadingStores
+                  ? "Дэлгүүрүүдийг ачааллаж байна…"
+                  : "Өгөгдлийн санд дэлгүүр байхгүй байна. Platform-оор дэлгүүр үүсгэнэ үү."}
+              </p>
+            ) : (
+              <>
+                <select
+                  value={activeShop.id}
+                  onChange={(e) => switchShop(e.target.value)}
+                  aria-label="Pick the shop you are editing"
+                  className="h-11 w-full appearance-none rounded-xl border border-zinc-200 bg-white px-4 pr-10 text-sm font-semibold text-zinc-900 outline-none focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
+                >
+                  {shops.map((shop) => (
+                    <option key={shop.id} value={shop.id}>
+                      {shop.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
+              </>
+            )}
           </div>
 
           {/* Nav grid */}
@@ -129,28 +140,38 @@ export function Sidebar() {
               Active shop
             </label>
             <div className="relative">
-              <div className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-8 w-8 -translate-y-1/2 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50">
-                <Image
-                  src={activeShop.logoUrl}
-                  alt=""
-                  fill
-                  sizes="32px"
-                  className="object-cover"
-                />
-              </div>
-              <select
-                id="shop-switcher"
-                value={activeShop.id}
-                onChange={(e) => switchShop(e.target.value)}
-                className="h-13 w-full appearance-none rounded-xl border border-zinc-200 bg-white py-3 pl-14 pr-10 text-sm font-semibold text-zinc-900 outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
-              >
-                {shops.map((shop) => (
-                  <option key={shop.id} value={shop.id}>
-                    {shop.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+              {shops.length === 0 ? (
+                <p className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-500">
+                  {isLoadingStores
+                    ? "Дэлгүүрүүдийг ачааллаж байна…"
+                    : "Дэлгүүр олдсонгүй."}
+                </p>
+              ) : (
+                <>
+                  <div className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-8 w-8 -translate-y-1/2 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50">
+                    <Image
+                      src={safeImage(activeShop.logoUrl)}
+                      alt=""
+                      fill
+                      sizes="32px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <select
+                    id="shop-switcher"
+                    value={activeShop.id}
+                    onChange={(e) => switchShop(e.target.value)}
+                    className="h-13 w-full appearance-none rounded-xl border border-zinc-200 bg-white py-3 pl-14 pr-10 text-sm font-semibold text-zinc-900 outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
+                  >
+                    {shops.map((shop) => (
+                      <option key={shop.id} value={shop.id}>
+                        {shop.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                </>
+              )}
             </div>
           </div>
 

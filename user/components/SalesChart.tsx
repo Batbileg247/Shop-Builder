@@ -11,7 +11,7 @@ import {
   YAxis,
   type TooltipContentProps,
 } from "recharts";
-import { monthlySalesData } from "@/lib/mockData";
+import type { MonthlySalesPoint } from "@/lib/admin-api";
 
 const salesFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -43,10 +43,12 @@ function SalesTooltip({ active, label, payload }: TooltipContentProps) {
 
 export function SalesChart({
   activeShopId,
+  data,
   brandColor = "#18181b",
   className = "",
 }: {
   activeShopId: string;
+  data: MonthlySalesPoint[];
   brandColor?: string;
   className?: string;
 }) {
@@ -54,8 +56,8 @@ export function SalesChart({
   const [isMounted, setIsMounted] = React.useState(false);
 
   const chartData = React.useMemo(
-    () => monthlySalesData.filter((point) => point.shopId === activeShopId),
-    [activeShopId],
+    () => data.filter((point) => point.shopId === activeShopId),
+    [activeShopId, data],
   );
 
   const totalSales = React.useMemo(
@@ -99,9 +101,9 @@ export function SalesChart({
             >
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#18181b" stopOpacity={0.12} />
-                  <stop offset="60%" stopColor="#18181b" stopOpacity={0.04} />
-                  <stop offset="100%" stopColor="#18181b" stopOpacity={0} />
+                  <stop offset="5%" stopColor={brandColor} stopOpacity={0.12} />
+                  <stop offset="60%" stopColor={brandColor} stopOpacity={0.04} />
+                  <stop offset="100%" stopColor={brandColor} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -125,7 +127,7 @@ export function SalesChart({
               />
               <Tooltip
                 cursor={{
-                  stroke: "#18181b",
+                  stroke: brandColor,
                   strokeOpacity: 0.1,
                   strokeWidth: 2,
                 }}
@@ -134,13 +136,13 @@ export function SalesChart({
               <Area
                 type="monotone"
                 dataKey="sales"
-                stroke="#18181b"
+                stroke={brandColor}
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
                 activeDot={{
                   r: 5,
                   fill: "#ffffff",
-                  stroke: "#18181b",
+                  stroke: brandColor,
                   strokeWidth: 2,
                 }}
                 dot={false}

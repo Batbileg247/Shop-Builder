@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import SalesChart from "@/components/SalesChart";
 import { useDashboard } from "@/context/DashboardContext";
-import { monthlySalesData } from "@/lib/mockData";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -27,11 +26,11 @@ function compactCurrency(value: number) {
 }
 
 export default function OverviewPage() {
-  const { activeShop, activeShopId, metrics, products } = useDashboard();
+  const { activeShop, activeShopId, monthlySales } = useDashboard();
 
   const timeline = React.useMemo(
-    () => monthlySalesData.filter((point) => point.shopId === activeShopId),
-    [activeShopId],
+    () => monthlySales.filter((point) => point.shopId === activeShopId),
+    [activeShopId, monthlySales],
   );
 
   const totalTimelineSales = timeline.reduce((t, p) => t + p.sales, 0);
@@ -135,6 +134,7 @@ export default function OverviewPage() {
         <div className="rounded-2xl border border-zinc-200 bg-white">
           <SalesChart
             activeShopId={activeShopId}
+            data={monthlySales}
             brandColor="#18181b"
             className="rounded-2xl p-0"
           />

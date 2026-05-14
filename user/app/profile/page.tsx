@@ -23,9 +23,10 @@ import {
   getAuthSession,
   type AuthSession,
 } from "@/lib/auth-session";
-import { cn } from "@/lib/utils";
+import { fetchAdminStores } from "@/lib/admin-api";
+import type { Shop } from "@/types/dashboard";
+import { cn, safeImage } from "@/lib/utils";
 import { buttonVariants } from "@/ui/button";
-import { useDashboard } from "@/context/DashboardContext";
 
 function displayName(session: AuthSession) {
   return [session.user.lastName, session.user.firstName]
@@ -53,7 +54,7 @@ function roleLabel(role: string) {
 
 export default function UserAccountPage() {
   const router = useRouter();
-  const { shops } = useDashboard();
+  const [shops, setShops] = useState<Shop[]>([]);
 
   const [session, setSession] = useState<AuthSession | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -67,6 +68,20 @@ export default function UserAccountPage() {
     }
     setSession(s);
   }, [router]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAdminStores()
+      .then((list) => {
+        if (!cancelled) setShops(list);
+      })
+      .catch(() => {
+        if (!cancelled) setShops([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!mounted || !session) {
     return (
@@ -301,7 +316,7 @@ export default function UserAccountPage() {
                       >
                         <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
                           <Image
-                            src={shop.logoUrl}
+                            src={safeImage(shop.logoUrl)}
                             alt={shop.name}
                             width={48}
                             height={48}

@@ -2,7 +2,6 @@
 
 import SalesChart from "@/components/SalesChart";
 import { useDashboard } from "@/context/DashboardContext";
-import { monthlySalesData } from "@/lib/mockData";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -11,8 +10,8 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
 });
 
 export default function AnalyticsPage() {
-  const { activeShop, activeShopId } = useDashboard();
-  const timeline = monthlySalesData.filter((point) => point.shopId === activeShopId);
+  const { activeShop, activeShopId, monthlySales } = useDashboard();
+  const timeline = monthlySales.filter((point) => point.shopId === activeShopId);
   const totalSales = timeline.reduce((total, point) => total + point.sales, 0);
 
   return (
@@ -30,6 +29,7 @@ export default function AnalyticsPage() {
 
       <SalesChart
         activeShopId={activeShopId}
+        data={monthlySales}
         brandColor="#14b8a6"
         className="rounded-[2rem] p-0"
       />

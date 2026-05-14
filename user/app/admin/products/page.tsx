@@ -59,7 +59,7 @@ function ProductModal({
 }: {
   open: boolean;
   onClose: () => void;
-  onSubmit: (product: NewProductInput) => void;
+  onSubmit: (product: NewProductInput) => void | Promise<void>;
   brandColor: string;
   product?: Product | null;
   categories: string[];
@@ -126,15 +126,21 @@ function ProductModal({
 
         <form
           className="space-y-5 px-7 pb-7"
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
             setFormError(null);
             if (!isEditing && !form.imageUrl.trim()) {
               setFormError("Add a product photo (upload or image URL).");
               return;
             }
-            onSubmit(form);
-            onClose();
+            try {
+              await Promise.resolve(onSubmit(form));
+              onClose();
+            } catch (err) {
+              setFormError(
+                err instanceof Error ? err.message : "Failed to save product.",
+              );
+            }
           }}
         >
           <div className="grid gap-4 sm:grid-cols-2">
@@ -364,13 +370,13 @@ export default function ProductsPage() {
     setEditingProduct(null);
   };
 
-  const saveProduct = (data: NewProductInput) => {
+  const saveProduct = async (data: NewProductInput) => {
     if (editingProduct) {
-      updateProduct(editingProduct.id, data);
+      await updateProduct(editingProduct.id, data);
       return;
     }
 
-    addProduct(data);
+    await addProduct(data);
   };
 
   const filteredProducts = React.useMemo(() => {

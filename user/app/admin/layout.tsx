@@ -6,13 +6,17 @@ import {
   AdminDashboardChrome,
   AdminLayoutShell,
 } from "@/components/admin-layout-shell";
+import { AdminDataStatusBanner } from "@/components/admin-data-status-banner";
 import { DashboardProvider } from "@/context/DashboardContext";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <DashboardProvider>
       <AdminLayoutShell>
-        <AdminDashboardChrome>{children}</AdminDashboardChrome>
+        <AdminDashboardChrome>
+          <AdminDataStatusBanner />
+          {children}
+        </AdminDashboardChrome>
       </AdminLayoutShell>
     </DashboardProvider>
   );
