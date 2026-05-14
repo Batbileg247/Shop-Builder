@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,8 +11,8 @@ import {
   Sparkles,
   Store,
   Users,
-  User,
 } from "lucide-react";
+import { getAuthSession, type AuthSession } from "@/lib/auth-session";
 import { useDashboard } from "@/context/DashboardContext";
 import { PATHS } from "@/lib/site-paths";
 
@@ -31,9 +32,31 @@ function navItemIsActive(pathname: string, href: string) {
   return pathname === href;
 }
 
+function initialsFor(session: AuthSession) {
+  const name =
+    [session.user.lastName, session.user.firstName]
+      .filter(Boolean)
+      .join(" ")
+      .trim() || session.user.email;
+  return name
+    .split(/\s|@/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 export function Sidebar() {
   const pathname = usePathname();
   const { shops, activeShop, switchShop } = useDashboard();
+  const [session, setSession] = useState<AuthSession | null>(null);
+
+  useEffect(() => {
+    const s = getAuthSession();
+    if (s) {
+      setSession(s);
+    }
+  }, []);
 
   return (
     <>
@@ -41,9 +64,12 @@ export function Sidebar() {
       <div className="p-4 pb-0 lg:hidden">
         <div className="rounded-2xl border border-zinc-200 bg-white p-4">
           {/* Brand */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-900 bg-zinc-900 text-xs font-black tracking-tight text-white">
-              SB
+          <Link
+            href="/user"
+            className="flex items-center gap-3 hover:opacity-75 transition-opacity"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-xs font-black tracking-tight text-zinc-900">
+              {session ? initialsFor(session) : "SB"}
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400">
@@ -51,7 +77,7 @@ export function Sidebar() {
               </p>
               <h1 className="text-sm font-bold text-zinc-900">Dashboard</h1>
             </div>
-          </div>
+          </Link>
 
           {/* Shop switcher */}
           <div className="relative mt-4">
@@ -98,10 +124,13 @@ export function Sidebar() {
       <aside className="hidden w-[320px] shrink-0 p-6 lg:block">
         <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col rounded-2xl border border-zinc-200 bg-white">
           {/* Brand header */}
-          <div className="border-b border-zinc-100 px-7 py-6">
+          <Link
+            href="/user"
+            className="border-b border-zinc-100 px-7 py-6 block hover:bg-zinc-50 transition-colors"
+          >
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-sm font-black tracking-tight text-white">
-                SB
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-sm font-black tracking-tight text-zinc-900">
+                {session ? initialsFor(session) : "SB"}
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
@@ -110,7 +139,7 @@ export function Sidebar() {
                 <h1 className="text-base font-bold text-zinc-900">Dashboard</h1>
               </div>
             </div>
-          </div>
+          </Link>
 
           {/* Shop switcher */}
           <div className="border-b border-zinc-100 px-6 py-5">
@@ -184,19 +213,6 @@ export function Sidebar() {
               })}
             </ul>
           </nav>
-
-          {/* Footer */}
-          <div className="border-t border-zinc-100 px-4 py-4">
-            <Link
-              href="/user"
-              className="flex items-center gap-3.5 rounded-xl px-4 py-3.5 text-sm font-semibold text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-100 text-zinc-400">
-                <User className="h-4.5 w-4.5" />
-              </span>
-              My Profile
-            </Link>
-          </div>
         </div>
       </aside>
     </>
