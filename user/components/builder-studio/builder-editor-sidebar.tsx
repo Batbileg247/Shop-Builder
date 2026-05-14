@@ -385,19 +385,19 @@ export function BuilderEditorSidebar() {
       defaultOpen
       style={
         {
-          "--sidebar-width": "20rem",
+          "--sidebar-width": "16rem",
         } as React.CSSProperties
       }
-      className="h-full w-full "
+      className="flex h-full min-h-0 w-full flex-col overflow-hidden"
     >
       <Sidebar
         collapsible="none"
-        className="h-full w-72 shrink-0 border-r border-neutral-200 bg-white text-neutral-900"
+        className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-r border-neutral-200 bg-white text-neutral-900"
         data-theme="minimal"
       >
         {/* HEADER */}
 
-        <SidebarHeader className="border-b border-neutral-200 bg-white px-5 py-4">
+        <SidebarHeader className="shrink-0 border-b border-neutral-200 bg-white px-5 py-4">
           <div className="flex flex-col gap-2">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
@@ -427,7 +427,7 @@ export function BuilderEditorSidebar() {
 
         {/* CONTENT */}
 
-        <SidebarContent className="overflow-y-auto bg-white">
+        <SidebarContent className="min-h-0 flex-1 bg-white">
           {/* SITE SETTINGS */}
 
           <SidebarGroup className="px-5 py-5">
@@ -832,7 +832,7 @@ export function BuilderEditorSidebar() {
 
         {/* FOOTER */}
 
-        <SidebarFooter className="border-t border-neutral-200 bg-white px-5 py-4">
+        <SidebarFooter className="shrink-0 border-t border-neutral-200 bg-white px-5 py-4">
           <Button
             type="button"
             variant="outline"

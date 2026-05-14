@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { SITE_CATEGORIES, SITE_PRODUCTS } from "@/lib/site-mock-products";
+import { storefrontNavPillClassName } from "@/lib/storefront-nav-pill";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/context/store-context";
 import { useStorefrontProducts } from "@/lib/use-storefront-products";
@@ -95,6 +98,13 @@ export function ShopPage() {
 
         <div className="min-w-0 flex-1">
           <div className="mb-6 border-b border-pv-divider pb-4">
+            <Link
+              href={basePath}
+              className={cn(storefrontNavPillClassName(), "mb-4 w-fit")}
+            >
+              <ArrowLeft className="size-4 shrink-0" aria-hidden />
+              Back to store
+            </Link>
             <h1 className="text-xl font-semibold tracking-tight text-pv-fg sm:text-2xl">
               Shop
             </h1>

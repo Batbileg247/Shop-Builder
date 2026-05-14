@@ -41,7 +41,6 @@ import {
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { useBuilderUi } from "@/context/builder-ui-context";
 import { useDashboard } from "@/context/DashboardContext";
-import { useMayEditLiveStorefrontCatalog } from "@/context/storefront-catalog-edit-context";
 import { isBuilderPreviewPath, storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
 
@@ -261,13 +260,13 @@ function HomePageInner() {
   const [heroPanelPercent, setHeroPanelPercent] = React.useState(44);
 
   const isStorefront = pathname.startsWith("/s/");
-  const mayEditLiveStorefront = useMayEditLiveStorefrontCatalog();
-  /** Builder / admin preview-д нэмэх слот; нийтийн `/s/` дээр зөвхөн эзэмшигчид. */
-  const showAddProductInPreview =
-    !isStorefront || mayEditLiveStorefront;
+  /** Builder / admin preview only — public `/s/` never shows the add-product slot. */
+  const showAddProductInPreview = !isStorefront;
   const fullSiteShell = isDemo || isStorefront;
   /** Theme studio (`/builder/...`) and landing create (`/building/...`) use the dashboard main column, not full viewport. */
   const isEmbeddedDashboardPreview = isBuilderPreviewPath(pathname);
+  /** Builder/building main column: let the preview grow with content; outer shell scrolls (see `BuilderStudioLayout` previewOnly). */
+  const relaxEmbeddedPreviewOverflow = isEmbeddedDashboardPreview;
   /** Builder/building + storefront + demo: resizable биш, Theme editor-ийн Hero өндөр (px). */
   const heroShelfLocked = fullSiteShell || isEmbeddedDashboardPreview;
 
@@ -343,7 +342,7 @@ function HomePageInner() {
   };
 
   const handleAddProductSubmit = () => {
-    if (isStorefront && !mayEditLiveStorefront) return;
+    if (isStorefront) return;
     if (!newProductDraft.name.trim() || !newProductDraft.image.trim()) {
       setAddProductError(
         "Enter a product name and choose an image (swipe the samples or paste a URL).",
@@ -505,7 +504,9 @@ function HomePageInner() {
         fullSiteShell
           ? "w-full lg:flex-row lg:items-start"
           : "flex-1 lg:flex-row",
-        !fullSiteShell && "h-full min-h-0 overflow-hidden",
+        !fullSiteShell &&
+          !relaxEmbeddedPreviewOverflow &&
+          "h-full min-h-0 overflow-hidden",
       )}
     >
       <aside
@@ -572,7 +573,11 @@ function HomePageInner() {
     <div
       className={cn(
         "border-t border-pv-divider bg-pv-bg",
-        fullSiteShell ? "w-full" : "min-h-0 flex-1 overflow-y-auto",
+        fullSiteShell
+          ? "w-full"
+          : relaxEmbeddedPreviewOverflow
+            ? "w-full"
+            : "min-h-0 flex-1 overflow-y-auto",
       )}
     >
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
@@ -647,8 +652,8 @@ function HomePageInner() {
           ? isStorefront
             ? "min-h-svh w-full"
             : "w-full"
-          : isEmbeddedDashboardPreview
-            ? "h-full min-h-0 min-w-0 flex-1"
+          : relaxEmbeddedPreviewOverflow
+            ? "min-h-0 min-w-0 w-full"
             : "min-h-svh",
       )}
       data-theme={preset}
@@ -658,14 +663,22 @@ function HomePageInner() {
           "flex w-full flex-col",
           fullSiteShell
             ? "w-full"
-            : "min-h-0 flex-1 flex-col overflow-hidden",
+            : relaxEmbeddedPreviewOverflow
+              ? "min-h-0 w-full"
+              : "min-h-0 flex-1 flex-col overflow-hidden",
         )}
       >
         <div className={previewHostClass}>
           <div
             className={cn(
-              "flex w-full max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm",
-              !fullSiteShell && "h-full min-h-0",
+              "flex w-full max-w-full flex-col",
+              relaxEmbeddedPreviewOverflow ? "min-h-0" : "overflow-hidden",
+              isStorefront
+                ? ""
+                : "rounded-2xl border border-zinc-200 shadow-sm",
+              !fullSiteShell &&
+                !relaxEmbeddedPreviewOverflow &&
+                "h-full min-h-0",
             )}
             style={shopPreviewShellStyle(effectiveTheme)}
           >

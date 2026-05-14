@@ -91,6 +91,7 @@ export function ThemeStudioLayout({
             <SparkleButton
               label="Back to Editor"
               icon={PanelLeftClose}
+              size="compact"
               className={builderDemoCtaButtonClassName()}
               onClick={() => setIsDemo(false)}
             />

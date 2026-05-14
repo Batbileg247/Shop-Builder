@@ -70,6 +70,8 @@ export type ParsedSiteTheme = {
   textColor?: string;
   font?: ThemeStudioFont;
   heroAnnouncement?: string;
+  /** Primary hero URL when API includes it (optional; gallery-only themes omit). */
+  heroImage?: string;
 };
 
 export function parseSiteThemePersisted(raw: unknown): ParsedSiteTheme {
@@ -142,6 +144,11 @@ export function parseSiteThemePersisted(raw: unknown): ParsedSiteTheme {
   if (f) patch.font = f;
   const ann = safeHeroAnnouncement(o.heroAnnouncement);
   if (ann) patch.heroAnnouncement = ann;
+
+  if (typeof o.heroImage === "string") {
+    const hi = o.heroImage.trim();
+    if (hi.length > 0 && hi.length < 4000) patch.heroImage = hi;
+  }
 
   return patch;
 }

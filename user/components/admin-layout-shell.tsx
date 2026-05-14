@@ -32,7 +32,8 @@ export function AdminDashboardChrome({
             label="Create New Shop"
             icon={Plus}
             href={PATHS.builderCreate}
-            className="h-9 gap-3"
+            size="compact"
+            className="gap-2"
           />
         </div>
       </div>

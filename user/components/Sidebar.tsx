@@ -22,7 +22,6 @@ const navItems = [
   { label: "Orders", href: PATHS.adminOrders, icon: ClipboardList },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { label: "Theme studio", href: PATHS.builderUpdate, icon: Sparkles },
-  { label: "Shop", href: PATHS.adminShop, icon: Store },
 ];
 
 function navItemIsActive(pathname: string, href: string) {
@@ -172,14 +171,18 @@ export function Sidebar() {
                 </p>
               ) : (
                 <>
-                  <div className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-8 w-8 -translate-y-1/2 overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50">
-                    <Image
-                      src={safeImage(activeShop.logoUrl)}
-                      alt=""
-                      fill
-                      sizes="32px"
-                      className="object-cover"
-                    />
+                  <div className="pointer-events-none absolute left-3.5 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center overflow-hidden rounded-lg border border-zinc-100 bg-zinc-50 text-zinc-500">
+                    {activeShop.logoUrl?.trim() ? (
+                      <Image
+                        src={safeImage(activeShop.logoUrl)}
+                        alt=""
+                        fill
+                        sizes="32px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <Store className="size-4 shrink-0" aria-hidden />
+                    )}
                   </div>
                   <select
                     id="shop-switcher"

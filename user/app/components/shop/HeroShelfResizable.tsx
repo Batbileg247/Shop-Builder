@@ -56,7 +56,7 @@ export function HeroShelfResizable({
   );
 
   const lockedShellClass = cn(
-    "flex w-full max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm",
+    "flex w-full max-w-full flex-col overflow-x-hidden rounded-2xl border border-slate-200/90 shadow-sm",
     className,
   );
 

@@ -1,8 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import type { CartItem, Product } from "@/types";
-import { safeImage } from "@/lib/utils";
+import * as React from "react";
+import { usePathname } from "next/navigation";
+import type { CartItem } from "@/types";
+import { cn, safeImage } from "@/lib/utils";
+import { useThemeStore } from "@/stores/useThemeStore";
 import {
   Sheet,
   SheetContent,
@@ -44,12 +47,50 @@ export function CartDrawer({
   const displaySubtotal = subtotal + giftFee;
   const remaining = Math.max(0, FREE_SHIP_AT - displaySubtotal);
 
+  const pathname = usePathname();
+  const preset = useThemeStore((s) => s.preset);
+  const radius = useThemeStore((s) => s.radius);
+  const cardContentPaddingRem = useThemeStore((s) => s.cardContentPaddingRem);
+  const productGridGapRem = useThemeStore((s) => s.productGridGapRem);
+  const previewProductCardBasisRem = useThemeStore(
+    (s) => s.previewProductCardBasisRem,
+  );
+  const primaryColor = useThemeStore((s) => s.primaryColor);
+
+  const isPublicStorefront = pathname.startsWith("/s/");
+  const portalPvStyle = React.useMemo(
+    () =>
+      isPublicStorefront
+        ? ({
+            "--pv-card-content-pad": `${cardContentPaddingRem}rem`,
+            "--pv-product-gap": `${productGridGapRem}rem`,
+            "--pv-preview-card-basis": `${previewProductCardBasisRem}rem`,
+            "--pv-radius": `${radius}px`,
+            "--pv-primary": primaryColor,
+          } as React.CSSProperties)
+        : undefined,
+    [
+      isPublicStorefront,
+      cardContentPaddingRem,
+      productGridGapRem,
+      previewProductCardBasisRem,
+      radius,
+      primaryColor,
+    ],
+  );
+
   return (
     <Sheet onOpenChange={onOpenChange} open={open}>
       <SheetContent
-        className="flex w-full max-w-md! flex-col border-l border-pv-divider bg-pv-bg p-0 sm:max-w-md!"
+        className={cn(
+          "flex w-full max-w-md! flex-col border-l border-pv-divider bg-pv-bg p-0 sm:max-w-md!",
+          isPublicStorefront &&
+            "site-preview-root text-pv-fg shadow-lg !gap-0 !bg-pv-bg",
+        )}
+        data-theme={isPublicStorefront ? preset : undefined}
         showCloseButton
         side="right"
+        style={portalPvStyle}
       >
         <SheetHeader className="border-b border-pv-divider px-6 pt-10">
           <SheetTitle className="text-2xl font-semibold text-pv-fg">

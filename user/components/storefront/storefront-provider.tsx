@@ -8,6 +8,7 @@ import {
   ShopPreviewDashboardSyncProvider,
 } from "@/components/dashboard/shop-preview-bridge";
 import { StorefrontRemoteHydrator } from "@/components/storefront/storefront-remote-hydrator";
+import { StorefrontThemeShell } from "@/components/storefront/storefront-theme-shell";
 import { BuilderUiProvider } from "@/context/builder-ui-context";
 import { DashboardProvider } from "@/context/DashboardContext";
 import { StorefrontCatalogEditProvider } from "@/context/storefront-catalog-edit-context";
@@ -39,7 +40,7 @@ export function StorefrontProvider({
   }, []);
 
   const inner = (
-    <>
+    <StorefrontThemeShell>
       <StorefrontBootstrap shopId={shopId} />
       <StorefrontRemoteHydrator
         slug={shopId}
@@ -47,7 +48,7 @@ export function StorefrontProvider({
       />
       {merchantOwnerShell ? <ShopPreviewBridge /> : null}
       {children}
-    </>
+    </StorefrontThemeShell>
   );
 
   return (

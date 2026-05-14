@@ -5,8 +5,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 import { useShop } from "@/app/hooks/useShop";
+import { storefrontNavPillClassName } from "@/lib/storefront-nav-pill";
 import { storefrontNavBase } from "@/lib/site-paths";
-import { cn } from "@/lib/utils";
 
 function StorefrontTopNavInner() {
   const pathname = usePathname();
@@ -36,35 +36,24 @@ function StorefrontTopNavInner() {
         <nav className="flex items-center gap-1.5 sm:gap-2" aria-label="Main">
           <Link
             href={navBase}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-(--pv-radius) px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
-              "text-pv-muted pv-interactive",
-              onBuilderHome &&
-                !shopBrowse &&
-                !cartIntent &&
-                "bg-pv-card text-pv-fg outline-1 outline-pv-border",
-            )}
+            className={storefrontNavPillClassName({
+              active:
+                onBuilderHome && !shopBrowse && !cartIntent,
+            })}
           >
             Home
           </Link>
           <Link
             href={catalogHref}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-(--pv-radius) px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
-              "text-pv-muted pv-interactive",
-              shopActive && "bg-pv-card text-pv-fg outline-1 outline-pv-border",
-            )}
+            className={storefrontNavPillClassName({ active: shopActive })}
           >
             Shop
           </Link>
           <Link
             href={cartHref}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-(--pv-radius) px-3 py-1.5 text-sm font-medium tracking-tight transition-none",
-              "text-pv-muted pv-interactive",
-              (cartIntent || onCartPath) &&
-                "bg-pv-card text-pv-fg outline outline-pv-border",
-            )}
+            className={storefrontNavPillClassName({
+              active: cartIntent || onCartPath,
+            })}
           >
             Cart
             {cartCount > 0 ? (

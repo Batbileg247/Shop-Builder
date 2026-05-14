@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
+import type { HTMLAttributeAnchorTarget } from "react";
 import { Sparkles } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 interface SparkleButtonProps {
   label?: string;
@@ -9,6 +12,12 @@ interface SparkleButtonProps {
   className?: string;
   /** When set, renders as a Next.js link with the same visual style as the button. */
   href?: string;
+  /** When `href` is set, passed to the underlying link (e.g. `"_blank"`). */
+  target?: HTMLAttributeAnchorTarget;
+  /** When `href` is set; defaults to `noopener noreferrer` if `target` is `_blank`. */
+  rel?: string;
+  /** `compact` = toolbar / admin chrome (smaller pill). `default` = landing hero CTA. */
+  size?: "default" | "compact";
 }
 
 const styles = `
@@ -100,15 +109,22 @@ const styles = `
   }
 `;
 
-const sparkleSurfaceClassName =
-  "generate-btn relative flex items-center gap-2 border-none bg-transparent px-5 py-5 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-110";
+const sparkleSurfaceDefault =
+  "generate-btn relative inline-flex items-center justify-center gap-2 border-none bg-transparent px-5 py-5 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-110";
+
+const sparkleSurfaceCompact =
+  "generate-btn relative inline-flex items-center justify-center gap-2 border-none bg-transparent px-4 py-2 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-105 min-h-9";
 
 function SparkleInner({
   label,
   Icon,
+  iconSize,
+  compact,
 }: {
   label: string;
   Icon: LucideIcon;
+  iconSize: number;
+  compact: boolean;
 }) {
   return (
     <>
@@ -118,10 +134,17 @@ function SparkleInner({
       />
       <Icon
         className="relative z-10 text-white"
-        size={22}
+        size={iconSize}
         aria-hidden="true"
       />
-      <span className="btn-text relative z-10 text-base">{label}</span>
+      <span
+        className={cn(
+          "btn-text relative z-10",
+          compact ? "text-sm font-semibold" : "text-base",
+        )}
+      >
+        {label}
+      </span>
     </>
   );
 }
@@ -132,19 +155,46 @@ export default function SparkleButton({
   onClick,
   className = "",
   href,
+  target,
+  rel,
+  size = "default",
 }: SparkleButtonProps) {
-  const surface = `${sparkleSurfaceClassName} ${className}`.trim();
+  const compact = size === "compact";
+  const surfaceBase = compact ? sparkleSurfaceCompact : sparkleSurfaceDefault;
+  const surface = `${surfaceBase} ${className}`.trim();
+  const linkRel =
+    rel ?? (target === "_blank" ? "noopener noreferrer" : undefined);
+  const iconSize = compact ? 18 : 22;
 
   return (
     <>
       <style>{styles}</style>
       {href ? (
-        <Link href={href} className={`${surface} cursor-pointer no-underline`}>
-          <SparkleInner label={label} Icon={Icon} />
+        <Link
+          href={href}
+          target={target}
+          rel={linkRel}
+          className={`${surface} cursor-pointer no-underline`}
+        >
+          <SparkleInner
+            label={label}
+            Icon={Icon}
+            iconSize={iconSize}
+            compact={compact}
+          />
         </Link>
       ) : (
-        <button type="button" onClick={onClick} className={`${surface} cursor-pointer`}>
-          <SparkleInner label={label} Icon={Icon} />
+        <button
+          type="button"
+          onClick={onClick}
+          className={`${surface} cursor-pointer`}
+        >
+          <SparkleInner
+            label={label}
+            Icon={Icon}
+            iconSize={iconSize}
+            compact={compact}
+          />
         </button>
       )}
     </>

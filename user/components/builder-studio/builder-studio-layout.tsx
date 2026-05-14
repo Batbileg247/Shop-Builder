@@ -40,7 +40,7 @@ function PreviewOnlyAnimatedSurface({
   }, []);
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
+    <div className="flex min-h-0 w-full flex-1 flex-col">
       <div
         data-theme={preset}
         className={cn(
@@ -126,6 +126,7 @@ export function BuilderStudioLayout({
             <SparkleButton
               label="Back to Editor"
               icon={PanelLeftClose}
+              size="compact"
               className={builderDemoCtaButtonClassName()}
               onClick={() => setIsDemo(false)}
             />
@@ -149,7 +150,7 @@ export function BuilderStudioLayout({
   if (variant === "embedded") {
     return (
       <div className="flex min-h-0 w-full flex-1 bg-[#f8f9fe]">
-        <div className="flex min-h-0 w-64 shrink-0 overflow-hidden">
+        <div className="flex min-h-0 w-64 min-w-64 shrink-0 flex-col overflow-hidden">
           <BuilderEditorSidebar />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -167,7 +168,7 @@ export function BuilderStudioLayout({
 
   return (
     <div className="flex min-h-svh w-full bg-[#f8f9fe]">
-      <div className="fixed left-0 top-0 z-40 h-svh w-64 border-r border-sidebar-border shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
+      <div className="fixed left-0 top-0 z-40 flex h-svh w-64 min-h-0 flex-col overflow-hidden border-r border-sidebar-border shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
         <BuilderEditorSidebar />
       </div>
 

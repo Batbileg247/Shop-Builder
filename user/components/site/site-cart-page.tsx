@@ -9,6 +9,7 @@ import {
   selectCartSubtotal,
   useCartStore,
 } from "@/stores/cart-store";
+import { storefrontNavPillClassName } from "@/lib/storefront-nav-pill";
 import { cn } from "@/lib/utils";
 
 export function SiteCartPage() {
@@ -47,7 +48,7 @@ export function SiteCartPage() {
             </p>
             <Link
               href={`${basePath}/shop`}
-              className="pv-btn-ghost inline-flex px-4 py-2 text-sm font-medium"
+              className={cn(storefrontNavPillClassName(), "w-fit")}
             >
               Дэлгүүр рүү
             </Link>

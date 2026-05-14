@@ -27,7 +27,6 @@ import { fetchAdminStores } from "@/lib/admin-api";
 import type { Shop } from "@/types/dashboard";
 import { cn, safeImage } from "@/lib/utils";
 import { buttonVariants } from "@/ui/button";
-import { useDashboard } from "@/context/DashboardContext";
 import { PATHS } from "@/lib/site-paths";
 
 function displayName(session: AuthSession) {
@@ -282,21 +281,30 @@ export default function UserAccountPage() {
                 <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-0.5">
                   {shops && shops.length > 0 ? (
                     <div className="grid gap-4">
-                      {shops.map((shop) => (
+                      {shops.map((shop) => {
+                        const hasStoreImage = Boolean(shop.logoUrl?.trim());
+                        return (
                         <Link
                           key={shop.id}
                           href={`/admin/overview?shop=${shop.id}`}
                           className="group rounded-lg border border-slate-200 bg-slate-50 p-4 transition hover:bg-white hover:shadow-md"
                         >
                           <div className="flex items-center gap-4">
-                            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-slate-200">
-                              <Image
-                                src={safeImage(shop.logoUrl)}
-                                alt={shop.name}
-                                width={64}
-                                height={64}
-                                className="object-cover"
-                              />
+                            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100 text-slate-500">
+                              {hasStoreImage ? (
+                                <Image
+                                  src={safeImage(shop.logoUrl)}
+                                  alt={shop.name}
+                                  width={64}
+                                  height={64}
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <Store
+                                  className="size-8 shrink-0"
+                                  aria-hidden
+                                />
+                              )}
                             </div>
                             <div className="min-w-0 flex-1">
                               <h3 className="font-bold text-slate-950 group-hover:text-slate-700">
@@ -312,7 +320,8 @@ export default function UserAccountPage() {
                             </div>
                           </div>
                         </Link>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : (
                     <p className="text-sm text-slate-600">

@@ -17,7 +17,9 @@ export function BuilderChromeMyShopButton() {
       label="My shop"
       icon={Store}
       href={PATHS.storefront(activeShop.id)}
-      className="h-9 gap-3"
+      target="_blank"
+      size="compact"
+      className="gap-2"
     />
   );
 }

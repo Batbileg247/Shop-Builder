@@ -235,7 +235,7 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
             heroTitle: parsed.heroTitle ?? prev.heroTitle,
             shopName: parsed.shopName ?? prev.shopName,
             heroGallery: parsed.heroGallery ?? prev.heroGallery,
-            heroImage: "",
+            heroImage: parsed.heroImage?.trim() ?? "",
             heroAnnouncement:
               parsed.heroAnnouncement ?? prev.heroAnnouncement,
             primaryColor:

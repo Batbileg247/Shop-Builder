@@ -33,6 +33,10 @@ export function StorefrontRemoteHydrator({ slug, onOwnerHydrated }: Props) {
         const data = await fetchStorefrontBySlug(clean);
         if (cancelled) return;
 
+        if (typeof data.store.name === "string" && data.store.name.trim()) {
+          useThemeStore.getState().setShopName(data.store.name.trim());
+        }
+
         const ownerId =
           typeof data.store.ownerId === "string" ? data.store.ownerId : "";
         const session = getAuthSession();

@@ -13,7 +13,8 @@ export function BuilderChromeViewDemoButton() {
     <SparkleButton
       label="View Demo"
       icon={Sparkle}
-      className="h-9 gap-3"
+      size="compact"
+      className="gap-2"
       onClick={() => setIsDemo(true)}
     />
   );

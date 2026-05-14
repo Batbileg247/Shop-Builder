@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import { useStore } from "@/context/store-context";
 import {
@@ -10,6 +11,7 @@ import {
   getSiteProductById,
   SITE_PRODUCTS,
 } from "@/lib/site-mock-products";
+import { storefrontNavPillClassName } from "@/lib/storefront-nav-pill";
 import { useStorefrontProducts } from "@/lib/use-storefront-products";
 import { useCartStore } from "@/stores/cart-store";
 import { cn } from "@/lib/utils";
@@ -43,9 +45,10 @@ export function ProductDetailPage() {
           <p className="text-sm text-pv-muted">Бараа олдсонгүй.</p>
           <Link
             href={`${basePath}/shop`}
-            className="mt-6 inline-block text-sm font-medium text-pv-fg underline-offset-2 hover:text-pv-link-hover hover:underline"
+            className={cn(storefrontNavPillClassName(), "mt-6 w-fit")}
           >
-            Дэлгүүр руу
+            <ArrowLeft className="size-4 shrink-0" aria-hidden />
+            Back to shop
           </Link>
         </main>
       </div>
@@ -70,16 +73,25 @@ export function ProductDetailPage() {
   return (
     <div className="pv-storefront">
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8 sm:py-10">
-        <nav className="mb-8 text-xs text-pv-muted">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href={`${basePath}/shop`}
-            className="font-medium text-pv-fg hover:underline"
+            className={cn(storefrontNavPillClassName(), "w-fit")}
           >
-            Shop
+            <ArrowLeft className="size-4 shrink-0" aria-hidden />
+            Back to shop
           </Link>
-          <span className="mx-2 text-pv-muted">/</span>
-          <span className="text-pv-fg">{product.name}</span>
-        </nav>
+          <nav className="text-xs text-pv-muted sm:text-right">
+            <Link
+              href={`${basePath}/shop`}
+              className="font-medium text-pv-fg hover:underline"
+            >
+              Shop
+            </Link>
+            <span className="mx-2 text-pv-muted">/</span>
+            <span className="text-pv-fg">{product.name}</span>
+          </nav>
+        </div>
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="min-w-0">
