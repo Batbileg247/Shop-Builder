@@ -6,30 +6,30 @@ import { ShopProvider } from "@/app/hooks/useShop";
 import { BuilderUiProvider } from "@/context/builder-ui-context";
 import { StoreProvider, useStore } from "@/context/store-context";
 
-function StorefrontBootstrap({ slug }: { slug: string }) {
+function StorefrontBootstrap({ shopId }: { shopId: string }) {
   const { setBasePath, setStoreSlug } = useStore();
 
   React.useEffect(() => {
-    const clean = slug.trim();
+    const clean = shopId.trim();
     setStoreSlug(clean);
     setBasePath(`/s/${clean}`);
-  }, [setBasePath, setStoreSlug, slug]);
+  }, [setBasePath, setStoreSlug, shopId]);
 
   return null;
 }
 
 export function StorefrontProvider({
-  slug,
+  shopId,
   children,
 }: {
-  slug: string;
+  shopId: string;
   children: React.ReactNode;
 }) {
   return (
     <StoreProvider>
       <ShopProvider>
         <BuilderUiProvider>
-          <StorefrontBootstrap slug={slug} />
+          <StorefrontBootstrap shopId={shopId} />
           {children}
         </BuilderUiProvider>
       </ShopProvider>

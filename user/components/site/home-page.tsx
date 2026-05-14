@@ -29,6 +29,14 @@ import type { Product, ProductDraft } from "@/types";
 import { emptyDraft } from "@/lib/defaults";
 import { Plus, Search, ShoppingBag, ShoppingCart, X } from "lucide-react";
 
+import { ProductForm } from "@/app/components/admin/ProductForm";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/ui/sheet";
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { SiteHeader } from "./site-header";
 import { useBuilderUi } from "@/context/builder-ui-context";
@@ -135,6 +143,9 @@ function HomePageInner() {
   const [addProductOpen, setAddProductOpen] = React.useState(false);
   const [newProductDraft, setNewProductDraft] =
     React.useState<ProductDraft>(emptyDraft);
+  const [addProductError, setAddProductError] = React.useState<string | null>(
+    null,
+  );
 
   const defSig = React.useMemo(
     () => filterDefinitionsSignature(shop.catalogFilterDefinitions),
@@ -172,8 +183,27 @@ function HomePageInner() {
   };
 
   const openAddProductSheet = () => {
+    setAddProductError(null);
     setNewProductDraft({ ...emptyDraft });
     setAddProductOpen(true);
+  };
+
+  const handleAddProductSheetOpen = (open: boolean) => {
+    setAddProductOpen(open);
+    if (!open) setAddProductError(null);
+  };
+
+  const handleAddProductSubmit = () => {
+    if (!newProductDraft.name.trim() || !newProductDraft.image.trim()) {
+      setAddProductError(
+        "Enter a product name and choose an image (swipe the samples or paste a URL).",
+      );
+      return;
+    }
+    setAddProductError(null);
+    shop.addProduct(newProductDraft);
+    setAddProductOpen(false);
+    setNewProductDraft({ ...emptyDraft });
   };
 
   const cyclePriceSort = () => {
@@ -457,7 +487,7 @@ function HomePageInner() {
             <header className="pv-header sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-pv-divider bg-pv-header/80 px-4 backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <Link
-                  href={navBase ?? ""}
+                  href={navBase}
                   className="flex items-center gap-2 group"
                 >
                   <div className="flex size-9 items-center justify-center rounded-lg bg-pv-primary text-white shadow-sm">
@@ -559,6 +589,39 @@ function HomePageInner() {
         open={cartOpen}
         subtotal={shop.cartTotal}
       />
+
+      <Sheet onOpenChange={handleAddProductSheetOpen} open={addProductOpen}>
+        <SheetContent
+          className="flex w-full max-w-lg! flex-col border-l border-pv-divider bg-pv-bg p-0 sm:max-w-lg!"
+          showCloseButton
+          side="right"
+        >
+          <SheetHeader className="border-b border-pv-divider px-6 pt-10">
+            <SheetTitle className="text-2xl font-semibold text-pv-fg">
+              Add product
+            </SheetTitle>
+            <SheetDescription className="text-pv-muted">
+              New products are saved to your active shop and appear in this
+              preview.
+            </SheetDescription>
+            {addProductError ? (
+              <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+                {addProductError}
+              </p>
+            ) : null}
+          </SheetHeader>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+            <ProductForm
+              draft={newProductDraft}
+              mode="create"
+              onCancel={() => handleAddProductSheetOpen(false)}
+              onSubmit={handleAddProductSubmit}
+              setDraft={setNewProductDraft}
+              theme={effectiveTheme}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {!fullSiteShell && (
         <footer className="mt-auto border-t border-pv-divider py-8 text-center text-xs text-pv-muted">

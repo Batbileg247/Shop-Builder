@@ -3,12 +3,19 @@ export type ProductStatus = "Live" | "Draft";
 export interface Shop {
   id: string;
   name: string;
-  slug: string;
   ownerId: string;
   logoUrl: string;
   brandColor: string;
   accentColor: string;
   currency: "USD" | "EUR" | "MNT";
+  /** Card / shell corner radius in pixels. */
+  radiusPx: number;
+  /** Storefront page background. */
+  backgroundColor: string;
+  /** Hero tagline under the shop name. */
+  tagline: string;
+  /** Default body text color on storefront surfaces. */
+  textColor: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,7 +66,17 @@ export type NewProductInput = Pick<
 export type ProductUpdateInput = Partial<NewProductInput>;
 
 export type ShopUpdateInput = Partial<
-  Pick<Shop, "name" | "slug" | "logoUrl" | "brandColor" | "accentColor">
+  Pick<
+    Shop,
+    | "name"
+    | "logoUrl"
+    | "brandColor"
+    | "accentColor"
+    | "radiusPx"
+    | "backgroundColor"
+    | "tagline"
+    | "textColor"
+  >
 >;
 
 export interface ShopMetrics {

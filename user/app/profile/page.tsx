@@ -319,7 +319,7 @@ export default function UserAccountPage() {
                               style={{ backgroundColor: shop.brandColor }}
                             />
                             <span className="text-[11px] text-slate-400">
-                              {shop.slug}
+                              {shop.id}
                             </span>
                           </div>
                         </div>

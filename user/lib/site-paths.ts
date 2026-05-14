@@ -13,6 +13,7 @@ export const PATHS = {
   adminProducts: "/admin/products",
   adminCustomers: "/admin/customers",
   adminAnalytics: "/admin/analytics",
+  adminShop: "/admin/shop",
 
   // User account
   user: "/user",
@@ -27,12 +28,13 @@ export const PATHS = {
   buildingCreate: "/building/create",
 
   // Live storefront helpers
-  storefront: (slug: string) => `/s/${slug}` as const,
-  storefrontShop: (slug: string) => `/s/${slug}/shop` as const,
-  storefrontProduct: (slug: string, id: string) =>
-    `/s/${slug}/shop/${id}` as const,
-  storefrontCart: (slug: string) => `/s/${slug}/cart` as const,
-  storefrontCheckout: (slug: string) => `/s/${slug}/checkout` as const,
+  /** Public storefront uses stable shop `id` in the path segment (`/s/:id`). */
+  storefront: (shopId: string) => `/s/${shopId}` as const,
+  storefrontShop: (shopId: string) => `/s/${shopId}/shop` as const,
+  storefrontProduct: (shopId: string, id: string) =>
+    `/s/${shopId}/shop/${id}` as const,
+  storefrontCart: (shopId: string) => `/s/${shopId}/cart` as const,
+  storefrontCheckout: (shopId: string) => `/s/${shopId}/checkout` as const,
 } as const;
 
 /** Default preview base for editor cart / shop links (update flow). */
@@ -54,7 +56,7 @@ export function isBuilderPreviewPath(pathname: string | null): boolean {
  * Returns the nav base prefix for storefront links (cart, shop, etc.).
  * Uses the current `/builder/...` or `/building/...` path so cart opens on the same mode.
  */
-export function storefrontNavBase(pathname: string | null) {
+export function storefrontNavBase(pathname: string | null): string {
   if (!pathname) return PATHS.builderUpdate;
   const m = pathname.match(/^\/s\/([^/]+)/);
   if (m) return `/s/${m[1]}`;
@@ -62,4 +64,5 @@ export function storefrontNavBase(pathname: string | null) {
     const clean = pathname.split("?")[0].replace(/\/$/, "");
     return clean || PATHS.builder;
   }
+  return PATHS.adminShop;
 }

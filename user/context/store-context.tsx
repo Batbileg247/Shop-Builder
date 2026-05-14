@@ -10,7 +10,7 @@ export type StoreState = {
   currentTheme: ThemeId;
   heroTitle: string;
   heroImage: string;
-  /** Дэлгүүрийн route base path (theme studio дээр preview base, public дээр `/s/:slug`) */
+  /** Дэлгүүрийн route base path (theme studio дээр preview base, public дээр `/s/:shopId`) */
   basePath: string;
   /** true бол `data-theme`-ийн `--pv-radius` ашиглана (inline override байхгүй) */
   cardRadiusFollowsTheme: boolean;
@@ -24,7 +24,7 @@ export type StoreState = {
   ownerId: string;
   /** Дэлгүүрийн нэр */
   storeName: string;
-  /** Дэлгүүрийн slug (publish хийгдсэний дараа storefront fetch хийхэд ашиглана) */
+  /** Public storefront path segment (`/s/:id`) — platform publish-ийн дараа эсвэл dashboard shop id */
   storeSlug: string;
   /** Publish процессын төлөв */
   publishStatus: "idle" | "creating" | "created" | "error";

@@ -16,31 +16,29 @@ const presets = [
   { label: "Orange", brandColor: "#f97316", accentColor: "#ffedd5" },
 ];
 
-function slugify(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 export function ShopEditor() {
   const { activeShop, updateShop } = useDashboard();
   const [form, setForm] = React.useState<ShopUpdateInput>({
     name: activeShop.name,
-    slug: activeShop.slug,
     logoUrl: activeShop.logoUrl,
     brandColor: activeShop.brandColor,
     accentColor: activeShop.accentColor,
+    radiusPx: activeShop.radiusPx,
+    backgroundColor: activeShop.backgroundColor,
+    tagline: activeShop.tagline,
+    textColor: activeShop.textColor,
   });
 
   React.useEffect(() => {
     setForm({
       name: activeShop.name,
-      slug: activeShop.slug,
       logoUrl: activeShop.logoUrl,
       brandColor: activeShop.brandColor,
       accentColor: activeShop.accentColor,
+      radiusPx: activeShop.radiusPx,
+      backgroundColor: activeShop.backgroundColor,
+      tagline: activeShop.tagline,
+      textColor: activeShop.textColor,
     });
   }, [activeShop]);
 
@@ -54,34 +52,43 @@ export function ShopEditor() {
   const saveChanges = () => {
     updateShop(activeShop.id, {
       name: form.name?.trim() || activeShop.name,
-      slug: form.slug?.trim() || activeShop.slug,
       logoUrl: form.logoUrl?.trim() || activeShop.logoUrl,
       brandColor: form.brandColor || activeShop.brandColor,
       accentColor: form.accentColor || activeShop.accentColor,
+      radiusPx: form.radiusPx ?? activeShop.radiusPx,
+      backgroundColor: form.backgroundColor || activeShop.backgroundColor,
+      tagline: form.tagline?.trim() || activeShop.tagline,
+      textColor: form.textColor || activeShop.textColor,
     });
   };
 
   const resetChanges = () => {
     setForm({
       name: activeShop.name,
-      slug: activeShop.slug,
       logoUrl: activeShop.logoUrl,
       brandColor: activeShop.brandColor,
       accentColor: activeShop.accentColor,
+      radiusPx: activeShop.radiusPx,
+      backgroundColor: activeShop.backgroundColor,
+      tagline: activeShop.tagline,
+      textColor: activeShop.textColor,
     });
   };
 
   const previewName = form.name || activeShop.name;
-  const previewSlug = form.slug || activeShop.slug;
+  const previewPath = activeShop.id;
   const previewBrand = form.brandColor || activeShop.brandColor;
   const previewAccent = form.accentColor || activeShop.accentColor;
 
   const dirty =
     (form.name?.trim() || "") !== activeShop.name ||
-    (form.slug?.trim() || "") !== activeShop.slug ||
     (form.logoUrl?.trim() || "") !== activeShop.logoUrl ||
     (form.brandColor || "") !== activeShop.brandColor ||
-    (form.accentColor || "") !== activeShop.accentColor;
+    (form.accentColor || "") !== activeShop.accentColor ||
+    (form.radiusPx ?? activeShop.radiusPx) !== activeShop.radiusPx ||
+    (form.backgroundColor || "") !== activeShop.backgroundColor ||
+    (form.tagline?.trim() || "") !== activeShop.tagline ||
+    (form.textColor || "") !== activeShop.textColor;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 pb-10">
@@ -131,12 +138,12 @@ export function ShopEditor() {
               </p>
               <p className="text-lg font-black text-slate-950">{previewName}</p>
               <p className="text-xs font-semibold text-slate-500">
-                /{slugify(previewSlug || "shop")}
+                /s/{previewPath}
               </p>
             </div>
           </div>
           <Link
-            href={PATHS.storefront(previewSlug)}
+            href={PATHS.storefront(previewPath)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 self-start rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 sm:self-auto"
@@ -158,12 +165,66 @@ export function ShopEditor() {
               />
             </label>
             <label className="space-y-2 text-sm font-bold text-slate-700">
-              Slug
+              Corner radius (px)
               <input
-                value={form.slug ?? ""}
-                onChange={(e) => updateField("slug", e.target.value)}
+                type="number"
+                min={0}
+                max={48}
+                value={form.radiusPx ?? activeShop.radiusPx}
+                onChange={(e) =>
+                  updateField("radiusPx", Number(e.target.value) || 0)
+                }
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-slate-300 focus:bg-white focus:ring-4 focus:ring-slate-100"
               />
+            </label>
+          </div>
+
+          <label className="block space-y-2 text-sm font-bold text-slate-700">
+            Tagline
+            <input
+              value={form.tagline ?? ""}
+              onChange={(e) => updateField("tagline", e.target.value)}
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-slate-300 focus:bg-white focus:ring-4 focus:ring-slate-100"
+              placeholder="Short line under your shop name"
+            />
+          </label>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="space-y-2 text-sm font-bold text-slate-700">
+              Page background
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={form.backgroundColor || "#f8fafc"}
+                  onChange={(e) =>
+                    updateField("backgroundColor", e.target.value)
+                  }
+                  className="h-12 w-16 cursor-pointer rounded-2xl border border-slate-200 bg-white p-1"
+                />
+                <input
+                  value={form.backgroundColor ?? ""}
+                  onChange={(e) =>
+                    updateField("backgroundColor", e.target.value)
+                  }
+                  className="h-12 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-3 font-mono text-xs font-semibold outline-none focus:border-slate-300 focus:bg-white focus:ring-4 focus:ring-slate-100"
+                />
+              </div>
+            </label>
+            <label className="space-y-2 text-sm font-bold text-slate-700">
+              Text color
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={form.textColor || "#0f172a"}
+                  onChange={(e) => updateField("textColor", e.target.value)}
+                  className="h-12 w-16 cursor-pointer rounded-2xl border border-slate-200 bg-white p-1"
+                />
+                <input
+                  value={form.textColor ?? ""}
+                  onChange={(e) => updateField("textColor", e.target.value)}
+                  className="h-12 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-3 font-mono text-xs font-semibold outline-none focus:border-slate-300 focus:bg-white focus:ring-4 focus:ring-slate-100"
+                />
+              </div>
             </label>
           </div>
 

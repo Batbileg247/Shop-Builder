@@ -11,7 +11,12 @@ import type {
   ShopMetrics,
   ShopUpdateInput,
 } from "@/types/dashboard";
+import * as shopApi from "@/lib/api/shop-builder-client";
+import { isShopBuilderApiMock } from "@/lib/env";
 import { shopsData } from "@/lib/mockData";
+
+export type DashboardDataSource = "mock" | "api";
+export type DashboardRemoteStatus = "idle" | "loading" | "ready" | "error";
 
 type DashboardContextValue = {
   shops: Shop[];
@@ -29,6 +34,12 @@ type DashboardContextValue = {
   addProduct: (product: NewProductInput) => void;
   updateProduct: (productId: string, product: ProductUpdateInput) => void;
   deleteProduct: (productId: string) => void;
+  /** `mock` = bundled seeds; `api` = `NEXT_PUBLIC_SHOP_BUILDER_API_URL`. */
+  dataSource: DashboardDataSource;
+  remoteStatus: DashboardRemoteStatus;
+  remoteError: string | null;
+  /** Reload shops, products, customers, categories from the API. */
+  refreshFromApi: () => Promise<void>;
 };
 
 const DashboardContext = React.createContext<DashboardContextValue | null>(
@@ -334,13 +345,27 @@ function readInitialActiveShopId() {
 }
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
+  const dataSource: DashboardDataSource = isShopBuilderApiMock()
+    ? "mock"
+    : "api";
   const [shops, setShops] = React.useState<Shop[]>(shopsSeed);
   const [activeShopId, setActiveShopId] = React.useState(readInitialActiveShopId);
   const [allProducts, setAllProducts] = React.useState<Product[]>(productsSeed);
-  const [allCustomers] = React.useState<Customer[]>(customersSeed);
+  const [allCustomers, setAllCustomers] =
+    React.useState<Customer[]>(customersSeed);
   const [shopCategories, setShopCategories] = React.useState<
     Record<string, string[]>
   >(() => ({ ...shopCategoriesSeed }));
+  const [remoteStatus, setRemoteStatus] =
+    React.useState<DashboardRemoteStatus>(() =>
+      isShopBuilderApiMock() ? "ready" : "loading",
+    );
+  const [remoteError, setRemoteError] = React.useState<string | null>(null);
+
+  const allProductsRef = React.useRef(allProducts);
+  React.useEffect(() => {
+    allProductsRef.current = allProducts;
+  }, [allProducts]);
 
   const activeShop = React.useMemo(
     () => shops.find((shop) => shop.id === activeShopId) ?? shops[0],
@@ -364,18 +389,63 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     [activeShop.id, shopCategories],
   );
 
+  const refreshFromApi = React.useCallback(async () => {
+    if (isShopBuilderApiMock()) return;
+    setRemoteStatus("loading");
+    setRemoteError(null);
+    try {
+      const bundle = await shopApi.apiLoadFullDashboard();
+      setShops(bundle.shops);
+      setAllProducts(bundle.allProducts);
+      setAllCustomers(bundle.allCustomers);
+      setShopCategories(bundle.shopCategories);
+      setActiveShopId((prev) => {
+        const ids = new Set(bundle.shops.map((s) => s.id));
+        if (ids.has(prev)) return prev;
+        return bundle.shops[0]?.id ?? prev;
+      });
+      setRemoteStatus("ready");
+    } catch (e) {
+      setRemoteError(
+        e instanceof Error ? e.message : "Failed to load dashboard",
+      );
+      setRemoteStatus("error");
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (isShopBuilderApiMock()) return;
+    void refreshFromApi();
+  }, [refreshFromApi]);
+
   const addCategory = React.useCallback(
     (name: string) => {
       const n = name.trim();
       if (!n) return;
-      setShopCategories((prev) => {
-        const cur = prev[activeShop.id] ?? [];
-        if (cur.includes(n)) return prev;
-        return {
-          ...prev,
-          [activeShop.id]: [...cur, n].sort((a, b) => a.localeCompare(b)),
-        };
-      });
+      if (isShopBuilderApiMock()) {
+        setShopCategories((prev) => {
+          const cur = prev[activeShop.id] ?? [];
+          if (cur.includes(n)) return prev;
+          return {
+            ...prev,
+            [activeShop.id]: [...cur, n].sort((a, b) => a.localeCompare(b)),
+          };
+        });
+        return;
+      }
+      void (async () => {
+        try {
+          const next = await shopApi.apiAddShopCategory(activeShop.id, n);
+          setShopCategories((prev) => ({
+            ...prev,
+            [activeShop.id]: [...next].sort((a, b) => a.localeCompare(b)),
+          }));
+        } catch (e) {
+          setRemoteError(
+            e instanceof Error ? e.message : "Failed to add category",
+          );
+        }
+      })();
     },
     [activeShop.id],
   );
@@ -384,10 +454,26 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     (name: string) => {
       const n = name.trim();
       if (!n) return;
-      setShopCategories((prev) => {
-        const cur = prev[activeShop.id] ?? [];
-        return { ...prev, [activeShop.id]: cur.filter((c) => c !== n) };
-      });
+      if (isShopBuilderApiMock()) {
+        setShopCategories((prev) => {
+          const cur = prev[activeShop.id] ?? [];
+          return { ...prev, [activeShop.id]: cur.filter((c) => c !== n) };
+        });
+        return;
+      }
+      void (async () => {
+        try {
+          const next = await shopApi.apiRemoveShopCategory(activeShop.id, n);
+          setShopCategories((prev) => ({
+            ...prev,
+            [activeShop.id]: [...next].sort((a, b) => a.localeCompare(b)),
+          }));
+        } catch (e) {
+          setRemoteError(
+            e instanceof Error ? e.message : "Failed to remove category",
+          );
+        }
+      })();
     },
     [activeShop.id],
   );
@@ -403,77 +489,164 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
   const updateShop = React.useCallback(
     (shopId: string, shop: ShopUpdateInput) => {
-      setShops((currentShops) =>
-        currentShops.map((currentShop) =>
-          currentShop.id === shopId
-            ? { ...currentShop, ...shop, updatedAt: new Date() }
-            : currentShop,
-        ),
-      );
+      if (isShopBuilderApiMock()) {
+        setShops((currentShops) =>
+          currentShops.map((currentShop) =>
+            currentShop.id === shopId
+              ? { ...currentShop, ...shop, updatedAt: new Date() }
+              : currentShop,
+          ),
+        );
+        return;
+      }
+      void (async () => {
+        try {
+          const updated = await shopApi.apiPatchShop(shopId, shop);
+          setShops((currentShops) =>
+            currentShops.map((s) => (s.id === shopId ? updated : s)),
+          );
+        } catch (e) {
+          setRemoteError(
+            e instanceof Error ? e.message : "Failed to update shop",
+          );
+        }
+      })();
     },
     [],
   );
 
   const addProduct = React.useCallback(
     (product: NewProductInput) => {
-      const createdAt = new Date();
-      const category = product.category.trim() || "Uncategorized";
+      const runMock = () => {
+        const createdAt = new Date();
+        const category = product.category.trim() || "Uncategorized";
       const sku =
         product.sku.trim() ||
-        `SKU-${activeShop.slug.slice(0, 4).toUpperCase()}-${Date.now().toString().slice(-6)}`;
-      const nextProduct: Product = {
-        id: createId("prod"),
-        shopId: activeShop.id,
-        name: product.name.trim(),
-        sku,
-        category,
-        size: product.size.trim(),
-        description: product.description.trim(),
-        imageUrl: product.imageUrl.trim(),
-        status: product.status,
-        price: product.price,
-        inventory: product.inventory,
-        sales: 0,
-        earning: 0,
-        createdAt,
-        updatedAt: createdAt,
+        `SKU-${activeShop.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 4).toUpperCase()}-${Date.now().toString().slice(-6)}`;
+        const nextProduct: Product = {
+          id: createId("prod"),
+          shopId: activeShop.id,
+          name: product.name.trim(),
+          sku,
+          category,
+          size: product.size.trim(),
+          description: product.description.trim(),
+          imageUrl: product.imageUrl.trim(),
+          status: product.status,
+          price: product.price,
+          inventory: product.inventory,
+          sales: 0,
+          earning: 0,
+          createdAt,
+          updatedAt: createdAt,
+        };
+
+        if (category) {
+          setShopCategories((prev) => {
+            const cur = prev[activeShop.id] ?? [];
+            if (cur.includes(category)) return prev;
+            return {
+              ...prev,
+              [activeShop.id]: [...cur, category].sort((a, b) =>
+                a.localeCompare(b),
+              ),
+            };
+          });
+        }
+
+        setAllProducts((currentProducts) => [nextProduct, ...currentProducts]);
       };
 
-      if (category) {
-        setShopCategories((prev) => {
-          const cur = prev[activeShop.id] ?? [];
-          if (cur.includes(category)) return prev;
-          return {
-            ...prev,
-            [activeShop.id]: [...cur, category].sort((a, b) =>
-              a.localeCompare(b),
-            ),
-          };
-        });
+      if (isShopBuilderApiMock()) {
+        runMock();
+        return;
       }
 
-      setAllProducts((currentProducts) => [nextProduct, ...currentProducts]);
+      void (async () => {
+        try {
+          const created = await shopApi.apiCreateProduct(
+            activeShop.id,
+            product,
+          );
+          setAllProducts((currentProducts) => [created, ...currentProducts]);
+          const category = product.category.trim() || "Uncategorized";
+          if (category) {
+            setShopCategories((prev) => {
+              const cur = prev[activeShop.id] ?? [];
+              if (cur.includes(category)) return prev;
+              return {
+                ...prev,
+                [activeShop.id]: [...cur, category].sort((a, b) =>
+                  a.localeCompare(b),
+                ),
+              };
+            });
+          }
+        } catch (e) {
+          setRemoteError(
+            e instanceof Error ? e.message : "Failed to create product",
+          );
+        }
+      })();
     },
-    [activeShop.id, activeShop.slug],
+    [activeShop.id],
   );
 
   const updateProduct = React.useCallback(
     (productId: string, product: ProductUpdateInput) => {
-      setAllProducts((currentProducts) =>
-        currentProducts.map((currentProduct) =>
-          currentProduct.id === productId
-            ? { ...currentProduct, ...product, updatedAt: new Date() }
-            : currentProduct,
-        ),
-      );
+      if (isShopBuilderApiMock()) {
+        setAllProducts((currentProducts) =>
+          currentProducts.map((currentProduct) =>
+            currentProduct.id === productId
+              ? { ...currentProduct, ...product, updatedAt: new Date() }
+              : currentProduct,
+          ),
+        );
+        return;
+      }
+      void (async () => {
+        const row = allProductsRef.current.find((p) => p.id === productId);
+        if (!row) return;
+        try {
+          const updated = await shopApi.apiPatchProduct(
+            row.shopId,
+            productId,
+            product,
+          );
+          setAllProducts((currentProducts) =>
+            currentProducts.map((p) => (p.id === productId ? updated : p)),
+          );
+        } catch (e) {
+          setRemoteError(
+            e instanceof Error ? e.message : "Failed to update product",
+          );
+        }
+      })();
     },
     [],
   );
 
   const deleteProduct = React.useCallback((productId: string) => {
-    setAllProducts((currentProducts) =>
-      currentProducts.filter((product) => product.id !== productId),
-    );
+    if (isShopBuilderApiMock()) {
+      setAllProducts((currentProducts) =>
+        currentProducts.filter((product) => product.id !== productId),
+      );
+      return;
+    }
+    void (async () => {
+      const row = allProductsRef.current.find((p) => p.id === productId);
+      if (!row) return;
+      try {
+        await shopApi.apiDeleteProduct(row.shopId, productId);
+        setAllProducts((currentProducts) =>
+          currentProducts.filter((product) => product.id !== productId),
+        );
+      } catch (e) {
+        setRemoteError(
+          e instanceof Error ? e.message : "Failed to delete product",
+        );
+      }
+    })();
   }, []);
 
   const value = React.useMemo<DashboardContextValue>(
@@ -492,6 +665,10 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       addProduct,
       updateProduct,
       deleteProduct,
+      dataSource,
+      remoteStatus,
+      remoteError,
+      refreshFromApi,
     }),
     [
       shops,
@@ -508,6 +685,10 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       addProduct,
       updateProduct,
       deleteProduct,
+      dataSource,
+      remoteStatus,
+      remoteError,
+      refreshFromApi,
     ],
   );
 

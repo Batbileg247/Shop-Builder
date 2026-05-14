@@ -1,4 +1,5 @@
 import type { Shop } from "@/types/dashboard";
+import { createShopWithStyle } from "@/lib/shop-defaults";
 
 export type MonthlySalesDataPoint = {
   shopId: string;
@@ -9,84 +10,102 @@ export type MonthlySalesDataPoint = {
 const now = new Date("2026-05-13T00:00:00.000Z");
 
 export const shopsData: Shop[] = [
-  {
+  createShopWithStyle({
     id: "shop_luma",
     name: "Luma Atelier",
-    slug: "luma-atelier",
     ownerId: "user_01",
     logoUrl:
       "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=240&q=80",
     brandColor: "#8b5cf6",
     accentColor: "#f0e7ff",
     currency: "USD",
+    radiusPx: 10,
+    backgroundColor: "#faf5ff",
+    tagline: "Soft essentials for everyday ritual.",
+    textColor: "#1e1b4b",
     createdAt: new Date("2025-01-15"),
     updatedAt: now,
-  },
-  {
+  }),
+  createShopWithStyle({
     id: "shop_nova",
     name: "Nova Tech Supply",
-    slug: "nova-tech-supply",
     ownerId: "user_01",
     logoUrl:
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=240&q=80",
     brandColor: "#3b82f6",
     accentColor: "#dbeafe",
     currency: "USD",
+    radiusPx: 8,
+    backgroundColor: "#eff6ff",
+    tagline: "Desk upgrades that ship fast.",
+    textColor: "#0f172a",
     createdAt: new Date("2025-02-20"),
     updatedAt: now,
-  },
-  {
+  }),
+  createShopWithStyle({
     id: "shop_terra",
     name: "Terra Home Goods",
-    slug: "terra-home-goods",
     ownerId: "user_01",
     logoUrl:
       "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=240&q=80",
     brandColor: "#f97316",
     accentColor: "#ffedd5",
     currency: "USD",
+    radiusPx: 12,
+    backgroundColor: "#fff7ed",
+    tagline: "Warm textures for slow mornings.",
+    textColor: "#431407",
     createdAt: new Date("2025-03-10"),
     updatedAt: now,
-  },
-  {
+  }),
+  createShopWithStyle({
     id: "shop_jade",
     name: "Jade Wellness",
-    slug: "jade-wellness",
     ownerId: "user_01",
     logoUrl:
       "https://images.unsplash.com/photo-1556821552-7f41c5d440db?auto=format&fit=crop&w=240&q=80",
     brandColor: "#10b981",
     accentColor: "#d1fae5",
     currency: "USD",
+    radiusPx: 16,
+    backgroundColor: "#ecfdf5",
+    tagline: "Small rituals, steady balance.",
+    textColor: "#064e3b",
     createdAt: new Date("2025-04-05"),
     updatedAt: now,
-  },
-  {
+  }),
+  createShopWithStyle({
     id: "shop_crimson",
     name: "Crimson Fashion Co.",
-    slug: "crimson-fashion",
     ownerId: "user_01",
     logoUrl:
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=240&q=80",
     brandColor: "#dc2626",
     accentColor: "#fee2e2",
     currency: "USD",
+    radiusPx: 6,
+    backgroundColor: "#fef2f2",
+    tagline: "Bold cuts, quiet confidence.",
+    textColor: "#450a0a",
     createdAt: new Date("2025-04-18"),
     updatedAt: now,
-  },
-  {
+  }),
+  createShopWithStyle({
     id: "shop_azure",
     name: "Azure Digital Solutions",
-    slug: "azure-digital",
     ownerId: "user_01",
     logoUrl:
       "https://images.unsplash.com/photo-1518152006812-edab29387d0f?auto=format&fit=crop&w=240&q=80",
     brandColor: "#0ea5e9",
     accentColor: "#cffafe",
     currency: "USD",
+    radiusPx: 3,
+    backgroundColor: "#f0f9ff",
+    tagline: "Tools for teams that move quickly.",
+    textColor: "#0c4a6e",
     createdAt: new Date("2025-05-02"),
     updatedAt: now,
-  },
+  }),
 ];
 
 export const monthlySalesData: MonthlySalesDataPoint[] = [

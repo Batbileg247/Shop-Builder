@@ -267,7 +267,7 @@ export default function UserAccountPage() {
                               {shop.name}
                             </h3>
                             <p className="mt-1 text-xs text-slate-500">
-                              {shop.slug}
+                              {shop.id}
                             </p>
                             <div
                               className="mt-2 h-1.5 w-20 rounded-full"

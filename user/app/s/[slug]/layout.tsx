@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { StorefrontProvider } from "@/components/storefront/storefront-provider";
 
+/** Route segment is still named `slug` in the filesystem; value is the shop `id` (`/s/shop_luma`). */
 export default async function StorefrontLayout({
   children,
   params,
@@ -9,9 +10,9 @@ export default async function StorefrontLayout({
   children: React.ReactNode;
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug: shopId } = await params;
   return (
-    <StorefrontProvider slug={slug}>{children}</StorefrontProvider>
+    <StorefrontProvider shopId={shopId}>{children}</StorefrontProvider>
   );
 }
 

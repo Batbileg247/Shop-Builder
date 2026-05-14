@@ -2,14 +2,14 @@
 
 import * as React from "react";
 import { Check, Pencil, Trash2 } from "lucide-react";
-import type { Product } from "../../../types/index";
-import { useDashboard } from "../../../context/dashboard-context";
+import type { Product, ProductStatus } from "@/types/dashboard";
+import { useDashboard } from "@/context/DashboardContext";
 
-function StatusPill({ status }: { status: Product["status"] }) {
+function StatusPill({ status }: { status: ProductStatus }) {
   return (
     <span
       className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-        status === "Active"
+        status === "Live"
           ? "bg-emerald-100 text-emerald-700"
           : "bg-slate-100 text-slate-700"
       }`}
@@ -39,15 +39,15 @@ export function ProductTable() {
       !editingId ||
       !draft.name ||
       draft.price == null ||
-      draft.stock == null
+      draft.inventory == null
     ) {
       return;
     }
     updateProduct(editingId, {
       name: draft.name,
       price: Number(draft.price),
-      stock: Number(draft.stock),
-      image: draft.image ?? "",
+      inventory: Number(draft.inventory),
+      imageUrl: draft.imageUrl ?? "",
       status: draft.status ?? "Draft",
     });
     cancelEdit();
@@ -75,7 +75,7 @@ export function ProductTable() {
                     <td className="py-4 pr-6 align-top">
                       <div className="flex items-center gap-3">
                         <img
-                          src={product.image}
+                          src={product.imageUrl}
                           alt={product.name}
                           className="h-14 w-14 rounded-3xl object-cover"
                         />
@@ -122,17 +122,17 @@ export function ProductTable() {
                         <input
                           type="number"
                           min={0}
-                          value={draft.stock ?? product.stock}
+                          value={draft.inventory ?? product.inventory}
                           onChange={(event) =>
                             setDraft((current) => ({
                               ...current,
-                              stock: Number(event.target.value),
+                              inventory: Number(event.target.value),
                             }))
                           }
                           className="w-20 rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none"
                         />
                       ) : (
-                        <span>{product.stock}</span>
+                        <span>{product.inventory}</span>
                       )}
                     </td>
                     <td className="py-4 pr-6 align-top">
@@ -142,12 +142,12 @@ export function ProductTable() {
                           onChange={(event) =>
                             setDraft((current) => ({
                               ...current,
-                              status: event.target.value as Product["status"],
+                              status: event.target.value as ProductStatus,
                             }))
                           }
                           className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none"
                         >
-                          <option value="Active">Active</option>
+                          <option value="Live">Live</option>
                           <option value="Draft">Draft</option>
                         </select>
                       ) : (

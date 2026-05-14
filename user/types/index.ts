@@ -3,7 +3,6 @@ export type ProductStatus = "Active" | "Draft";
 export interface Shop {
   id: string;
   name: string;
-  slug: string;
   brandColor: string;
   heroImage: string;
 }

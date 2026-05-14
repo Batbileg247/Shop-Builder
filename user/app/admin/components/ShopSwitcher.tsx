@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useDashboard } from "../../../context/dashboard-context";
+import { useDashboard } from "@/context/DashboardContext";
 
 export function ShopSwitcher() {
   const { shops, activeShop, switchShop } = useDashboard();
