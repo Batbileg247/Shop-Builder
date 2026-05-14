@@ -36,6 +36,8 @@ type SidebarContextProps = {
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
   toggleSidebar: () => void;
+  /** Human-facing name for a11y (mobile sheet, toggle, rail). Theme studio uses "Live theme editor". */
+  sidebarLabel: string;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
@@ -56,11 +58,14 @@ function SidebarProvider({
   className,
   style,
   children,
+  sidebarLabel = "Menu",
   ...props
 }: React.ComponentProps<"div"> & {
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Shown in mobile sheet title, toggle screen reader text, and rail hint. */
+  sidebarLabel?: string;
 }) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
@@ -118,8 +123,18 @@ function SidebarProvider({
       openMobile,
       setOpenMobile,
       toggleSidebar,
+      sidebarLabel,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+    [
+      state,
+      open,
+      setOpen,
+      isMobile,
+      openMobile,
+      setOpenMobile,
+      toggleSidebar,
+      sidebarLabel,
+    ],
   );
 
   return (
@@ -158,7 +173,7 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const { isMobile, state, openMobile, setOpenMobile, sidebarLabel } = useSidebar();
 
   if (collapsible === "none") {
     return (
@@ -192,8 +207,10 @@ function Sidebar({
           side={side}
         >
           <SheetHeader className="sr-only">
-            <SheetTitle>Menu</SheetTitle>
-            <SheetDescription>Open navigation and settings from here.</SheetDescription>
+            <SheetTitle>{sidebarLabel}</SheetTitle>
+            <SheetDescription>
+              Open or close the {sidebarLabel.toLowerCase()} panel.
+            </SheetDescription>
           </SheetHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
@@ -250,7 +267,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, sidebarLabel } = useSidebar();
 
   return (
     <Button
@@ -266,22 +283,22 @@ function SidebarTrigger({
       {...props}
     >
       <PanelLeftIcon />
-      <span className="sr-only">Show or hide menu</span>
+      <span className="sr-only">Show or hide {sidebarLabel}</span>
     </Button>
   );
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, sidebarLabel } = useSidebar();
 
   return (
     <button
       data-sidebar="rail"
       data-slot="sidebar-rail"
-      aria-label="Show or hide menu"
+      aria-label={`Show or hide ${sidebarLabel}`}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Drag to resize the menu"
+      title={`Resize or toggle ${sidebarLabel}`}
       className={cn(
         "absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex ltr:-translate-x-1/2 rtl:-translate-x-1/2",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",

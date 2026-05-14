@@ -29,7 +29,7 @@ export function SidebarLayout({
   contentClassName?: string
 }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider sidebarLabel={title}>
       <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader className="gap-2">
           <div className="flex items-center justify-between gap-2 px-1">

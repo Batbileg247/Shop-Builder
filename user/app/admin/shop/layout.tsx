@@ -2,11 +2,15 @@
 
 import * as React from "react";
 
+import {
+  ShopPreviewBridge,
+  ShopPreviewDashboardSyncProvider,
+} from "@/components/dashboard/shop-preview-bridge";
 import { ShopProvider } from "@/app/hooks/useShop";
 import { BuilderUiProvider } from "@/context/builder-ui-context";
 import { ensureAuthCookieFromSession } from "@/lib/auth-session";
 
-export default function CustomizeLayout({
+export default function AdminShopLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -16,8 +20,11 @@ export default function CustomizeLayout({
   }, []);
 
   return (
-    <ShopProvider>
-      <BuilderUiProvider>{children}</BuilderUiProvider>
-    </ShopProvider>
+    <ShopPreviewDashboardSyncProvider>
+      <ShopProvider>
+        <ShopPreviewBridge />
+        <BuilderUiProvider>{children}</BuilderUiProvider>
+      </ShopProvider>
+    </ShopPreviewDashboardSyncProvider>
   );
 }

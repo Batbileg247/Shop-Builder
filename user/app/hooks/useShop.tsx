@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -21,6 +22,7 @@ import {
   defaultTheme,
   emptyDraft,
 } from "@/lib/defaults";
+import { ShopPreviewDashboardSyncContext } from "@/context/shop-preview-dashboard-sync-context";
 import { safeImage, slugify } from "@/lib/utils";
 
 const ShopContext = createContext<ReturnType<typeof useShopState> | null>(null);
@@ -41,6 +43,8 @@ export function useShop() {
 }
 
 function useShopState() {
+  const previewDashboardSync = useContext(ShopPreviewDashboardSyncContext);
+
   const [surface, setSurface] = useState<Surface>("builder");
   const [theme, setTheme] = useState<ShopTheme>(defaultTheme);
   const [products, setProducts] = useState<Product[]>([]);
@@ -99,9 +103,35 @@ function useShopState() {
     );
   }
 
+  const replaceProducts = useCallback(
+    (next: Product[], nextCategories?: string[]) => {
+      setProducts(next);
+      if (nextCategories) {
+        setCategories(
+          [...nextCategories].sort((a, b) => a.localeCompare(b)),
+        );
+      }
+      setCart((prev) => {
+        const ids = new Set(next.map((p) => p.id));
+        const out: Record<string, number> = {};
+        for (const [id, qty] of Object.entries(prev)) {
+          if (ids.has(id) && qty > 0) out[id] = qty;
+        }
+        return out;
+      });
+    },
+    [],
+  );
+
   function addProduct(overrideDraft?: ProductDraft) {
     const d = overrideDraft ?? draft;
     if (!d.name.trim() || !d.image.trim()) return;
+
+    if (previewDashboardSync?.persistAddFromDraft) {
+      previewDashboardSync.persistAddFromDraft(d);
+      setDraft(emptyDraft);
+      return;
+    }
 
     const category = d.category.trim() || "Uncategorized";
     ensureCategoryListed(category);
@@ -296,6 +326,7 @@ function useShopState() {
     inStockProducts,
     featuredProducts,
     addProduct,
+    replaceProducts,
     saveEdit,
     startEdit,
     cancelEdit,

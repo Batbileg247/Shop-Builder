@@ -13,13 +13,14 @@ export const PATHS = {
   adminProducts: "/admin/products",
   adminCustomers: "/admin/customers",
   adminAnalytics: "/admin/analytics",
-  adminCustomize: "/admin/customize",
+  /** Branding / identity for the active shop (sidebar switcher). */
+  adminShop: "/admin/shop",
 
   // User account
   user: "/user",
 
-  // Theme studio / storefront preview (embedded on Customize)
-  builder: "/admin/customize",
+  // Full-screen theme studio (preview + editor sidebar)
+  builder: "/builder",
 
   // Live storefront helpers
   storefront: (slug: string) => `/s/${slug}` as const,
@@ -30,8 +31,8 @@ export const PATHS = {
   storefrontCheckout: (slug: string) => `/s/${slug}/checkout` as const,
 } as const;
 
-/** Nav base for theme preview links (same route as customize). */
-export const BUILDER_PREVIEW_BASE = PATHS.adminCustomize;
+/** Nav base for theme preview links (Theme studio route). */
+export const BUILDER_PREVIEW_BASE = PATHS.builder;
 
 /** Where to send a user after successful login / signup. */
 export const DEFAULT_AFTER_LOGIN = PATHS.adminOverview;
@@ -41,11 +42,16 @@ export const LOGIN_PAGE = PATHS.signIn;
 
 /**
  * Returns the nav base prefix for storefront links.
- * On customize preview, links stay under `/admin/customize`.
+ * On `/builder`, cart and shop links stay under `/builder`.
  * On `/s/:slug/*`, links use `/s/:slug`.
+ * Else admin (e.g. shop settings) falls back to `PATHS.adminShop` for legacy relative paths.
  */
 export function storefrontNavBase(pathname: string | null): string {
-  if (!pathname) return PATHS.adminCustomize;
+  if (!pathname) return PATHS.builder;
   const m = pathname.match(/^\/s\/([^/]+)/);
-  return m ? `/s/${m[1]}` : PATHS.adminCustomize;
+  if (m) return `/s/${m[1]}`;
+  if (pathname === "/builder" || pathname.startsWith("/builder/")) {
+    return PATHS.builder;
+  }
+  return PATHS.adminShop;
 }

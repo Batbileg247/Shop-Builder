@@ -17,7 +17,6 @@ import { ProductCard } from "@/app/components/ecommerce/ProductCard";
 import { ProductGrid } from "@/app/components/ecommerce/ProductGrid";
 import { FilterSidebar } from "@/app/components/ecommerce/FilterSidebar";
 import { Button } from "@/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/ui/sheet";
 import {
   applyCatalogFilters,
   buildDefaultSelections,
@@ -28,13 +27,12 @@ import {
 import { cn } from "@/lib/utils";
 import type { Product, ProductDraft } from "@/types";
 import { emptyDraft } from "@/lib/defaults";
-import { Plus, Search, ShoppingBag, ShoppingCart, Menu, X } from "lucide-react";
-import { Input } from "@/ui/input";
+import { Plus, Search, ShoppingBag, ShoppingCart, X } from "lucide-react";
 
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { SiteHeader } from "./site-header";
 import { useBuilderUi } from "@/context/builder-ui-context";
-import { storefrontNavBase } from "@/lib/site-paths";
+import { PATHS, storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
 
 const PREVIEW_SLOT_COUNT = 6;
@@ -114,12 +112,15 @@ function HomePageInner() {
 
   const isStorefront = pathname.startsWith("/s/");
   const fullSiteShell = isDemo || isStorefront;
-  const isEmbeddedCustomize = pathname.startsWith("/admin/customize");
+  const isEmbeddedDashboardPreview =
+    pathname.startsWith(PATHS.adminShop) ||
+    pathname === PATHS.builder ||
+    pathname.startsWith(`${PATHS.builder}/`);
 
   const catalogFull = searchParams.get("view") === "all";
   const previewHostClass = fullSiteShell
     ? SHOP_PREVIEW_HOST_DEMO_CLASS
-    : isEmbeddedCustomize
+    : isEmbeddedDashboardPreview
       ? "flex h-full min-h-0 w-full flex-1"
       : SHOP_PREVIEW_HOST_CLASS;
 
@@ -156,6 +157,17 @@ function HomePageInner() {
     setCartOpen(intent);
   }, [searchParams]);
 
+  const toggleCart = (open: boolean) => {
+    setCartOpen(open);
+    const next = new URLSearchParams(searchParams.toString());
+    if (open) next.set("cart", "open");
+    else next.delete("cart");
+    router.replace(
+      next.toString() ? `${pathname}?${next.toString()}` : pathname,
+      { scroll: false },
+    );
+  };
+
   const openDetail = (p: (typeof shop.products)[number]) => {
     setDetailProduct(p);
     setDetailOpen(true);
@@ -166,12 +178,20 @@ function HomePageInner() {
     setAddProductOpen(true);
   };
 
-  const submitNewProduct = () => {
-    const d = newProductDraft;
-    if (!d.name.trim() || !d.image.trim() || !d.category.trim()) return;
-    shop.addProduct(d);
-    setAddProductOpen(false);
-    setNewProductDraft({ ...emptyDraft });
+  const cyclePriceSort = () => {
+    setPriceSort((s) => (s === "none" ? "asc" : s === "asc" ? "desc" : "none"));
+  };
+
+  const filterSidebarProps = {
+    definitions: shop.catalogFilterDefinitions,
+    selections: filterSelections,
+    onSelectionsChange: setFilterSelections,
+    priceSortMode: priceSort,
+    onPriceSortCycle: shop.catalogFilterDefinitions.some(
+      (d) => d.type === "priceRange",
+    )
+      ? cyclePriceSort
+      : undefined,
   };
 
   const effectiveTheme = React.useMemo(
@@ -216,13 +236,11 @@ function HomePageInner() {
     return ["All", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
   }, [shop.products, shop.categories]);
 
-  // Хайлтын шүүлтүүртэй Preview Pool
   const previewPool = React.useMemo(() => {
     let pool =
       previewCategory === "All"
         ? shop.products
         : shop.products.filter((p) => p.category === previewCategory);
-
     if (searchQuery.trim() !== "") {
       pool = pool.filter((p) =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -241,14 +259,12 @@ function HomePageInner() {
     return Math.max(0, PREVIEW_SLOT_COUNT - previewSlotProducts.length);
   }, [previewPool.length, previewSlotProducts.length]);
 
-  // Хайлтын шүүлтүүртэй Catalog
   const filteredCatalog = React.useMemo(() => {
     let items = applyCatalogFilters(
       shop.products,
       shop.catalogFilterDefinitions,
       filterSelections,
     );
-
     if (searchQuery.trim() !== "") {
       items = items.filter((p) =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -273,29 +289,10 @@ function HomePageInner() {
     return copy;
   }, [filteredCatalog, priceSort]);
 
-  const cyclePriceSort = () => {
-    setPriceSort((s) => (s === "none" ? "asc" : s === "asc" ? "desc" : "none"));
-  };
-
-  const filterSidebarProps = {
-    definitions: shop.catalogFilterDefinitions,
-    selections: filterSelections,
-    onSelectionsChange: setFilterSelections,
-    priceSortMode: priceSort,
-    onPriceSortCycle: shop.catalogFilterDefinitions.some(
-      (d) => d.type === "priceRange",
-    )
-      ? cyclePriceSort
-      : undefined,
-  };
-
-  const goFullCatalog = () => {
+  const goFullCatalog = () =>
     router.replace(mergeSearchParams(pathname, searchParams, { view: "all" }));
-  };
-
-  const goPreviewCatalog = () => {
+  const goPreviewCatalog = () =>
     router.replace(mergeSearchParams(pathname, searchParams, { view: null }));
-  };
 
   const fullShopLayout = (
     <div
@@ -311,8 +308,8 @@ function HomePageInner() {
         className={cn(
           "shrink-0 border-pv-divider bg-pv-header",
           fullSiteShell
-            ? "w-full border-b px-4 py-6 lg:w-[17.5rem] lg:border-r lg:border-b-0 lg:shrink-0 sm:px-6"
-            : "hidden w-[17.5rem] overflow-y-auto border-r lg:block",
+            ? "w-full border-b px-4 py-6 lg:w-70 lg:border-r lg:border-b-0 lg:shrink-0 sm:px-6"
+            : "hidden w-70 overflow-y-auto border-r lg:block",
         )}
       >
         <FilterSidebar {...filterSidebarProps} />
@@ -434,7 +431,7 @@ function HomePageInner() {
           ? isStorefront
             ? "min-h-svh w-full"
             : "w-full pt-16"
-          : isEmbeddedCustomize
+          : isEmbeddedDashboardPreview
             ? "h-full min-h-0 min-w-0 flex-1"
             : "min-h-svh",
       )}
@@ -458,7 +455,7 @@ function HomePageInner() {
             )}
             style={shopPreviewShellStyle(effectiveTheme)}
           >
-            {/* Шинэчлэгдсэн Header */}
+            {/* Header with Search and Cart */}
             <header className="pv-header sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-pv-divider bg-pv-header/80 px-4 backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <Link href={navBase} className="flex items-center gap-2 group">
@@ -471,8 +468,7 @@ function HomePageInner() {
                 </Link>
               </div>
 
-              {/* Search Bar */}
-              <div className="relative flex-1 max-w-sm">
+              <div className="relative flex-1 max-w-sm mx-4">
                 <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-pv-muted" />
                 <input
                   type="text"
@@ -494,13 +490,13 @@ function HomePageInner() {
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
-                  className="hidden items-center gap-2 sm:flex"
+                  className="hidden sm:flex"
                   onClick={goFullCatalog}
                 >
-                  <span>Shop</span>
+                  Shop
                 </Button>
                 <button
-                  onClick={() => setCartOpen(true)}
+                  onClick={() => toggleCart(true)}
                   className="relative flex size-10 items-center justify-center rounded-full text-pv-fg hover:bg-pv-card"
                 >
                   <ShoppingCart className="size-5" />
@@ -539,8 +535,6 @@ function HomePageInner() {
         </div>
       </section>
 
-      {/* Product Detail Modal, Cart Drawer and Add Product Sheet... */}
-      {/* (Хуучин код хэвээрээ үргэлжилнэ) */}
       <ShopProductDetailModal
         onAddToCart={(product, qty) => {
           shop.addQuantityToCart(product.id, qty);
@@ -558,15 +552,7 @@ function HomePageInner() {
         onDecrement={shop.removeFromCart}
         onGiftWrapChange={setGiftWrap}
         onIncrement={shop.addToCart}
-        onOpenChange={(open) => {
-          setCartOpen(open);
-          const next = new URLSearchParams(searchParams.toString());
-          if (open) next.set("cart", "open");
-          else next.delete("cart");
-          router.replace(
-            next.toString() ? `${pathname}?${next.toString()}` : pathname,
-          );
-        }}
+        onOpenChange={toggleCart}
         onRemoveLine={shop.clearCartItem}
         onViewFullCart={() => router.push(`${navBase}/cart`)}
         open={cartOpen}

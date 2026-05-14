@@ -7,23 +7,41 @@ import {
   BarChart3,
   ChevronDown,
   LayoutDashboard,
-  Palette,
-  Settings,
+  Sparkles,
+  Store,
   Users,
   User,
 } from "lucide-react";
 import { useDashboard } from "@/context/DashboardContext";
+import { PATHS } from "@/lib/site-paths";
 
 const navItems = [
   { label: "Overview", href: "/admin/overview", icon: LayoutDashboard },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { label: "Customize", href: "/admin/customize", icon: Palette },
+  { label: "Theme studio", href: PATHS.builder, icon: Sparkles },
+  { label: "Shop", href: PATHS.adminShop, icon: Store },
 ];
+
+function navItemIsActive(pathname: string, href: string) {
+  if (href === PATHS.builder) {
+    return (
+      pathname === PATHS.builder ||
+      pathname.startsWith(`${PATHS.builder}/`)
+    );
+  }
+  if (href === PATHS.adminShop) {
+    return (
+      pathname === PATHS.adminShop ||
+      pathname.startsWith(`${PATHS.adminShop}/`)
+    );
+  }
+  return pathname === href;
+}
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { shops, activeShop, switchShop, metrics } = useDashboard();
+  const { shops, activeShop, switchShop } = useDashboard();
 
   return (
     <>
@@ -64,7 +82,7 @@ export function Sidebar() {
           <nav className="mt-4 grid grid-cols-2 gap-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = navItemIsActive(pathname, item.href);
               return (
                 <Link
                   key={item.label}
@@ -144,7 +162,7 @@ export function Sidebar() {
             <ul className="space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = navItemIsActive(pathname, item.href);
                 return (
                   <li key={item.label}>
                     <Link
