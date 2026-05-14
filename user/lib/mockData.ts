@@ -1,8 +1,93 @@
+import type { Shop } from "@/types/dashboard";
+
 export type MonthlySalesDataPoint = {
   shopId: string;
   month: string;
   sales: number;
 };
+
+const now = new Date("2026-05-13T00:00:00.000Z");
+
+export const shopsData: Shop[] = [
+  {
+    id: "shop_luma",
+    name: "Luma Atelier",
+    slug: "luma-atelier",
+    ownerId: "user_01",
+    logoUrl:
+      "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=240&q=80",
+    brandColor: "#8b5cf6",
+    accentColor: "#f0e7ff",
+    currency: "USD",
+    createdAt: new Date("2025-01-15"),
+    updatedAt: now,
+  },
+  {
+    id: "shop_nova",
+    name: "Nova Tech Supply",
+    slug: "nova-tech-supply",
+    ownerId: "user_01",
+    logoUrl:
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=240&q=80",
+    brandColor: "#3b82f6",
+    accentColor: "#dbeafe",
+    currency: "USD",
+    createdAt: new Date("2025-02-20"),
+    updatedAt: now,
+  },
+  {
+    id: "shop_terra",
+    name: "Terra Home Goods",
+    slug: "terra-home-goods",
+    ownerId: "user_01",
+    logoUrl:
+      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=240&q=80",
+    brandColor: "#f97316",
+    accentColor: "#ffedd5",
+    currency: "USD",
+    createdAt: new Date("2025-03-10"),
+    updatedAt: now,
+  },
+  {
+    id: "shop_jade",
+    name: "Jade Wellness",
+    slug: "jade-wellness",
+    ownerId: "user_01",
+    logoUrl:
+      "https://images.unsplash.com/photo-1556821552-7f41c5d440db?auto=format&fit=crop&w=240&q=80",
+    brandColor: "#10b981",
+    accentColor: "#d1fae5",
+    currency: "USD",
+    createdAt: new Date("2025-04-05"),
+    updatedAt: now,
+  },
+  {
+    id: "shop_crimson",
+    name: "Crimson Fashion Co.",
+    slug: "crimson-fashion",
+    ownerId: "user_01",
+    logoUrl:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=240&q=80",
+    brandColor: "#dc2626",
+    accentColor: "#fee2e2",
+    currency: "USD",
+    createdAt: new Date("2025-04-18"),
+    updatedAt: now,
+  },
+  {
+    id: "shop_azure",
+    name: "Azure Digital Solutions",
+    slug: "azure-digital",
+    ownerId: "user_01",
+    logoUrl:
+      "https://images.unsplash.com/photo-1518152006812-edab29387d0f?auto=format&fit=crop&w=240&q=80",
+    brandColor: "#0ea5e9",
+    accentColor: "#cffafe",
+    currency: "USD",
+    createdAt: new Date("2025-05-02"),
+    updatedAt: now,
+  },
+];
 
 export const monthlySalesData: MonthlySalesDataPoint[] = [
   { shopId: "shop_luma", month: "Jan", sales: 18400 },
@@ -41,4 +126,40 @@ export const monthlySalesData: MonthlySalesDataPoint[] = [
   { shopId: "shop_terra", month: "Oct", sales: 36200 },
   { shopId: "shop_terra", month: "Nov", sales: 39700 },
   { shopId: "shop_terra", month: "Dec", sales: 44600 },
+  { shopId: "shop_jade", month: "Jan", sales: 12500 },
+  { shopId: "shop_jade", month: "Feb", sales: 14200 },
+  { shopId: "shop_jade", month: "Mar", sales: 16100 },
+  { shopId: "shop_jade", month: "Apr", sales: 19300 },
+  { shopId: "shop_jade", month: "May", sales: 21800 },
+  { shopId: "shop_jade", month: "Jun", sales: 25400 },
+  { shopId: "shop_jade", month: "Jul", sales: 28700 },
+  { shopId: "shop_jade", month: "Aug", sales: 31200 },
+  { shopId: "shop_jade", month: "Sep", sales: 34500 },
+  { shopId: "shop_jade", month: "Oct", sales: 38100 },
+  { shopId: "shop_jade", month: "Nov", sales: 41600 },
+  { shopId: "shop_jade", month: "Dec", sales: 46200 },
+  { shopId: "shop_crimson", month: "Jan", sales: 19800 },
+  { shopId: "shop_crimson", month: "Feb", sales: 21400 },
+  { shopId: "shop_crimson", month: "Mar", sales: 24200 },
+  { shopId: "shop_crimson", month: "Apr", sales: 27800 },
+  { shopId: "shop_crimson", month: "May", sales: 30600 },
+  { shopId: "shop_crimson", month: "Jun", sales: 34900 },
+  { shopId: "shop_crimson", month: "Jul", sales: 37300 },
+  { shopId: "shop_crimson", month: "Aug", sales: 40100 },
+  { shopId: "shop_crimson", month: "Sep", sales: 43600 },
+  { shopId: "shop_crimson", month: "Oct", sales: 47200 },
+  { shopId: "shop_crimson", month: "Nov", sales: 51400 },
+  { shopId: "shop_crimson", month: "Dec", sales: 56800 },
+  { shopId: "shop_azure", month: "Jan", sales: 16300 },
+  { shopId: "shop_azure", month: "Feb", sales: 18700 },
+  { shopId: "shop_azure", month: "Mar", sales: 21200 },
+  { shopId: "shop_azure", month: "Apr", sales: 24600 },
+  { shopId: "shop_azure", month: "May", sales: 28100 },
+  { shopId: "shop_azure", month: "Jun", sales: 31500 },
+  { shopId: "shop_azure", month: "Jul", sales: 34900 },
+  { shopId: "shop_azure", month: "Aug", sales: 37400 },
+  { shopId: "shop_azure", month: "Sep", sales: 40800 },
+  { shopId: "shop_azure", month: "Oct", sales: 44300 },
+  { shopId: "shop_azure", month: "Nov", sales: 48600 },
+  { shopId: "shop_azure", month: "Dec", sales: 53200 },
 ];

@@ -10,6 +10,7 @@ import type {
   ShopMetrics,
   ShopUpdateInput,
 } from "@/types/dashboard";
+import { shopsData } from "@/lib/mockData";
 
 type DashboardContextValue = {
   shops: Shop[];
@@ -35,47 +36,7 @@ const DashboardContext = React.createContext<DashboardContextValue | null>(
 
 const now = new Date("2026-05-13T00:00:00.000Z");
 
-const shopsSeed: Shop[] = [
-  {
-    id: "shop_luma",
-    name: "Luma Atelier",
-    slug: "luma-atelier",
-    ownerId: "user_01",
-    logoUrl:
-      "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=240&q=80",
-    brandColor: "#8b5cf6",
-    accentColor: "#f0e7ff",
-    currency: "USD",
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "shop_nova",
-    name: "Nova Tech Supply",
-    slug: "nova-tech-supply",
-    ownerId: "user_01",
-    logoUrl:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=240&q=80",
-    brandColor: "#3b82f6",
-    accentColor: "#dbeafe",
-    currency: "USD",
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "shop_terra",
-    name: "Terra Home Goods",
-    slug: "terra-home-goods",
-    ownerId: "user_01",
-    logoUrl:
-      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=240&q=80",
-    brandColor: "#f97316",
-    accentColor: "#ffedd5",
-    currency: "USD",
-    createdAt: now,
-    updatedAt: now,
-  },
-];
+const shopsSeed: Shop[] = shopsData;
 
 const productsSeed: Product[] = [];
 
