@@ -86,6 +86,13 @@ export function BuilderEditorSidebar() {
 
   const setProductGridGapRem = useThemeStore((s) => s.setProductGridGapRem);
 
+  const previewProductCardBasisRem = useThemeStore(
+    (s) => s.previewProductCardBasisRem,
+  );
+  const setPreviewProductCardBasisRem = useThemeStore(
+    (s) => s.setPreviewProductCardBasisRem,
+  );
+
   const primaryColor = useThemeStore((s) => s.primaryColor);
   const backgroundColor = useThemeStore((s) => s.backgroundColor);
   const textColor = useThemeStore((s) => s.textColor);
@@ -189,6 +196,7 @@ export function BuilderEditorSidebar() {
               radiusPx: radius,
               cardContentPaddingRem,
               productGridGapRem,
+              previewProductCardBasisRem,
             },
           },
         }),
@@ -533,6 +541,17 @@ export function BuilderEditorSidebar() {
                   max: 2.5,
                   step: 0.0625,
                   onChange: (v: number) => setProductGridGapRem(v),
+                },
+
+                {
+                  id: "preview-card-basis",
+                  label: "Бүтээгдэхүүний картын өргөн",
+                  value: previewProductCardBasisRem,
+                  display: `${previewProductCardBasisRem.toFixed(2)}rem`,
+                  min: 9,
+                  max: 24,
+                  step: 0.25,
+                  onChange: (v: number) => setPreviewProductCardBasisRem(v),
                 },
               ].map(
                 ({ id, label, value, display, min, max, step, onChange }) => (

@@ -32,6 +32,8 @@ export type ThemeState = {
   /** Theme Studio spacing tokens. */
   cardContentPaddingRem: number;
   productGridGapRem: number;
+  /** Flex-wrap preview: minimum basis per product card row (`flex: 1 1 …`). */
+  previewProductCardBasisRem: number;
 };
 
 export type ThemeActions = {
@@ -50,6 +52,7 @@ export type ThemeActions = {
   setRadius: (value: number) => void;
   setCardContentPaddingRem: (value: number) => void;
   setProductGridGapRem: (value: number) => void;
+  setPreviewProductCardBasisRem: (value: number) => void;
   reset: () => void;
 };
 
@@ -95,9 +98,10 @@ const defaults: ThemeState = {
   radius: 8,
   cardContentPaddingRem: 1,
   productGridGapRem: 1,
+  previewProductCardBasisRem: 14,
 };
 
-const THEME_STORE_VERSION = 2;
+const THEME_STORE_VERSION = 3;
 
 /** Legacy single-key blob; migrated once into the first per-shop key read. */
 const LEGACY_THEME_STORAGE_KEY = "shop-builder-theme-v1";
@@ -187,6 +191,9 @@ function themePatchFromPersisted(value: unknown): Partial<ThemeState> {
   if (typeof source.productGridGapRem === "number") {
     patch.productGridGapRem = source.productGridGapRem;
   }
+  if (typeof source.previewProductCardBasisRem === "number") {
+    patch.previewProductCardBasisRem = source.previewProductCardBasisRem;
+  }
 
   return patch;
 }
@@ -224,6 +231,8 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
       setCardContentPaddingRem: (cardContentPaddingRem) =>
         set({ cardContentPaddingRem }),
       setProductGridGapRem: (productGridGapRem) => set({ productGridGapRem }),
+      setPreviewProductCardBasisRem: (previewProductCardBasisRem) =>
+        set({ previewProductCardBasisRem }),
       reset: () => set({ ...defaults }),
     }),
     {
@@ -252,6 +261,7 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
         radius: s.radius,
         cardContentPaddingRem: s.cardContentPaddingRem,
         productGridGapRem: s.productGridGapRem,
+        previewProductCardBasisRem: s.previewProductCardBasisRem,
       }),
     },
   ),

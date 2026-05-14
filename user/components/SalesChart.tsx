@@ -67,8 +67,12 @@ export function SalesChart({
     setIsMounted(true);
   }, []);
 
+  const chartHeight = 320;
+
   return (
-    <section className={`bg-white p-6 sm:p-7 ${className}`}>
+    <section
+      className={`min-w-0 w-full bg-white p-6 sm:p-7 ${className}`}
+    >
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -89,10 +93,16 @@ export function SalesChart({
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="mt-7 h-[320px]">
+      {/* Chart — explicit height + min-w-0 so ResponsiveContainer never measures -1 in flex layouts */}
+      <div className="mt-7 h-[320px] w-full min-w-0 shrink-0">
         {isMounted ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer
+            width="100%"
+            height={chartHeight}
+            minWidth={0}
+            debounce={50}
+            initialDimension={{ width: 400, height: chartHeight }}
+          >
             <AreaChart
               data={chartData}
               margin={{ top: 12, right: 10, left: -18, bottom: 0 }}

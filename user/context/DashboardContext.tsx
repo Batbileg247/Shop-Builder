@@ -333,23 +333,16 @@ function calculateMetrics(products: Product[]): ShopMetrics {
 
 const ACTIVE_SHOP_SESSION_KEY = "shop-builder-active-shop-id";
 
-function readInitialActiveShopId() {
-  if (typeof window === "undefined") return shopsSeed[0].id;
-  try {
-    const v = sessionStorage.getItem(ACTIVE_SHOP_SESSION_KEY);
-    if (v && shopsSeed.some((s) => s.id === v)) return v;
-  } catch {
-    /* ignore */
-  }
-  return shopsSeed[0].id;
-}
+/** Same on server + first client paint — sessionStorage is applied in an effect after hydrate. */
+const DEFAULT_ACTIVE_SHOP_ID = shopsSeed[0].id;
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const dataSource: DashboardDataSource = isShopBuilderApiMock()
     ? "mock"
     : "api";
   const [shops, setShops] = React.useState<Shop[]>(shopsSeed);
-  const [activeShopId, setActiveShopId] = React.useState(readInitialActiveShopId);
+  const [activeShopId, setActiveShopId] =
+    React.useState<string>(DEFAULT_ACTIVE_SHOP_ID);
   const [allProducts, setAllProducts] = React.useState<Product[]>(productsSeed);
   const [allCustomers, setAllCustomers] =
     React.useState<Customer[]>(customersSeed);
@@ -366,6 +359,17 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     allProductsRef.current = allProducts;
   }, [allProducts]);
+
+  React.useEffect(() => {
+    try {
+      const v = sessionStorage.getItem(ACTIVE_SHOP_SESSION_KEY);
+      if (v && shops.some((s) => s.id === v)) {
+        setActiveShopId(v);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [shops]);
 
   const activeShop = React.useMemo(
     () => shops.find((shop) => shop.id === activeShopId) ?? shops[0],
