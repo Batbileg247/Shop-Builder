@@ -3,7 +3,14 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export type ThemePresetId = "minimal" | "glass" | "neumorph";
+import {
+  buildSiteThemePersisted,
+  parseSiteThemePersisted,
+  type ParsedSiteTheme,
+  type ThemePresetId,
+} from "@/lib/site-theme-config";
+
+export type { ThemePresetId } from "@/lib/site-theme-config";
 
 export type ThemeState = {
   /** Theme Studio preset (maps to `.site-preview-root[data-theme]`). */
@@ -32,6 +39,8 @@ export type ThemeState = {
   /** Theme Studio spacing tokens. */
   cardContentPaddingRem: number;
   productGridGapRem: number;
+  /** Hero carousel бүсийн өндөр (px) — storefront / preview. */
+  heroImageHeightPx: number;
 };
 
 export type ThemeActions = {
@@ -50,6 +59,9 @@ export type ThemeActions = {
   setRadius: (value: number) => void;
   setCardContentPaddingRem: (value: number) => void;
   setProductGridGapRem: (value: number) => void;
+  setHeroImageHeightPx: (value: number) => void;
+  /** Серверийн `theme_config` (whitelist JSON) → state. */
+  applyPersistedSiteTheme: (raw: unknown) => void;
   reset: () => void;
 };
 
@@ -95,9 +107,10 @@ const defaults: ThemeState = {
   radius: 8,
   cardContentPaddingRem: 1,
   productGridGapRem: 1,
+  heroImageHeightPx: 240,
 };
 
-const THEME_STORE_VERSION = 2;
+const THEME_STORE_VERSION = 3;
 
 /** Legacy single-key blob; migrated once into the first per-shop key read. */
 const LEGACY_THEME_STORAGE_KEY = "shop-builder-theme-v1";
@@ -143,52 +156,19 @@ const perShopThemeStorage = createJSONStorage(() => ({
 
 function themePatchFromPersisted(value: unknown): Partial<ThemeState> {
   if (!value || typeof value !== "object") return {};
-
-  const source = value as Record<string, unknown>;
-  const patch: Partial<ThemeState> = {};
-
-  if (
-    source.preset === "minimal" ||
-    source.preset === "glass" ||
-    source.preset === "neumorph"
-  ) {
-    patch.preset = source.preset;
-  }
-
-  if (typeof source.heroTitle === "string") patch.heroTitle = source.heroTitle;
-  if (typeof source.heroImage === "string") patch.heroImage = source.heroImage;
-  if (Array.isArray(source.heroGallery)) {
-    patch.heroGallery = source.heroGallery.filter(
-      (u): u is string => typeof u === "string",
-    );
-  }
-  if (typeof source.shopName === "string") patch.shopName = source.shopName;
-  if (typeof source.heroAnnouncement === "string") {
-    patch.heroAnnouncement = source.heroAnnouncement;
-  }
-  if (typeof source.primaryColor === "string") {
-    patch.primaryColor = source.primaryColor;
-  }
-  if (typeof source.backgroundColor === "string") {
-    patch.backgroundColor = source.backgroundColor;
-  }
-  if (typeof source.textColor === "string") patch.textColor = source.textColor;
-  if (
-    source.font === "sans" ||
-    source.font === "serif" ||
-    source.font === "mono"
-  ) {
-    patch.font = source.font;
-  }
-  if (typeof source.radius === "number") patch.radius = source.radius;
-  if (typeof source.cardContentPaddingRem === "number") {
-    patch.cardContentPaddingRem = source.cardContentPaddingRem;
-  }
-  if (typeof source.productGridGapRem === "number") {
-    patch.productGridGapRem = source.productGridGapRem;
-  }
-
-  return patch;
+  const o = value as Record<string, unknown>;
+  const merged = {
+    ...o,
+    ...(typeof o.builderTheme !== "string" &&
+    (o.preset === "minimal" || o.preset === "glass" || o.preset === "neumorph")
+      ? { builderTheme: o.preset }
+      : {}),
+  };
+  const p: ParsedSiteTheme = parseSiteThemePersisted(merged);
+  const { preset, ...rest } = p;
+  const out: Partial<ThemeState> = { ...rest };
+  if (preset) out.preset = preset;
+  return out;
 }
 
 export const useThemeStore = create<ThemeState & ThemeActions>()(
@@ -224,35 +204,61 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
       setCardContentPaddingRem: (cardContentPaddingRem) =>
         set({ cardContentPaddingRem }),
       setProductGridGapRem: (productGridGapRem) => set({ productGridGapRem }),
+      setHeroImageHeightPx: (heroImageHeightPx) => set({ heroImageHeightPx }),
+      applyPersistedSiteTheme: (raw) => {
+        const parsed = parseSiteThemePersisted(raw);
+        set((prev) => {
+          const preset = parsed.preset ?? prev.preset;
+          const next: ThemeState = {
+            ...prev,
+            ...presetDefaults(preset),
+            preset,
+            heroTitle: parsed.heroTitle ?? prev.heroTitle,
+            shopName: parsed.shopName ?? prev.shopName,
+            heroGallery: parsed.heroGallery ?? prev.heroGallery,
+            heroImage: "",
+            heroAnnouncement: "",
+            radius: parsed.radius ?? prev.radius,
+            cardContentPaddingRem:
+              parsed.cardContentPaddingRem ?? prev.cardContentPaddingRem,
+            productGridGapRem:
+              parsed.productGridGapRem ?? prev.productGridGapRem,
+            heroImageHeightPx:
+              parsed.heroImageHeightPx ?? prev.heroImageHeightPx,
+          };
+          return next;
+        });
+      },
       reset: () => set({ ...defaults }),
     }),
     {
       name: LEGACY_THEME_STORAGE_KEY,
       storage: perShopThemeStorage,
       version: THEME_STORE_VERSION,
-      migrate: (persisted) => ({
-        ...defaults,
-        ...themePatchFromPersisted(persisted),
-      }),
-      merge: (persisted, current) => ({
-        ...current,
-        ...themePatchFromPersisted(persisted),
-      }),
-      partialize: (s) => ({
-        preset: s.preset,
-        heroTitle: s.heroTitle,
-        heroImage: s.heroImage,
-        heroGallery: s.heroGallery,
-        shopName: s.shopName,
-        heroAnnouncement: s.heroAnnouncement,
-        primaryColor: s.primaryColor,
-        backgroundColor: s.backgroundColor,
-        textColor: s.textColor,
-        font: s.font,
-        radius: s.radius,
-        cardContentPaddingRem: s.cardContentPaddingRem,
-        productGridGapRem: s.productGridGapRem,
-      }),
+      migrate: (persisted) => {
+        const p = themePatchFromPersisted(persisted);
+        const preset = p.preset ?? defaults.preset;
+        return {
+          ...defaults,
+          ...presetDefaults(preset),
+          ...p,
+          preset,
+          heroImage: "",
+          heroAnnouncement: "",
+        };
+      },
+      merge: (persisted, current) => {
+        const p = themePatchFromPersisted(persisted);
+        const preset = p.preset ?? current.preset;
+        return {
+          ...current,
+          ...presetDefaults(preset),
+          ...p,
+          preset,
+          heroImage: "",
+        };
+      },
+      partialize: (s) => buildSiteThemePersisted(s),
     },
   ),
 );

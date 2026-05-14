@@ -29,10 +29,19 @@ import type { Product, ProductDraft } from "@/types";
 import { emptyDraft } from "@/lib/defaults";
 import { Plus, Search, ShoppingBag, ShoppingCart, X } from "lucide-react";
 
+import { ProductForm } from "@/app/components/admin/ProductForm";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/ui/sheet";
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { SiteHeader } from "./site-header";
 import { useBuilderUi } from "@/context/builder-ui-context";
-import { PATHS, storefrontNavBase } from "@/lib/site-paths";
+import { useMayEditLiveStorefrontCatalog } from "@/context/storefront-catalog-edit-context";
+import { isBuilderPreviewPath, storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
 
 const PREVIEW_SLOT_COUNT = 6;
@@ -107,15 +116,22 @@ function HomePageInner() {
   const textColor = useThemeStore((s) => s.textColor);
   const font = useThemeStore((s) => s.font);
   const radius = useThemeStore((s) => s.radius);
+  const heroImageHeightPx = useThemeStore((s) => s.heroImageHeightPx);
   const shop = useShop();
-  const { isDemo, heroPanelPercent, setHeroPanelPercent } = useBuilderUi();
+  const { isDemo } = useBuilderUi();
+  /** Зөвхөн resizable горим (жишээ нь admin preview) — builder/building дээр hero өндрийг theme store-оор удирдана. */
+  const [heroPanelPercent, setHeroPanelPercent] = React.useState(44);
 
   const isStorefront = pathname.startsWith("/s/");
+  const mayEditLiveStorefront = useMayEditLiveStorefrontCatalog();
+  /** Builder / admin preview-д нэмэх слот; нийтийн `/s/` дээр зөвхөн эзэмшигчид. */
+  const showAddProductInPreview =
+    !isStorefront || mayEditLiveStorefront;
   const fullSiteShell = isDemo || isStorefront;
-  const isEmbeddedDashboardPreview =
-    pathname.startsWith(PATHS.adminShop) ||
-    pathname === PATHS.builder ||
-    pathname.startsWith(`${PATHS.builder}/`);
+  /** Theme studio (`/builder/...`) and landing create (`/building/...`) use the dashboard main column, not full viewport. */
+  const isEmbeddedDashboardPreview = isBuilderPreviewPath(pathname);
+  /** Builder/building + storefront + demo: resizable биш, Theme editor-ийн Hero өндөр (px). */
+  const heroShelfLocked = fullSiteShell || isEmbeddedDashboardPreview;
 
   const catalogFull = searchParams.get("view") === "all";
   const previewHostClass = fullSiteShell
@@ -137,6 +153,9 @@ function HomePageInner() {
   const [addProductOpen, setAddProductOpen] = React.useState(false);
   const [newProductDraft, setNewProductDraft] =
     React.useState<ProductDraft>(emptyDraft);
+  const [addProductError, setAddProductError] = React.useState<string | null>(
+    null,
+  );
 
   const defSig = React.useMemo(
     () => filterDefinitionsSignature(shop.catalogFilterDefinitions),
@@ -174,8 +193,29 @@ function HomePageInner() {
   };
 
   const openAddProductSheet = () => {
+    if (!showAddProductInPreview) return;
+    setAddProductError(null);
     setNewProductDraft({ ...emptyDraft });
     setAddProductOpen(true);
+  };
+
+  const handleAddProductSheetOpen = (open: boolean) => {
+    setAddProductOpen(open);
+    if (!open) setAddProductError(null);
+  };
+
+  const handleAddProductSubmit = () => {
+    if (isStorefront && !mayEditLiveStorefront) return;
+    if (!newProductDraft.name.trim() || !newProductDraft.image.trim()) {
+      setAddProductError(
+        "Enter a product name and choose an image (swipe the samples or paste a URL).",
+      );
+      return;
+    }
+    setAddProductError(null);
+    shop.addProduct(newProductDraft);
+    setAddProductOpen(false);
+    setNewProductDraft({ ...emptyDraft });
   };
 
   const cyclePriceSort = () => {
@@ -207,6 +247,7 @@ function HomePageInner() {
       textColor,
       font,
       radius,
+      heroImageHeightPx,
     }),
     [
       shop.theme,
@@ -220,6 +261,7 @@ function HomePageInner() {
       textColor,
       font,
       radius,
+      heroImageHeightPx,
     ],
   );
 
@@ -255,9 +297,14 @@ function HomePageInner() {
   );
 
   const addProductSlotCount = React.useMemo(() => {
+    if (!showAddProductInPreview) return 0;
     if (previewPool.length > PREVIEW_SLOT_COUNT) return 0;
     return Math.max(0, PREVIEW_SLOT_COUNT - previewSlotProducts.length);
-  }, [previewPool.length, previewSlotProducts.length]);
+  }, [
+    showAddProductInPreview,
+    previewPool.length,
+    previewSlotProducts.length,
+  ]);
 
   const filteredCatalog = React.useMemo(() => {
     let items = applyCatalogFilters(
@@ -458,7 +505,10 @@ function HomePageInner() {
             {/* Header with Search and Cart */}
             <header className="pv-header sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-pv-divider bg-pv-header/80 px-4 backdrop-blur-md">
               <div className="flex items-center gap-2">
-                <Link href={navBase} className="flex items-center gap-2 group">
+                <Link
+                  href={navBase}
+                  className="flex items-center gap-2 group"
+                >
                   <div className="flex size-9 items-center justify-center rounded-lg bg-pv-primary text-white shadow-sm">
                     <ShoppingBag className="size-5" />
                   </div>
@@ -526,8 +576,10 @@ function HomePageInner() {
                   </div>
                 }
                 heroSizePercent={heroPanelPercent}
-                locked={fullSiteShell}
-                onHeroPercentChange={setHeroPanelPercent}
+                locked={heroShelfLocked}
+                onHeroPercentChange={
+                  heroShelfLocked ? undefined : setHeroPanelPercent
+                }
                 theme={effectiveTheme}
               />
             )}
@@ -558,6 +610,41 @@ function HomePageInner() {
         open={cartOpen}
         subtotal={shop.cartTotal}
       />
+
+      {showAddProductInPreview ? (
+        <Sheet onOpenChange={handleAddProductSheetOpen} open={addProductOpen}>
+          <SheetContent
+            className="flex w-full max-w-lg! flex-col border-l border-pv-divider bg-pv-bg p-0 sm:max-w-lg!"
+            showCloseButton
+            side="right"
+          >
+            <SheetHeader className="border-b border-pv-divider px-6 pt-10">
+              <SheetTitle className="text-2xl font-semibold text-pv-fg">
+                Add product
+              </SheetTitle>
+              <SheetDescription className="text-pv-muted">
+                New products are saved to your active shop and appear in this
+                preview.
+              </SheetDescription>
+              {addProductError ? (
+                <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+                  {addProductError}
+                </p>
+              ) : null}
+            </SheetHeader>
+            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+              <ProductForm
+                draft={newProductDraft}
+                mode="create"
+                onCancel={() => handleAddProductSheetOpen(false)}
+                onSubmit={handleAddProductSubmit}
+                setDraft={setNewProductDraft}
+                theme={effectiveTheme}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : null}
 
       {!fullSiteShell && (
         <footer className="mt-auto border-t border-pv-divider py-8 text-center text-xs text-pv-muted">

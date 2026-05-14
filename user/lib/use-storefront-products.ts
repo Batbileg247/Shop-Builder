@@ -5,13 +5,13 @@ import * as React from "react";
 import type { SiteProduct } from "@/lib/site-mock-products";
 import { fetchStorefrontBySlug, mapToSiteProducts } from "@/lib/storefront-api";
 
-export function useStorefrontProducts(slug: string | null | undefined) {
+export function useStorefrontProducts(shopId: string | null | undefined) {
   const [products, setProducts] = React.useState<SiteProduct[] | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!slug || !slug.trim()) {
+    if (!shopId || !shopId.trim()) {
       setProducts(null);
       setLoading(false);
       setError(null);
@@ -22,7 +22,7 @@ export function useStorefrontProducts(slug: string | null | undefined) {
     setLoading(true);
     setError(null);
 
-    fetchStorefrontBySlug(slug.trim(), { signal: ac.signal })
+    fetchStorefrontBySlug(shopId.trim(), { signal: ac.signal })
       .then((data) => {
         setProducts(mapToSiteProducts(data.products || []));
       })
@@ -37,7 +37,7 @@ export function useStorefrontProducts(slug: string | null | undefined) {
       });
 
     return () => ac.abort();
-  }, [slug]);
+  }, [shopId]);
 
   return { products, loading, error };
 }

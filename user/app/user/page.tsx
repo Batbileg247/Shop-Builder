@@ -26,6 +26,8 @@ import { fetchAdminStores } from "@/lib/admin-api";
 import type { Shop } from "@/types/dashboard";
 import { cn, safeImage } from "@/lib/utils";
 import { buttonVariants } from "@/ui/button";
+import { useDashboard } from "@/context/DashboardContext";
+import { PATHS } from "@/lib/site-paths";
 
 function displayName(session: AuthSession) {
   return [session.user.lastName, session.user.firstName]
@@ -231,7 +233,7 @@ export default function UserAccountPage() {
                 </p>
                 <div className="flex gap-1">
                   <Link
-                    href="/builder"
+                    href={PATHS.builderUpdate}
                     className={cn(
                       buttonVariants({ variant: "default", size: "lg" }),
                       "mt-5",
@@ -281,7 +283,7 @@ export default function UserAccountPage() {
                               {shop.name}
                             </h3>
                             <p className="mt-1 text-xs text-slate-500">
-                              {shop.slug}
+                              {shop.id}
                             </p>
                             <div
                               className="mt-2 h-1.5 w-20 rounded-full"

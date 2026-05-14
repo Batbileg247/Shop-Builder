@@ -3,13 +3,18 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Box, Layers, Sparkles } from "lucide-react";
 
 import { useShop } from "@/app/hooks/useShop";
 import { useDashboard } from "@/context/DashboardContext";
 import { getAuthSession } from "@/lib/auth-session";
-import { PATHS } from "@/lib/site-paths";
+import { patchAdminStore } from "@/lib/admin-api";
+import { postPlatformStore, type PlatformStoreCreated } from "@/lib/platform-stores";
+import { PATHS, storefrontNavBase } from "@/lib/site-paths";
+import { buildSiteThemePersisted } from "@/lib/site-theme-config";
 import { buildHeroCarouselUrls } from "@/lib/shop-theme";
+import { getMerchantBaseUrl, resolveThemeImageUrlsForStorage, uploadImageViaMerchantApi } from "@/lib/storefront-api";
 import { useThemeStore, type ThemePresetId } from "@/stores/useThemeStore";
 import { Button } from "@/ui/button";
 import {
@@ -24,7 +29,7 @@ import {
   SidebarProvider,
   SidebarSeparator,
 } from "@/ui/sidebar";
-import { cn } from "@/lib/utils";
+import { cn, normalizeMerchantSlugBase } from "@/lib/utils";
 
 const themes: { id: ThemePresetId; label: string; icon: typeof Layers }[] = [
   { id: "minimal", label: "Minimal", icon: Layers },
@@ -32,26 +37,19 @@ const themes: { id: ThemePresetId; label: string; icon: typeof Layers }[] = [
   { id: "neumorph", label: "Neumorph", icon: Box },
 ];
 
-const base = PATHS.builder;
-
-function normalizeSlug(input: string) {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function shortId() {
-  return Math.random().toString(36).slice(2, 8);
-}
-
 export function BuilderEditorSidebar() {
-  const { activeShop } = useDashboard();
+  const pathname = usePathname();
+  const router = useRouter();
+  const isCreateFlow =
+    pathname === PATHS.builderCreate ||
+    (pathname?.startsWith(`${PATHS.builderCreate}/`) ?? false);
+  const isUpdateFlow =
+    pathname === PATHS.builderUpdate ||
+    (pathname?.startsWith(`${PATHS.builderUpdate}/`) ?? false);
 
-  const brand = activeShop.brandColor;
+  const base = storefrontNavBase(pathname);
+  const { activeShop, refreshDashboard, reloadShops, switchShop } =
+    useDashboard();
 
   const preset = useThemeStore((s) => s.preset);
   const setPreset = useThemeStore((s) => s.setPreset);
@@ -59,8 +57,8 @@ export function BuilderEditorSidebar() {
   const heroTitle = useThemeStore((s) => s.heroTitle);
   const setHeroTitle = useThemeStore((s) => s.setHeroTitle);
 
-  const heroImage = useThemeStore((s) => s.heroImage);
   const setHeroImage = useThemeStore((s) => s.setHeroImage);
+  const setHeroGallery = useThemeStore((s) => s.setHeroGallery);
 
   const heroGallery = useThemeStore((s) => s.heroGallery);
   const addHeroGalleryImage = useThemeStore((s) => s.addHeroGalleryImage);
@@ -68,9 +66,6 @@ export function BuilderEditorSidebar() {
 
   const shopName = useThemeStore((s) => s.shopName);
   const setShopName = useThemeStore((s) => s.setShopName);
-
-  const heroAnnouncement = useThemeStore((s) => s.heroAnnouncement);
-  const setHeroAnnouncement = useThemeStore((s) => s.setHeroAnnouncement);
 
   const radius = useThemeStore((s) => s.radius);
   const setRadius = useThemeStore((s) => s.setRadius);
@@ -85,10 +80,8 @@ export function BuilderEditorSidebar() {
 
   const setProductGridGapRem = useThemeStore((s) => s.setProductGridGapRem);
 
-  const primaryColor = useThemeStore((s) => s.primaryColor);
-  const backgroundColor = useThemeStore((s) => s.backgroundColor);
-  const textColor = useThemeStore((s) => s.textColor);
-  const font = useThemeStore((s) => s.font);
+  const heroImageHeightPx = useThemeStore((s) => s.heroImageHeightPx);
+  const setHeroImageHeightPx = useThemeStore((s) => s.setHeroImageHeightPx);
 
   const resetTheme = useThemeStore((s) => s.reset);
 
@@ -99,118 +92,242 @@ export function BuilderEditorSidebar() {
   const heroSlideCount = React.useMemo(
     () =>
       buildHeroCarouselUrls({
-        heroImage,
+        heroImage: "",
         heroGallery,
       }).length,
-    [heroImage, heroGallery],
+    [heroGallery],
   );
 
-  const [ownerId, setOwnerId] = React.useState("");
-  const [storeName, setStoreName] = React.useState("My Store");
-
-  const [storeSlug, setStoreSlug] = React.useState("");
-
-  const [publishStatus, setPublishStatus] = React.useState<
-    "idle" | "creating" | "created" | "error"
+  const [saveStatus, setSaveStatus] = React.useState<
+    "idle" | "saving" | "saved" | "error"
   >("idle");
 
-  const [publishError, setPublishError] = React.useState<string | null>(null);
+  const [saveError, setSaveError] = React.useState<string | null>(null);
+  const [heroUploadError, setHeroUploadError] = React.useState<string | null>(
+    null,
+  );
+  const [uploadingGalleryHero, setUploadingGalleryHero] =
+    React.useState(false);
+
+  const [createOwnerId, setCreateOwnerId] = React.useState("");
+  const [createStoreName, setCreateStoreName] = React.useState("");
+  const [createSlug, setCreateSlug] = React.useState("");
+  const [createBusy, setCreateBusy] = React.useState(false);
+  const [createError, setCreateError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    if (!isCreateFlow) return;
     const s = getAuthSession();
-
-    if (s?.user?.id) {
-      setOwnerId((prev) => (prev.trim() ? prev : s.user.id));
-    }
-  }, []);
+    const uid = s?.user?.id;
+    if (uid) setCreateOwnerId((cur) => (cur.trim() ? cur : uid));
+  }, [isCreateFlow]);
 
   async function handleCreateStore() {
-    const platformBase = process.env.NEXT_PUBLIC_PLATFORM_API_URL?.trim();
-
-    if (!platformBase) {
-      setPublishError("NEXT_PUBLIC_PLATFORM_API_URL тохируулаагүй байна.");
-
-      setPublishStatus("error");
+    setCreateError(null);
+    const owner = createOwnerId.trim();
+    const name = createStoreName.trim();
+    if (!owner) {
+      setCreateError("Эзэмшигч (Owner ID) оруулна уу.");
+      return;
+    }
+    if (!name) {
+      setCreateError("Дэлгүүрийн нэр оруулна уу.");
       return;
     }
 
-    if (!ownerId.trim()) {
-      setPublishError("Owner ID (merchant user UUID) шаардлагатай.");
+    setCreateBusy(true);
+    try {
+      let resolvedGallery = heroGallery;
+      try {
+        const r = await resolveThemeImageUrlsForStorage("", heroGallery);
+        resolvedGallery = r.heroGallery;
+      } catch (e) {
+        setCreateError(
+          e instanceof Error ? e.message : "Зургийг Cloudinary руу илгээхэд алдаа.",
+        );
+        setCreateBusy(false);
+        return;
+      }
 
-      setPublishStatus("error");
+      const themeConfig = buildSiteThemePersisted({
+        preset,
+        heroTitle,
+        shopName: name,
+        heroGallery: resolvedGallery,
+        radius,
+        cardContentPaddingRem,
+        productGridGapRem,
+        heroImageHeightPx,
+      });
+
+      const basePart = normalizeMerchantSlugBase(createSlug.trim() || name);
+      let slugBase = basePart.length > 0 ? basePart : "shop";
+      slugBase = slugBase.slice(0, 48);
+
+      let lastErr: string | null = null;
+      let created: PlatformStoreCreated | null = null;
+      for (let i = 0; i < 10; i++) {
+        const suffix = crypto.randomUUID().replace(/-/g, "").slice(0, 6);
+        const slug = `${slugBase}-${suffix}`;
+        try {
+          created = await postPlatformStore({
+            ownerId: owner,
+            name,
+            slug,
+            themeConfig,
+          });
+          lastErr = null;
+          break;
+        } catch (e) {
+          lastErr = e instanceof Error ? e.message : String(e);
+          const dup =
+            /409|давхар|already in use|unique/i.test(lastErr) ||
+            lastErr.toLowerCase().includes("slug");
+          if (!dup) throw e;
+        }
+      }
+      if (!created) {
+        setCreateError(lastErr || "Slug давхцаад дахин оролдоно уу.");
+        return;
+      }
+
+      await reloadShops();
+      switchShop(created.id);
+      router.push(PATHS.builderUpdate);
+    } catch (e) {
+      setCreateError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setCreateBusy(false);
+    }
+  }
+
+  async function handleSaveTheme() {
+    const merchantBase = getMerchantBaseUrl();
+    if (!merchantBase) {
+      setSaveError("NEXT_PUBLIC_MERCHANT_API_URL тохируулаагүй байна.");
+      setSaveStatus("error");
+      return;
+    }
+
+    if (!activeShop.id || activeShop.id === "__loading__") {
+      setSaveError("Идэвхтэй дэлгүүр алга. Admin-аас дэлгүүр сонгоно уу.");
+      setSaveStatus("error");
       return;
     }
 
     const slides = buildHeroCarouselUrls({
-      heroImage,
+      heroImage: "",
       heroGallery,
     }).length;
 
     if (slides < 3) {
-      setPublishError("Hero зураг дор хаяж 3 шаардлагатай.");
-
-      setPublishStatus("error");
+      setSaveError("Hero gallery-д дор хаяж 3 зураг нэмнэ үү.");
+      setSaveStatus("error");
       return;
     }
 
-    setPublishError(null);
-    setPublishStatus("creating");
+    setSaveError(null);
+    setSaveStatus("saving");
 
-    const rawSlug = normalizeSlug(storeName) || `my-store-${shortId()}`;
+    let resolvedGallery = heroGallery;
+    try {
+      const r = await resolveThemeImageUrlsForStorage("", heroGallery);
+      resolvedGallery = r.heroGallery;
+    } catch (e) {
+      setSaveError(
+        e instanceof Error ? e.message : "Зургийг Cloudinary руу илгээхэд алдаа.",
+      );
+      setSaveStatus("error");
+      return;
+    }
 
-    const slug = `${rawSlug}-${shortId()}`;
+    const themeConfig = buildSiteThemePersisted({
+      preset,
+      heroTitle,
+      shopName,
+      heroGallery: resolvedGallery,
+      radius,
+      cardContentPaddingRem,
+      productGridGapRem,
+      heroImageHeightPx,
+    });
 
     try {
-      const res = await fetch(`${platformBase}/stores`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${merchantBase.replace(/\/$/, "")}/stores/${encodeURIComponent(activeShop.id)}/theme`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ themeConfig }),
         },
-
-        body: JSON.stringify({
-          ownerId: ownerId.trim(),
-          name: storeName.trim() || "My Store",
-          slug,
-
-          themeConfig: {
-            builderTheme: preset,
-            heroTitle,
-            heroImage,
-            heroGallery,
-            shopName,
-            heroAnnouncement,
-            primaryColor,
-            backgroundColor,
-            textColor,
-            font,
-
-            layout: {
-              radiusPx: radius,
-              cardContentPaddingRem,
-              productGridGapRem,
-            },
-          },
-        }),
-      });
+      );
 
       const data = (await res.json().catch(() => null)) as {
         error?: string;
+        id?: string;
         slug?: string;
       } | null;
 
       if (!res.ok) {
-        setPublishError(data?.error || `Алдаа (${res.status})`);
-
-        setPublishStatus("error");
+        setSaveError(data?.error || `Алдаа (${res.status})`);
+        setSaveStatus("error");
         return;
       }
 
-      setStoreSlug(String(data?.slug ?? slug));
-      setPublishStatus("created");
-    } catch (e) {
-      setPublishError(e instanceof Error ? e.message : "Сүлжээний алдаа");
+      const slugFromResponse =
+        typeof data?.slug === "string" ? data.slug.trim() : "";
+      const themeRowId = typeof data?.id === "string" ? data.id : "";
+      const slugStillOld =
+        themeRowId === activeShop.id &&
+        (!slugFromResponse || slugFromResponse === activeShop.slug);
+      if (slugStillOld) {
+        let base = normalizeMerchantSlugBase(
+          shopName.trim() || activeShop.name,
+        );
+        if (!base.length) base = "shop";
+        base = base.slice(0, 48);
+        let rotated = false;
+        let lastMsg = "Slug шинэчлэхэд алдаа.";
+        for (let i = 0; i < 10; i++) {
+          const suffix = crypto.randomUUID().replace(/-/g, "").slice(0, 6);
+          try {
+            await patchAdminStore(activeShop.id, {
+              slug: `${base}-${suffix}`,
+            });
+            rotated = true;
+            break;
+          } catch (e) {
+            lastMsg = e instanceof Error ? e.message : String(e);
+            const dup =
+              /409|already in use|давхц/i.test(lastMsg) ||
+              lastMsg.toLowerCase().includes("slug");
+            if (!dup) {
+              setSaveError(lastMsg);
+              setSaveStatus("error");
+              return;
+            }
+          }
+        }
+        if (!rotated) {
+          setSaveError(lastMsg);
+          setSaveStatus("error");
+          return;
+        }
+      }
 
-      setPublishStatus("error");
+      const name = shopName.trim() || activeShop.name;
+      if (name !== activeShop.name) {
+        await patchAdminStore(activeShop.id, { name });
+      }
+
+      await refreshDashboard();
+      setHeroImage("");
+      setHeroGallery(resolvedGallery);
+      setSaveStatus("saved");
+      window.setTimeout(() => setSaveStatus("idle"), 2500);
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : "Сүлжээний алдаа");
+      setSaveStatus("error");
     }
   }
 
@@ -220,7 +337,23 @@ export function BuilderEditorSidebar() {
   const fieldLabelClass = "text-sm font-medium text-neutral-500";
 
   const inputClass =
-    "h-10 rounded-xl border-neutral-200 bg-neutral-50 text-sm text-neutral-900 placeholder:text-neutral-300 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-neutral-300";
+    "h-11 rounded-2xl border-slate-100 bg-slate-50 text-sm font-semibold text-slate-900 shadow-none placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-200";
+
+  // const sliderStyle = React.useMemo(
+  //   () => ({ accentColor: brand }) as React.CSSProperties,
+  //   [brand],
+  // );
+
+  // const headerBg = React.useMemo(
+  //   () =>
+  //     ({
+  //       background: `linear-gradient(145deg, ${accent} 0%, #ffffff 42%, #f8fafc 100%)`,
+  //     }) as React.CSSProperties,
+  //   [accent],
+  // );
+
+  // const sliderClass =
+  //   "h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200/90";
 
   return (
     <SidebarProvider
@@ -240,11 +373,29 @@ export function BuilderEditorSidebar() {
         {/* HEADER */}
 
         <SidebarHeader className="border-b border-neutral-200 bg-white px-5 py-4">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-2">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
-                Theme editor
+                {isCreateFlow ? "Шинэ дэлгүүр" : "Theme editor"}
               </p>
+            </div>
+            <div className="flex flex-wrap gap-3 text-[11px] font-semibold">
+              {isUpdateFlow ? (
+                <Link
+                  href={PATHS.builderCreate}
+                  className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-neutral-900"
+                >
+                  Шинэ дэлгүүр нэмэх
+                </Link>
+              ) : null}
+              {isCreateFlow ? (
+                <Link
+                  href={PATHS.builderUpdate}
+                  className="text-neutral-500 underline decoration-neutral-300 underline-offset-2 hover:text-neutral-900"
+                >
+                  Одоогийн дэлгүүр засах
+                </Link>
+              ) : null}
             </div>
           </div>
         </SidebarHeader>
@@ -290,58 +441,23 @@ export function BuilderEditorSidebar() {
                 </div>
               ))}
 
-              {/* HERO URL */}
-
-              <div className="space-y-1.5">
-                <label htmlFor="hero-image" className={fieldLabelClass}>
-                  Hero image URL
-                </label>
-
-                <SidebarInput
-                  id="hero-image"
-                  value={heroImage}
-                  placeholder="https://..."
-                  onChange={(e) => setHeroImage(e.target.value)}
-                  className={cn(inputClass, "font-mono text-xs")}
-                />
-              </div>
-
-              {/* PRIMARY UPLOAD */}
-
-              <div className="space-y-1.5">
-                <span className={fieldLabelClass}>Primary hero upload</span>
-
-                <input
-                  accept="image/*"
-                  type="file"
-                  className="block w-full text-xs text-neutral-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-neutral-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-neutral-700 file:transition file:hover:bg-neutral-50"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-
-                    e.target.value = "";
-
-                    if (!file) return;
-
-                    const reader = new FileReader();
-
-                    reader.onload = () =>
-                      setHeroImage(String(reader.result ?? ""));
-
-                    reader.readAsDataURL(file);
-                  }}
-                />
-              </div>
-
               {/* HERO GALLERY */}
 
               <div className="space-y-2">
-                <span className={fieldLabelClass}>Hero gallery</span>
+                <span className={fieldLabelClass}>
+                  Hero gallery
+                  {uploadingGalleryHero ? (
+                    <span className="ml-2 text-xs font-normal text-amber-600">
+                      Cloudinary руу илгээж байна…
+                    </span>
+                  ) : null}
+                </span>
 
                 {heroGallery.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {heroGallery.map((url, index) => (
                       <div
-                        key={`${url.slice(0, 48)}-${index}`}
+                        key={`${index}-${url.slice(0, 48)}`}
                         className="relative size-14 overflow-hidden rounded-xl border border-neutral-200"
                       >
                         <Image
@@ -368,23 +484,37 @@ export function BuilderEditorSidebar() {
                 <input
                   accept="image/*"
                   type="file"
-                  className="block w-full text-xs text-neutral-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-neutral-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-neutral-700 file:transition file:hover:bg-neutral-50"
+                  disabled={uploadingGalleryHero}
+                  className="block w-full text-xs text-neutral-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-neutral-200 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-neutral-700 file:transition file:hover:bg-neutral-50 disabled:opacity-50"
                   onChange={(e) => {
-                    const file = e.target.files?.[0];
-
-                    e.target.value = "";
-
-                    if (!file) return;
-
-                    const reader = new FileReader();
-
-                    reader.onload = () =>
-                      addHeroGalleryImage(String(reader.result ?? ""));
-
-                    reader.readAsDataURL(file);
+                    void (async () => {
+                      const file = e.target.files?.[0];
+                      e.target.value = "";
+                      if (!file) return;
+                      setHeroUploadError(null);
+                      setUploadingGalleryHero(true);
+                      try {
+                        const url = await uploadImageViaMerchantApi(file);
+                        addHeroGalleryImage(url);
+                      } catch (err) {
+                        setHeroUploadError(
+                          err instanceof Error
+                            ? err.message
+                            : "Зураг upload хийгдсэнгүй.",
+                        );
+                      } finally {
+                        setUploadingGalleryHero(false);
+                      }
+                    })();
                   }}
                 />
               </div>
+
+              {heroUploadError ? (
+                <p className="text-xs font-semibold text-red-600">
+                  {heroUploadError}
+                </p>
+              ) : null}
 
               {/* SLIDE COUNTER */}
 
@@ -401,7 +531,7 @@ export function BuilderEditorSidebar() {
                 <p className="mt-0.5 text-xs font-medium opacity-80">
                   {heroSlideCount >= 3
                     ? "Ready — carousel has enough slides."
-                    : "Primary + gallery must reach 3 images."}
+                    : "Hero gallery-д дор хаяж 3 зураг нэмнэ үү."}
                 </p>
               </div>
             </SidebarGroupContent>
@@ -458,6 +588,30 @@ export function BuilderEditorSidebar() {
             <SidebarGroupLabel className={sectionLabelClass}>
               Layout
             </SidebarGroupLabel>
+            {/* <SidebarGroupContent className="space-y-5 pt-1">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="radius-theme" className={fieldLabelClass}>
+                    Булангийн радиус
+                  </label>
+                  <span className="text-xs tabular-nums font-semibold text-slate-500">
+                    {radius}px
+                  </span>
+                </div>
+                <input
+                  id="radius-theme"
+                  type="range"
+                  min={2}
+                  max={40}
+                  step={1}
+                  value={radius}
+                  onChange={(e) =>
+                    setRadius(Number.parseInt(e.target.value, 10))
+                  }
+                  className={sliderClass}
+                  style={sliderStyle}
+                />
+              </div> */}
 
             <SidebarGroupContent className="space-y-5">
               {[
@@ -492,6 +646,17 @@ export function BuilderEditorSidebar() {
                   max: 2.5,
                   step: 0.0625,
                   onChange: (v: number) => setProductGridGapRem(v),
+                },
+
+                {
+                  id: "hero-h",
+                  label: "Hero өндөр (px)",
+                  value: heroImageHeightPx,
+                  display: `${Math.round(heroImageHeightPx)}px`,
+                  min: 40,
+                  max: 900,
+                  step: 4,
+                  onChange: (v: number) => setHeroImageHeightPx(v),
                 },
               ].map(
                 ({ id, label, value, display, min, max, step, onChange }) => (
@@ -529,93 +694,105 @@ export function BuilderEditorSidebar() {
 
           <SidebarSeparator className="bg-neutral-100" />
 
-          {/* PUBLISH */}
+          {isCreateFlow ? (
+            <SidebarGroup className="px-5 py-5">
+              <SidebarGroupLabel className={sectionLabelClass}>
+                Шинэ дэлгүүр
+              </SidebarGroupLabel>
 
-          <SidebarGroup className="px-5 py-5">
-            <SidebarGroupLabel className={sectionLabelClass}>
-              Дэлгүүр үүсгэх
-            </SidebarGroupLabel>
+              <SidebarGroupContent className="space-y-4">
+                <p className="text-xs leading-relaxed text-neutral-400">
+                  Platform API (<span className="font-mono">POST /stores</span>)
+                  — эзэмшигчийн ID нь D1 дээрх мерчант хэрэглэгчийн{" "}
+                  <span className="font-mono">users.id</span> (UUID) байх ёстой.
+                  Slug хоосон бол нэр + суффикс автоматаар үүснэ.
+                </p>
 
-            <SidebarGroupContent className="space-y-4">
-              <p className="text-xs leading-relaxed text-neutral-400">
-                Platform API дээр дэлгүүр үүсгээд public storefront нээнэ.
-              </p>
-
-              {(
-                [
-                  {
-                    id: "owner-id",
-                    label: "Owner ID",
-                    val: ownerId,
-                    set: setOwnerId,
-                    ph: "merchant user UUID",
-                    mono: true,
-                  },
-
-                  {
-                    id: "store-name",
-                    label: "Дэлгүүрийн нэр",
-                    val: storeName,
-                    set: setStoreName,
-                    ph: "My Store",
-                    mono: false,
-                  },
-                ] as const
-              ).map(({ id, label, val, set, ph, mono }) => (
-                <div key={id} className="space-y-1.5">
-                  <label htmlFor={id} className={fieldLabelClass}>
-                    {label}
+                <div className="space-y-1.5">
+                  <label htmlFor="create-owner-id" className={fieldLabelClass}>
+                    Owner ID (UUID)
                   </label>
-
                   <SidebarInput
-                    id={id}
-                    value={val}
-                    placeholder={ph}
-                    onChange={(e) => set(e.target.value)}
-                    className={cn(inputClass, mono && "font-mono text-xs")}
+                    id="create-owner-id"
+                    value={createOwnerId}
+                    onChange={(e) => setCreateOwnerId(e.target.value)}
+                    className={cn(inputClass, "font-mono text-xs")}
+                    placeholder="550e8400-e29b-41d4-a716-446655440000"
+                    autoComplete="off"
                   />
                 </div>
-              ))}
 
-              <button
-                type="button"
-                onClick={handleCreateStore}
-                disabled={publishStatus === "creating"}
-                className="h-11 w-full rounded-xl bg-neutral-900 text-sm font-bold text-white transition hover:bg-neutral-800 disabled:opacity-40"
-              >
-                {publishStatus === "creating"
-                  ? "Үүсгэж байна..."
-                  : "Шинэ дэлгүүр үүсгэх"}
-              </button>
-
-              {publishStatus === "created" && storeSlug && (
-                <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-                  <p className="text-sm font-bold text-neutral-900">
-                    Дэлгүүр үүслээ
-                  </p>
-
-                  <p className="mt-1 break-all font-mono text-xs text-neutral-400">
-                    slug: {storeSlug}
-                  </p>
-
-                  <Link
-                    href={`/s/${encodeURIComponent(storeSlug)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 flex w-full items-center justify-center rounded-xl border border-neutral-900 bg-neutral-900 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-neutral-800"
-                  >
-                    Public дэлгүүр нээх
-                  </Link>
+                <div className="space-y-1.5">
+                  <label htmlFor="create-store-name" className={fieldLabelClass}>
+                    Дэлгүүрийн нэр
+                  </label>
+                  <SidebarInput
+                    id="create-store-name"
+                    value={createStoreName}
+                    onChange={(e) => setCreateStoreName(e.target.value)}
+                    className={inputClass}
+                    placeholder="Nomad Goods"
+                  />
                 </div>
-              )}
 
-              {publishError && (
-                <p className="text-xs font-semibold text-red-500">
-                  {publishError}
+                <div className="space-y-1.5">
+                  <label htmlFor="create-slug" className={fieldLabelClass}>
+                    Slug (сонголттой)
+                  </label>
+                  <SidebarInput
+                    id="create-slug"
+                    value={createSlug}
+                    onChange={(e) => setCreateSlug(e.target.value)}
+                    className={cn(inputClass, "font-mono text-xs")}
+                    placeholder="tech-store — хоосон бол random суффикстой"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => void handleCreateStore()}
+                  disabled={createBusy}
+                  className="h-11 w-full rounded-xl bg-neutral-900 text-sm font-bold text-white transition hover:bg-neutral-800 disabled:opacity-40"
+                >
+                  {createBusy ? "Үүсгэж байна…" : "Дэлгүүр үүсгэх"}
+                </button>
+
+                {createError ? (
+                  <p className="text-xs font-semibold text-red-600">{createError}</p>
+                ) : null}
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ) : (
+            <SidebarGroup className="px-5 py-5">
+              <SidebarGroupLabel className={sectionLabelClass}>
+                Хадгалах
+              </SidebarGroupLabel>
+
+              <SidebarGroupContent className="space-y-4">
+                <p className="text-xs leading-relaxed text-neutral-400">
+                  Идэвхтэй дэлгүүрийн ({activeShop.name}) theme-ийг серверт
+                  хадгална. Hero gallery дор хаяж 3 зураг шаардлагатай.
                 </p>
-              )}
-            </SidebarGroupContent>
-          </SidebarGroup>
+
+                <button
+                  type="button"
+                  onClick={() => void handleSaveTheme()}
+                  disabled={saveStatus === "saving"}
+                  className="h-11 w-full rounded-xl bg-neutral-900 text-sm font-bold text-white transition hover:bg-neutral-800 disabled:opacity-40"
+                >
+                  {saveStatus === "saving"
+                    ? "Хадгалж байна…"
+                    : saveStatus === "saved"
+                      ? "Хадгалагдлаа"
+                      : "Хадгалах"}
+                </button>
+
+                {saveError ? (
+                  <p className="text-xs font-semibold text-red-600">{saveError}</p>
+                ) : null}
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
         </SidebarContent>
 
         {/* FOOTER */}
@@ -629,13 +806,6 @@ export function BuilderEditorSidebar() {
           >
             Reset to default
           </Button>
-
-          <Link
-            href={PATHS.adminOverview}
-            className="mt-2 block rounded-lg py-2 text-center text-xs font-semibold text-neutral-400 transition hover:text-neutral-700"
-          >
-            Shop settings
-          </Link>
         </SidebarFooter>
       </Sidebar>
     </SidebarProvider>

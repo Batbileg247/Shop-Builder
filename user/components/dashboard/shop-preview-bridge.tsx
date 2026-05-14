@@ -37,15 +37,31 @@ export function ShopPreviewDashboardSyncProvider({
 
 /** Syncs dashboard catalog for the active shop into `useShop` (builder + admin shop preview). */
 export function ShopPreviewBridge() {
-  const { activeShop, products, categories } = useDashboard();
+  const {
+    activeShop,
+    products,
+    categories,
+    isLoadingStores,
+    isLoadingDashboard,
+  } = useDashboard();
   const { replaceProducts } = useShop();
 
   React.useEffect(() => {
+    if (!activeShop.id || activeShop.id === "__loading__") return;
+    if (isLoadingStores) return;
+    if (isLoadingDashboard) return;
     replaceProducts(
       products.map(mapDashboardProductToStorefront),
       categories,
     );
-  }, [activeShop.id, products, categories, replaceProducts]);
+  }, [
+    activeShop.id,
+    products,
+    categories,
+    replaceProducts,
+    isLoadingStores,
+    isLoadingDashboard,
+  ]);
 
   return null;
 }

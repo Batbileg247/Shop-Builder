@@ -12,6 +12,8 @@ export type ShopTheme = {
   textColor: string;
   heroImage: string;
   heroGallery: string[];
+  /** Builder: hero carousel бүсийн өндөр (px). */
+  heroImageHeightPx?: number;
   layout: ProductLayout;
   radius: number;
   currency: string;

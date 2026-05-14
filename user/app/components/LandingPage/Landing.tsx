@@ -11,22 +11,22 @@ import { Footer } from "./Footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/ui/avatar";
 import TranslateWidget from "../LanguageSelector";
 import { getAuthSession } from "@/lib/auth-session";
-import { BUILDER_PREVIEW_BASE } from "@/lib/site-paths";
+import { PATHS } from "@/lib/site-paths";
 import { useEffect, useState } from "react";
 
 export const LandingPage = () => {
   const [generateHref, setGenerateHref] = useState(
-    `/signin?redirect=${encodeURIComponent(BUILDER_PREVIEW_BASE)}`,
+    `/signin?redirect=${encodeURIComponent(PATHS.buildingCreate)}`,
   );
   const [avatarHref, setAvatarHref] = useState("/signin");
 
   useEffect(() => {
     if (getAuthSession()) {
-      setGenerateHref(BUILDER_PREVIEW_BASE);
+      setGenerateHref(PATHS.buildingCreate);
       setAvatarHref(`/admin`);
     } else {
       setGenerateHref(
-        `/signin?redirect=${encodeURIComponent(BUILDER_PREVIEW_BASE)}`,
+        `/signin?redirect=${encodeURIComponent(PATHS.buildingCreate)}`,
       );
       setAvatarHref("/signin");
     }

@@ -20,16 +20,26 @@ const navItems = [
   { label: "Overview", href: "/admin/overview", icon: LayoutDashboard },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { label: "Theme studio", href: PATHS.builder, icon: Sparkles },
+  { label: "Theme studio", href: PATHS.builderUpdate, icon: Sparkles },
+  { label: "Shop", href: PATHS.adminShop, icon: Store },
 ];
 
 function navItemIsActive(pathname: string, href: string) {
-  if (href === PATHS.builder) {
+  if (href === PATHS.builderUpdate) {
     return (
-      pathname === PATHS.builder || pathname.startsWith(`${PATHS.builder}/`)
+      pathname === PATHS.builder ||
+      pathname.startsWith(`${PATHS.builder}/`) ||
+      pathname === PATHS.builderUpdate ||
+      pathname.startsWith(`${PATHS.builderUpdate}/`)
     );
   }
-  return pathname === href;
+  if (href === PATHS.adminShop) {
+    return (
+      pathname === PATHS.adminShop ||
+      pathname.startsWith(`${PATHS.adminShop}/`)
+    );
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function Sidebar() {
@@ -39,7 +49,7 @@ export function Sidebar() {
   return (
     <>
       {/* ── Mobile bar ── */}
-      <div className="w-full p-4 pb-0 lg:hidden">
+      <div className="p-4 pb-0 lg:hidden">
         <div className="rounded-2xl border border-zinc-200 bg-white p-4">
           {/* Brand */}
           <div className="flex items-center gap-3">
@@ -106,7 +116,7 @@ export function Sidebar() {
       </div>
 
       {/* ── Desktop sidebar ── */}
-      <aside className="hidden w-fit shrink-0 p-6 lg:block">
+      <aside className="hidden w-[320px] shrink-0 p-6 lg:block">
         <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col rounded-2xl border border-zinc-200 bg-white">
           {/* Brand header */}
           <div className="border-b border-zinc-100 px-7 py-6">

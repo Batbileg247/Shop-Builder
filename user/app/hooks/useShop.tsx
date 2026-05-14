@@ -297,6 +297,13 @@ function useShopState() {
     setLastOrderId("");
   }
 
+  const acknowledgeRemoteOrder = useCallback((orderId: string) => {
+    setCart({});
+    setBuyerName("");
+    setBuyerEmail("");
+    setLastOrderId(orderId);
+  }, []);
+
   function updateOrderStatus(id: string, status: OrderStatus) {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
   }
@@ -339,6 +346,7 @@ function useShopState() {
     clearCartItem,
     checkout,
     clearLastOrder,
+    acknowledgeRemoteOrder,
     updateOrderStatus,
   };
 }

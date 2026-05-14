@@ -61,15 +61,30 @@ export function HeroShelfResizable({
   );
 
   if (locked) {
+    const heroPx =
+      typeof theme.heroImageHeightPx === "number" &&
+      Number.isFinite(theme.heroImageHeightPx) &&
+      theme.heroImageHeightPx > 0
+        ? theme.heroImageHeightPx
+        : null;
+
     return (
       <div className={lockedShellClass} style={shopPreviewShellStyle(theme)}>
         <div className="flex w-full flex-col">
           <div
             className="flex w-full shrink-0 flex-col overflow-hidden"
-            style={{
-              height: `${pct}vh`,
-              minHeight: "12rem",
-            }}
+            style={
+              heroPx != null
+                ? {
+                    height: heroPx,
+                    minHeight: "12rem",
+                    maxHeight: "85vh",
+                  }
+                : {
+                    height: `${pct}vh`,
+                    minHeight: "12rem",
+                  }
+            }
           >
             <div className="flex h-full min-h-0 flex-col overflow-hidden">{hero}</div>
           </div>

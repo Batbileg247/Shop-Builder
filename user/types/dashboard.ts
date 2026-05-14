@@ -9,6 +9,16 @@ export interface Shop {
   brandColor: string;
   accentColor: string;
   currency: "USD" | "EUR" | "MNT";
+  /** Card / shell corner radius in pixels. */
+  radiusPx: number;
+  /** Storefront page background. */
+  backgroundColor: string;
+  /** Hero tagline under the shop name. */
+  tagline: string;
+  /** Default body text color on storefront surfaces. */
+  textColor: string;
+  /** Site builder `theme_config` (whitelist JSON). */
+  themeConfig?: unknown;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,7 +69,18 @@ export type NewProductInput = Pick<
 export type ProductUpdateInput = Partial<NewProductInput>;
 
 export type ShopUpdateInput = Partial<
-  Pick<Shop, "name" | "slug" | "logoUrl" | "brandColor" | "accentColor">
+  Pick<
+    Shop,
+    | "name"
+    | "slug"
+    | "logoUrl"
+    | "brandColor"
+    | "accentColor"
+    | "radiusPx"
+    | "backgroundColor"
+    | "tagline"
+    | "textColor"
+  >
 >;
 
 export interface ShopMetrics {

@@ -3,7 +3,7 @@
 import { Home, Box, Palette, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { ShopSwitcher } from "./ShopSwitcher";
-import { useDashboard } from "../../../context/dashboard-context";
+import { useDashboard } from "@/context/DashboardContext";
 
 const navItems = [
   { label: "Dashboard", href: "#overview", icon: Home },

@@ -21,6 +21,7 @@ export function CheckoutSummary({
   onViewCart,
   lastOrderId,
   onRemoveLine,
+  isCheckoutPending = false,
 }: {
   items: CartItem[];
   giftWrap: boolean;
@@ -35,6 +36,7 @@ export function CheckoutSummary({
   onViewCart: () => void;
   lastOrderId: string;
   onRemoveLine: (id: string) => void;
+  isCheckoutPending?: boolean;
 }) {
   const giftFee = giftWrap ? 10_000 : 0;
   const total = subtotal + giftFee;
@@ -178,10 +180,14 @@ export function CheckoutSummary({
 
           <Button
             className="h-11 w-full bg-black text-white hover:bg-zinc-900"
-            disabled={items.length === 0 || !buyerName.trim()}
+            disabled={
+              items.length === 0 ||
+              !buyerName.trim() ||
+              isCheckoutPending
+            }
             onClick={onCheckout}
           >
-            Checkout
+            {isCheckoutPending ? "Processing…" : "Checkout"}
           </Button>
           <button
             className="w-full text-center text-sm text-zinc-600 underline"

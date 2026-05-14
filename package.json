@@ -1,0 +1,11 @@
+{
+  "name": "shop-builder",
+  "private": true,
+  "description": "Root scripts delegate to the Next.js app in ./user",
+  "scripts": {
+    "dev": "npm run dev --prefix user",
+    "build": "npm run build --prefix user",
+    "start": "npm run start --prefix user",
+    "lint": "npm run lint --prefix user"
+  }
+}

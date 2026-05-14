@@ -37,3 +37,12 @@ export function formatMoney(value: number, currency: string): string {
 export function slugify(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
+
+/** Merchant `normalizeSlug`-тай ижил — дэлгүүрийн path суурь (суффиксээс тусад). */
+export function normalizeMerchantSlugBase(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}

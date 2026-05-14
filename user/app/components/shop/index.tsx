@@ -92,8 +92,8 @@ export function ShopHero({
                 : "mt-2 max-w-md text-xs leading-relaxed text-zinc-600"
             }
           >
-            Use the theme panel: primary upload or URL, then add gallery files
-            until you have three slides for the carousel demo.
+            Use the theme panel: add at least three images under Hero gallery
+            for the carousel.
           </p>
           {threeSlots}
         </div>

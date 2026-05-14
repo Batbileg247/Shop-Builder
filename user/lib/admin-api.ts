@@ -34,12 +34,22 @@ function parseShop(raw: Record<string, unknown>): Shop {
   return {
     id: String(raw.id),
     name: String(raw.name),
-    slug: String(raw.slug),
-    ownerId: String(raw.ownerId),
+    slug: String(raw.slug ?? ""),
+    ownerId: String(raw.ownerId ?? ""),
     logoUrl: String(raw.logoUrl ?? ""),
     brandColor: String(raw.brandColor ?? "#18181b"),
     accentColor: String(raw.accentColor ?? "#fafafa"),
     currency,
+    radiusPx:
+      typeof raw.radiusPx === "number" && Number.isFinite(raw.radiusPx)
+        ? Math.round(raw.radiusPx)
+        : 12,
+    backgroundColor: String(raw.backgroundColor ?? "#ffffff"),
+    tagline: String(raw.tagline ?? ""),
+    textColor: String(raw.textColor ?? "#0f172a"),
+    ...(raw.themeConfig !== undefined
+      ? { themeConfig: raw.themeConfig as unknown }
+      : {}),
     createdAt: new Date(String(raw.createdAt ?? "")),
     updatedAt: new Date(String(raw.updatedAt ?? "")),
   };

@@ -1,14 +1,7 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { BuilderStudioLayout } from "@/components/builder-studio/builder-studio-layout";
-import { HomePage } from "@/components/site/home-page";
+import { PATHS } from "@/lib/site-paths";
 
-export default function BuilderPage() {
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <BuilderStudioLayout variant="previewOnly">
-        <HomePage />
-      </BuilderStudioLayout>
-    </div>
-  );
+export default function BuilderRootRedirect() {
+  redirect(PATHS.builderUpdate);
 }

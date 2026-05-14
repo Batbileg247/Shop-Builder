@@ -27,6 +27,8 @@ import { fetchAdminStores } from "@/lib/admin-api";
 import type { Shop } from "@/types/dashboard";
 import { cn, safeImage } from "@/lib/utils";
 import { buttonVariants } from "@/ui/button";
+import { useDashboard } from "@/context/DashboardContext";
+import { PATHS } from "@/lib/site-paths";
 
 function displayName(session: AuthSession) {
   return [session.user.lastName, session.user.firstName]
@@ -273,7 +275,7 @@ export default function UserAccountPage() {
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
-                  href="/builder"
+                  href={PATHS.builderUpdate}
                   className={cn(
                     buttonVariants({ size: "sm" }),
                     "rounded-2xl bg-slate-900 px-5 shadow-lg shadow-slate-900/10 transition hover:bg-slate-800",
@@ -333,7 +335,7 @@ export default function UserAccountPage() {
                               style={{ backgroundColor: shop.brandColor }}
                             />
                             <span className="text-[11px] text-slate-400">
-                              {shop.slug}
+                              {shop.id}
                             </span>
                           </div>
                         </div>
@@ -352,7 +354,7 @@ export default function UserAccountPage() {
                     Builder ашиглан анхны дэлгүүрээ үүсгээрэй.
                   </p>
                   <Link
-                    href="/builder"
+                    href={PATHS.builderCreate}
                     className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
                   >
                     Дэлгүүр үүсгэх

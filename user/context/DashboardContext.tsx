@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ThemeStoreShopPersistenceSync } from "@/context/theme-store-shop-persistence-sync";
+import { useThemeStore } from "@/stores/useThemeStore";
 import {
   deleteAdminCategory,
   deleteAdminProduct,
@@ -43,13 +44,15 @@ type DashboardContextValue = {
   updateProduct: (productId: string, product: ProductUpdateInput) => Promise<void>;
   deleteProduct: (productId: string) => Promise<void>;
   refreshDashboard: () => Promise<void>;
+  /** Merchant admin-аас дэлгүүрийн жагсаалтыг дахин татна (жишээ нь platform-оор шинэ дэлгүүр үүсгэсний дараа). */
+  reloadShops: () => Promise<void>;
 };
 
 const DashboardContext = React.createContext<DashboardContextValue | null>(
   null,
 );
 
-const ACTIVE_SHOP_SESSION_KEY = "shop-builder-active-shop-id";
+export const ACTIVE_SHOP_SESSION_KEY = "shop-builder-active-shop-id";
 
 const PLACEHOLDER_SHOP: Shop = {
   id: "__loading__",
@@ -61,6 +64,10 @@ const PLACEHOLDER_SHOP: Shop = {
   brandColor: "#18181b",
   accentColor: "#f4f4f5",
   currency: "USD",
+  radiusPx: 12,
+  backgroundColor: "#ffffff",
+  tagline: "",
+  textColor: "#0f172a",
   createdAt: new Date(0),
   updatedAt: new Date(0),
 };
@@ -88,7 +95,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     [],
   );
   const [isLoadingStores, setIsLoadingStores] = React.useState(true);
-  const [isLoadingDashboard, setIsLoadingDashboard] = React.useState(false);
+  const [isLoadingDashboard, setIsLoadingDashboard] = React.useState(true);
   const [loadError, setLoadError] = React.useState<string | null>(null);
 
   const dashboardReq = React.useRef(0);
@@ -111,15 +118,16 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   );
 
   const refreshDashboard = React.useCallback(async () => {
+    setIsLoadingDashboard(true);
     if (!effectiveShopId) {
       setProducts([]);
       setCustomers([]);
       setCategories([]);
       setMonthlySales([]);
+      setIsLoadingDashboard(false);
       return;
     }
     const n = ++dashboardReq.current;
-    setIsLoadingDashboard(true);
     setLoadError(null);
     try {
       const d = await fetchAdminDashboard(effectiveShopId);
@@ -127,6 +135,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setShops((prev) =>
         prev.map((s) => (s.id === d.store.id ? d.store : s)),
       );
+      if (d.store.themeConfig != null) {
+        useThemeStore.getState().applyPersistedSiteTheme(d.store.themeConfig);
+      }
       setProducts(d.products);
       setCustomers(d.customers);
       setCategories(d.categories);
@@ -143,6 +154,17 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       if (n === dashboardReq.current) setIsLoadingDashboard(false);
     }
   }, [effectiveShopId]);
+
+  const reloadShops = React.useCallback(async () => {
+    setLoadError(null);
+    try {
+      const list = await fetchAdminStores();
+      setShops(list);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setLoadError(msg);
+    }
+  }, []);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -187,7 +209,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     );
   }, [shops]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     void refreshDashboard();
   }, [refreshDashboard]);
 
@@ -311,6 +333,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       updateProduct,
       deleteProduct,
       refreshDashboard,
+      reloadShops,
     }),
     [
       shops,
@@ -333,6 +356,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       updateProduct,
       deleteProduct,
       refreshDashboard,
+      reloadShops,
     ],
   );
 
