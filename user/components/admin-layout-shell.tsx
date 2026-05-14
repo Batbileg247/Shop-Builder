@@ -18,11 +18,7 @@ export function AdminDashboardChrome({
       <div className="mb-6 flex shrink-0 items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-950">{title}</h1>
         <Link
-<<<<<<< HEAD
           href={PATHS.builderCreate}
-=======
-          href={"/builder"}
->>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
           className="flex items-center gap-2 rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800"
         >
           <Plus className="h-4 w-4" />

@@ -221,27 +221,23 @@ export function BuilderEditorSidebar() {
   const fieldLabelClass = "text-sm font-medium text-neutral-500";
 
   const inputClass =
-<<<<<<< HEAD
     "h-11 rounded-2xl border-slate-100 bg-slate-50 text-sm font-semibold text-slate-900 shadow-none placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-200";
 
-  const sliderStyle = React.useMemo(
-    () => ({ accentColor: brand }) as React.CSSProperties,
-    [brand],
-  );
+  // const sliderStyle = React.useMemo(
+  //   () => ({ accentColor: brand }) as React.CSSProperties,
+  //   [brand],
+  // );
 
-  const headerBg = React.useMemo(
-    () =>
-      ({
-        background: `linear-gradient(145deg, ${accent} 0%, #ffffff 42%, #f8fafc 100%)`,
-      }) as React.CSSProperties,
-    [accent],
-  );
+  // const headerBg = React.useMemo(
+  //   () =>
+  //     ({
+  //       background: `linear-gradient(145deg, ${accent} 0%, #ffffff 42%, #f8fafc 100%)`,
+  //     }) as React.CSSProperties,
+  //   [accent],
+  // );
 
-  const sliderClass =
-    "h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200/90";
-=======
-    "h-10 rounded-xl border-neutral-200 bg-neutral-50 text-sm text-neutral-900 placeholder:text-neutral-300 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-neutral-300";
->>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
+  // const sliderClass =
+  //   "h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200/90";
 
   return (
     <SidebarProvider
@@ -479,8 +475,7 @@ export function BuilderEditorSidebar() {
             <SidebarGroupLabel className={sectionLabelClass}>
               Layout
             </SidebarGroupLabel>
-<<<<<<< HEAD
-            <SidebarGroupContent className="space-y-5 pt-1">
+            {/* <SidebarGroupContent className="space-y-5 pt-1">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <label htmlFor="radius-theme" className={fieldLabelClass}>
@@ -503,9 +498,7 @@ export function BuilderEditorSidebar() {
                   className={sliderClass}
                   style={sliderStyle}
                 />
-              </div>
-=======
->>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
+              </div> */}
 
             <SidebarGroupContent className="space-y-5">
               {[
@@ -657,19 +650,11 @@ export function BuilderEditorSidebar() {
                 </div>
               )}
 
-<<<<<<< HEAD
               {publishError ? (
                 <p className="text-xs font-semibold text-red-600">
                   {publishError}
                 </p>
               ) : null}
-=======
-              {publishError && (
-                <p className="text-xs font-semibold text-red-500">
-                  {publishError}
-                </p>
-              )}
->>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
@@ -685,16 +670,6 @@ export function BuilderEditorSidebar() {
           >
             Reset to default
           </Button>
-<<<<<<< HEAD
-=======
-
-          <Link
-            href={PATHS.adminOverview}
-            className="mt-2 block rounded-lg py-2 text-center text-xs font-semibold text-neutral-400 transition hover:text-neutral-700"
-          >
-            Shop settings
-          </Link>
->>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
         </SidebarFooter>
       </Sidebar>
     </SidebarProvider>

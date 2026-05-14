@@ -112,15 +112,8 @@ function HomePageInner() {
 
   const isStorefront = pathname.startsWith("/s/");
   const fullSiteShell = isDemo || isStorefront;
-<<<<<<< HEAD
   /** Theme studio (`/builder/...`) and landing create (`/building/...`) use the dashboard main column, not full viewport. */
   const isEmbeddedDashboardPreview = isBuilderPreviewPath(pathname);
-=======
-  const isEmbeddedDashboardPreview =
-    pathname.startsWith(PATHS.adminShop) ||
-    pathname === PATHS.builder ||
-    pathname.startsWith(`${PATHS.builder}/`);
->>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
 
   const catalogFull = searchParams.get("view") === "all";
   const previewHostClass = fullSiteShell
@@ -452,46 +445,6 @@ function HomePageInner() {
             : "min-h-0 flex-1 flex-col overflow-hidden px-6 py-8",
         )}
       >
-<<<<<<< HEAD
-        {catalogFull ? (
-          <div className={previewHostClass}>
-            <div
-              className={cn(
-                "flex w-full max-w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 shadow-sm",
-                !fullSiteShell && "h-full min-h-0",
-              )}
-              style={shopPreviewShellStyle(effectiveTheme)}
-            >
-              {fullShopLayout}
-            </div>
-          </div>
-        ) : (
-          <div className={previewHostClass}>
-            <HeroShelfResizable
-              belowHero={previewBelowHero}
-              hero={
-                <div className="flex h-full min-h-0 flex-col overflow-hidden">
-                  <header className="pv-header flex h-11 shrink-0 items-center justify-between gap-3 px-4 sm:h-12 sm:px-5">
-                    <Link
-                      href={navBase ?? ""}
-                      className={cn(
-                        "rounded-(--pv-radius) px-1 py-0.5 text-sm font-semibold tracking-tight text-pv-fg",
-                        "pv-interactive transition-none",
-                      )}
-                    >
-                      Store
-                    </Link>
-                    <span className="truncate text-right text-xs font-medium text-pv-muted sm:text-sm">
-                      {effectiveTheme.name}
-                    </span>
-                  </header>
-                  <div className="min-h-0 flex-1 overflow-hidden">
-                    <ShopHero
-                      fillContainer
-                      heroImages={buildHeroCarouselUrls(effectiveTheme)}
-                      theme={effectiveTheme}
-                    />
-=======
         <div className={previewHostClass}>
           <div
             className={cn(
@@ -503,10 +456,12 @@ function HomePageInner() {
             {/* Header with Search and Cart */}
             <header className="pv-header sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-pv-divider bg-pv-header/80 px-4 backdrop-blur-md">
               <div className="flex items-center gap-2">
-                <Link href={navBase} className="flex items-center gap-2 group">
+                <Link
+                  href={navBase ?? ""}
+                  className="flex items-center gap-2 group"
+                >
                   <div className="flex size-9 items-center justify-center rounded-lg bg-pv-primary text-white shadow-sm">
                     <ShoppingBag className="size-5" />
->>>>>>> 8eeea5f4a8afce6d70af0d7d5b991aff47de3c39
                   </div>
                   <span className="hidden text-lg font-bold text-pv-fg sm:block">
                     {effectiveTheme.name}
