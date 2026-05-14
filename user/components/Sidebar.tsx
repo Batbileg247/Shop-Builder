@@ -17,26 +17,20 @@ import { PATHS } from "@/lib/site-paths";
 
 const navItems = [
   { label: "Overview", href: "/admin/overview", icon: LayoutDashboard },
+  { label: "Shop", href: PATHS.adminShop, icon: Store },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { label: "Theme studio", href: PATHS.builder, icon: Sparkles },
-  { label: "Shop", href: PATHS.adminShop, icon: Store },
+  { label: "Theme studio", href: PATHS.builderUpdate, icon: Sparkles },
 ];
 
 function navItemIsActive(pathname: string, href: string) {
-  if (href === PATHS.builder) {
+  if (href === PATHS.builderUpdate) {
     return (
-      pathname === PATHS.builder ||
-      pathname.startsWith(`${PATHS.builder}/`)
+      pathname === PATHS.builderUpdate ||
+      pathname.startsWith(`${PATHS.builderUpdate}/`)
     );
   }
-  if (href === PATHS.adminShop) {
-    return (
-      pathname === PATHS.adminShop ||
-      pathname.startsWith(`${PATHS.adminShop}/`)
-    );
-  }
-  return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function Sidebar() {

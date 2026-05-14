@@ -96,7 +96,7 @@ export function ShopEditor() {
           Branding and identity for this shop only. Switch shops from the sidebar
           to edit another storefront. Theme and layout live in{" "}
           <Link
-            href={PATHS.builder}
+            href={PATHS.builderUpdate}
             className="font-bold text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-900"
           >
             Theme studio
@@ -286,7 +286,7 @@ export function ShopEditor() {
             Manage products
           </Link>
           <Link
-            href={PATHS.builder}
+            href={PATHS.builderUpdate}
             className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-bold text-slate-800 transition hover:bg-white"
           >
             <Sparkles className="h-4 w-4" aria-hidden />

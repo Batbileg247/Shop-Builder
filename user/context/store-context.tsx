@@ -58,7 +58,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [currentTheme, setCurrentTheme] = React.useState<ThemeId>("minimal");
   const [heroTitle, setHeroTitle] = React.useState(defaultHeroTitle);
   const [heroImage, setHeroImage] = React.useState(defaultHeroImage);
-  const [basePath, setBasePath] = React.useState<string>(PATHS.builder);
+  const [basePath, setBasePath] = React.useState<string>(PATHS.builderUpdate);
   const [cardRadiusFollowsTheme, setCardRadiusFollowsTheme] =
     React.useState(true);
   const [cardRadiusPx, setCardRadiusPx] = React.useState(defaultCardRadiusPx);

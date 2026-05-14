@@ -19,9 +19,13 @@ export function middleware(request: NextRequest) {
       pathname === "/admin/customize/studio"
         ? ""
         : pathname.slice("/admin/customize/studio".length);
-    url.pathname = `${PATHS.builder}${sub}`;
-    if (sub === "/cart") {
+    if (sub === "" || sub === "/") {
+      url.pathname = PATHS.builderUpdate;
+    } else if (sub === "/cart") {
+      url.pathname = PATHS.builderUpdate;
       url.searchParams.set("cart", "open");
+    } else {
+      url.pathname = `${PATHS.builderUpdate}${sub}`;
     }
     return NextResponse.redirect(url, 308);
   }
@@ -57,6 +61,8 @@ export const config = {
     "/admin/:path*",
     "/builder",
     "/builder/:path*",
+    "/building",
+    "/building/:path*",
     "/user",
     "/user/:path*",
   ],

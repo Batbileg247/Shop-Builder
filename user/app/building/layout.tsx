@@ -1,6 +1,6 @@
 import { BuilderRouteShell } from "@/components/builder-studio/builder-route-shell";
 
-export default function BuilderLayout({
+export default function BuildingLayout({
   children,
 }: {
   children: React.ReactNode;

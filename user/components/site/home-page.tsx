@@ -34,7 +34,7 @@ import { Input } from "@/ui/input";
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { SiteHeader } from "./site-header";
 import { useBuilderUi } from "@/context/builder-ui-context";
-import { PATHS, storefrontNavBase } from "@/lib/site-paths";
+import { isBuilderPreviewPath, storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
 
 const PREVIEW_SLOT_COUNT = 6;
@@ -121,11 +121,8 @@ function HomePageInner() {
   /** Жинхэнэ storefront (`/s/...`) — builder preview-ийн хүрээгүй, View Demo-тэй ижил бүтэн site. */
   const isStorefront = pathname.startsWith("/s/");
   const fullSiteShell = isDemo || isStorefront;
-  /** Theme studio (`/builder`) and shop settings use the dashboard main column, not full viewport. */
-  const isEmbeddedDashboardPreview =
-    pathname.startsWith(PATHS.adminShop) ||
-    pathname === PATHS.builder ||
-    pathname.startsWith(`${PATHS.builder}/`);
+  /** Theme studio (`/builder/...`) and landing create (`/building/...`) use the dashboard main column, not full viewport. */
+  const isEmbeddedDashboardPreview = isBuilderPreviewPath(pathname);
 
   const catalogFull = searchParams.get("view") === "all";
   const previewHostClass = fullSiteShell
@@ -472,7 +469,7 @@ function HomePageInner() {
                 <div className="flex h-full min-h-0 flex-col overflow-hidden">
                   <header className="pv-header flex h-11 shrink-0 items-center justify-between gap-3 px-4 sm:h-12 sm:px-5">
                     <Link
-                      href={navBase}
+                      href={navBase ?? ""}
                       className={cn(
                         "rounded-(--pv-radius) px-1 py-0.5 text-sm font-semibold tracking-tight text-pv-fg",
                         "pv-interactive transition-none",

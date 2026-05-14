@@ -3,12 +3,13 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Box, Layers, Sparkles } from "lucide-react";
 
 import { useShop } from "@/app/hooks/useShop";
 import { useDashboard } from "@/context/DashboardContext";
 import { getAuthSession } from "@/lib/auth-session";
-import { PATHS } from "@/lib/site-paths";
+import { storefrontNavBase } from "@/lib/site-paths";
 import { buildHeroCarouselUrls } from "@/lib/shop-theme";
 import { useThemeStore, type ThemePresetId } from "@/stores/useThemeStore";
 import { Button } from "@/ui/button";
@@ -32,8 +33,6 @@ const themes: { id: ThemePresetId; label: string; icon: typeof Layers }[] = [
   { id: "neumorph", label: "Neumorph", icon: Box },
 ];
 
-const base = PATHS.builder;
-
 function normalizeSlug(input: string) {
   return input
     .trim()
@@ -49,6 +48,8 @@ function shortId() {
 }
 
 export function BuilderEditorSidebar() {
+  const pathname = usePathname();
+  const base = storefrontNavBase(pathname);
   const { activeShop } = useDashboard();
   const brand = activeShop.brandColor;
   const accent = activeShop.accentColor;
@@ -184,7 +185,7 @@ export function BuilderEditorSidebar() {
     "h-11 rounded-2xl border-slate-100 bg-slate-50 text-sm font-semibold text-slate-900 shadow-none placeholder:text-slate-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-slate-200";
 
   const sliderStyle = React.useMemo(
-    () => ({ accentColor: brand } as React.CSSProperties),
+    () => ({ accentColor: brand }) as React.CSSProperties,
     [brand],
   );
 
@@ -440,10 +441,7 @@ export function BuilderEditorSidebar() {
             <SidebarGroupContent className="space-y-5 pt-1">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
-                  <label
-                    htmlFor="radius-theme"
-                    className={fieldLabelClass}
-                  >
+                  <label htmlFor="radius-theme" className={fieldLabelClass}>
                     Булангийн радиус
                   </label>
                   <span className="text-xs tabular-nums font-semibold text-slate-500">
@@ -586,7 +584,9 @@ export function BuilderEditorSidebar() {
               ) : null}
 
               {publishError ? (
-                <p className="text-xs font-semibold text-red-600">{publishError}</p>
+                <p className="text-xs font-semibold text-red-600">
+                  {publishError}
+                </p>
               ) : null}
             </SidebarGroupContent>
           </SidebarGroup>
@@ -601,12 +601,6 @@ export function BuilderEditorSidebar() {
           >
             Reset to default
           </Button>
-          <Link
-            href={PATHS.adminOverview}
-            className="block rounded-xl py-2 text-center text-xs font-bold text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
-          >
-            Shop settings ({PATHS.adminShop})
-          </Link>
         </SidebarFooter>
       </Sidebar>
     </SidebarProvider>

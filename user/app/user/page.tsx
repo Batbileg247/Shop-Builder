@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/ui/button";
 import { useDashboard } from "@/context/DashboardContext";
+import { PATHS } from "@/lib/site-paths";
 
 function displayName(session: AuthSession) {
   return [session.user.lastName, session.user.firstName]
@@ -216,7 +217,7 @@ export default function UserAccountPage() {
                 </p>
                 <div className="flex gap-1">
                   <Link
-                    href="/builder"
+                    href={PATHS.builderUpdate}
                     className={cn(
                       buttonVariants({ variant: "default", size: "lg" }),
                       "mt-5",
