@@ -50,17 +50,19 @@ function roleLabel(role: string) {
 export default function UserAccountPage() {
   const router = useRouter();
   const [session, setSession] = useState<AuthSession | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const s = getAuthSession();
     if (!s) {
-      router.replace("/signin?redirect=%2Fuser");
+      router.push("/signin?redirect=%2Fuser");
       return;
     }
     setSession(s);
   }, [router]);
 
-  if (!session) {
+  if (!mounted || !session) {
     return (
       <div className="flex min-h-svh items-center justify-center bg-slate-50 px-6 text-slate-500">
         <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm">
@@ -106,22 +108,6 @@ export default function UserAccountPage() {
             <Home className="size-4" aria-hidden />
             Нүүр
           </Link>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/admin/overview"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-            >
-              <LayoutDashboard className="size-4" aria-hidden />
-              Admin
-            </Link>
-            <Link
-              href="/builder"
-              className={cn(buttonVariants({ variant: "default", size: "sm" }))}
-            >
-              <Store className="size-4" aria-hidden />
-              Builder
-            </Link>
-          </div>
         </header>
 
         <main className="grid flex-1 gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]">
@@ -163,6 +149,21 @@ export default function UserAccountPage() {
                   {session.user.id}
                 </p>
               </div>
+              <button
+                type="button"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "w-30 rounded-lg border border-white/15 bg-white/10 hover:bg-white/20 hover:border-white/40",
+                )}
+                onClick={() => {
+                  clearAuthSession();
+                  router.push("/signin");
+                  router.refresh();
+                }}
+              >
+                <LogOut className="size-4" aria-hidden />
+                Гарах
+              </button>
             </div>
           </section>
 
@@ -206,7 +207,6 @@ export default function UserAccountPage() {
 
             <div className="grid gap-5 md:grid-cols-[1fr_280px]">
               <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-semibold text-amber-700">Next step</p>
                 <h2 className="mt-1 text-xl font-black tracking-tight">
                   Дэлгүүрээ үргэлжлүүлэх
                 </h2>
@@ -214,40 +214,32 @@ export default function UserAccountPage() {
                   Builder хэсэгт загвар, бүтээгдэхүүн, дэлгүүрийн тохиргоогоо
                   үргэлжлүүлэн засах боломжтой.
                 </p>
-                <Link
-                  href="/builder"
-                  className={cn(
-                    buttonVariants({ variant: "default", size: "lg" }),
-                    "mt-5",
-                  )}
-                >
-                  Builder нээх
-                  <ArrowRight className="size-4" aria-hidden />
-                </Link>
+                <div className="flex gap-1">
+                  <Link
+                    href="/builder"
+                    className={cn(
+                      buttonVariants({ variant: "default", size: "lg" }),
+                      "mt-5",
+                    )}
+                  >
+                    Builder нээх
+                    <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                  <Link
+                    href="/admin/overview"
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "lg" }),
+                      "mt-5",
+                    )}
+                  >
+                    <LayoutDashboard className="size-4" aria-hidden />
+                    Admin
+                    <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                </div>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-semibold text-slate-500">Session</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Энэ төхөөрөмж дээр таны нэвтрэлтийн мэдээлэл хадгалагдсан
-                  байна.
-                </p>
-                <button
-                  type="button"
-                  className={cn(
-                    buttonVariants({ variant: "destructive", size: "lg" }),
-                    "mt-5 w-full",
-                  )}
-                  onClick={() => {
-                    clearAuthSession();
-                    router.push("/signin");
-                    router.refresh();
-                  }}
-                >
-                  <LogOut className="size-4" aria-hidden />
-                  Гарах
-                </button>
-              </div>
+              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"></div>
             </div>
           </section>
         </main>
