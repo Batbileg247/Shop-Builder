@@ -5,24 +5,61 @@ import * as React from "react";
 import { useBuilderUi } from "@/context/builder-ui-context";
 import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { useThemeStore } from "@/stores/useThemeStore";
+import { cn } from "@/lib/utils";
 import { PanelLeftClose } from "lucide-react";
 
-import { ThemeEditorSidebar } from "./theme-editor-sidebar";
+import { BuilderEditorSidebar } from "./builder-editor-sidebar";
 import SparkleButton from "@/app/components/LandingPage/SparkleButton";
 
-export type ThemeStudioLayoutVariant = "fullscreen" | "embedded";
+export type BuilderStudioLayoutVariant =
+  | "fullscreen"
+  | "embedded"
+  /** Preview only: theme editor lives in the admin shell sidebar slot; no internal editor column. */
+  | "previewOnly";
 
-type ThemeStudioLayoutProps = {
+type BuilderStudioLayoutProps = {
   children: React.ReactNode;
-  /** `embedded` = inside a constrained admin column (no fixed viewport chrome). */
-  variant?: ThemeStudioLayoutVariant;
+  /** `embedded` = editor + preview in one row. `previewOnly` = preview surface only (editor is external). */
+  variant?: BuilderStudioLayoutVariant;
 };
 
-/** Theme Studio shell: fullscreen (legacy full-viewport) or embedded in admin main. */
-export function ThemeStudioLayout({
+function PreviewOnlyAnimatedSurface({
+  children,
+  preset,
+  previewCssVars,
+}: {
+  children: React.ReactNode;
+  preset: string;
+  previewCssVars: React.CSSProperties;
+}) {
+  const [entered, setEntered] = React.useState(false);
+
+  React.useEffect(() => {
+    const t = window.setTimeout(() => setEntered(true), 120);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
+      <div
+        data-theme={preset}
+        className={cn(
+          "site-preview-root min-h-0 flex-1 overflow-y-auto bg-pv-bg transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:opacity-100",
+          entered ? "translate-x-0 opacity-100" : "translate-x-5 opacity-0",
+        )}
+        style={previewCssVars}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** Full-screen theme studio (fork for `/builder`). */
+export function BuilderStudioLayout({
   children,
   variant = "fullscreen",
-}: ThemeStudioLayoutProps) {
+}: BuilderStudioLayoutProps) {
   const { isDemo, setIsDemo } = useBuilderUi();
   const preset = useThemeStore((s) => s.preset);
   const radius = useThemeStore((s) => s.radius);
@@ -91,11 +128,19 @@ export function ThemeStudioLayout({
     );
   }
 
+  if (variant === "previewOnly") {
+    return (
+      <PreviewOnlyAnimatedSurface preset={preset} previewCssVars={previewCssVars}>
+        {children}
+      </PreviewOnlyAnimatedSurface>
+    );
+  }
+
   if (variant === "embedded") {
     return (
       <div className="flex min-h-0 w-full flex-1 bg-[#f8f9fe]">
         <div className="flex min-h-0 w-64 shrink-0 overflow-hidden">
-          <ThemeEditorSidebar />
+          <BuilderEditorSidebar />
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <div
@@ -113,7 +158,7 @@ export function ThemeStudioLayout({
   return (
     <div className="flex min-h-svh w-full bg-[#f8f9fe]">
       <div className="fixed left-0 top-0 z-40 h-svh w-64 border-r border-sidebar-border shadow-[4px_0_24px_rgba(0,0,0,0.06)]">
-        <ThemeEditorSidebar />
+        <BuilderEditorSidebar />
       </div>
 
       <div className="ml-64 flex min-h-svh min-w-0 flex-1 flex-col">

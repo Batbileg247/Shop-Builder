@@ -2,32 +2,37 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { AUTH_LOGGED_IN_COOKIE } from "@/lib/auth-cookie";
-import { LOGIN_PAGE } from "@/lib/site-paths";
+import { LOGIN_PAGE, PATHS } from "@/lib/site-paths";
 
-const CUSTOMIZE = "/admin/customize";
+const ADMIN_SHOP = PATHS.adminShop;
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const pathname = url.pathname;
 
-  // Legacy `/admin/customize/studio` → `/admin/customize`
+  // Legacy `/admin/customize/studio` → theme studio
   if (
     pathname === "/admin/customize/studio" ||
     pathname.startsWith("/admin/customize/studio/")
   ) {
-    const sub = pathname.slice("/admin/customize/studio".length);
-    url.pathname = CUSTOMIZE;
+    const sub =
+      pathname === "/admin/customize/studio"
+        ? ""
+        : pathname.slice("/admin/customize/studio".length);
+    url.pathname = `${PATHS.builder}${sub}`;
     if (sub === "/cart") {
       url.searchParams.set("cart", "open");
     }
     return NextResponse.redirect(url, 308);
   }
 
-  // Legacy `/builder` → `/admin/customize`
-  if (pathname === "/builder" || pathname.startsWith("/builder/")) {
+  // Legacy `/admin/customize` → shop settings
+  if (pathname === "/admin/customize" || pathname.startsWith("/admin/customize/")) {
     const suffix =
-      pathname === "/builder" ? "" : pathname.slice("/builder".length);
-    url.pathname = CUSTOMIZE;
+      pathname === "/admin/customize"
+        ? ""
+        : pathname.slice("/admin/customize".length);
+    url.pathname = `${ADMIN_SHOP}${suffix}`;
     if (suffix === "/cart") {
       url.searchParams.set("cart", "open");
     }

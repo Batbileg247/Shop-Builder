@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { PATHS } from "@/lib/site-paths";
+
 export type ThemeId = "minimal" | "glass" | "neumorph";
 
 export type StoreState = {
@@ -51,13 +53,12 @@ const defaultCardRadiusPx = 16;
 const defaultCardContentPaddingRem = 1;
 const defaultProductGridGapRem = 1;
 const defaultStoreName = "My Store";
-const defaultBasePath = "/admin/customize";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [currentTheme, setCurrentTheme] = React.useState<ThemeId>("minimal");
   const [heroTitle, setHeroTitle] = React.useState(defaultHeroTitle);
   const [heroImage, setHeroImage] = React.useState(defaultHeroImage);
-  const [basePath, setBasePath] = React.useState(defaultBasePath);
+  const [basePath, setBasePath] = React.useState<string>(PATHS.builder);
   const [cardRadiusFollowsTheme, setCardRadiusFollowsTheme] =
     React.useState(true);
   const [cardRadiusPx, setCardRadiusPx] = React.useState(defaultCardRadiusPx);

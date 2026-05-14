@@ -166,8 +166,9 @@ export function ThemeEditorSidebar() {
   return (
     <SidebarProvider
       defaultOpen
+      sidebarLabel="Live theme editor"
       style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
-      className="h-full w-72 min-w-0 shrink-0"
+      className="flex h-full min-h-0 w-72 min-w-0 shrink-0 flex-col"
     >
       <Sidebar
         collapsible="none"

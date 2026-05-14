@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export type ThemePresetId = "minimal" | "glass" | "neumorph";
 
@@ -99,6 +99,48 @@ const defaults: ThemeState = {
 
 const THEME_STORE_VERSION = 2;
 
+/** Legacy single-key blob; migrated once into the first per-shop key read. */
+const LEGACY_THEME_STORAGE_KEY = "shop-builder-theme-v1";
+
+/**
+ * Per-shop theme slices in localStorage (`…__shop__${id}`). Set by
+ * `ThemeStoreShopPersistenceSync` before `persist.rehydrate()` on shop switch.
+ * Do not revert to a single global persist key without updating that sync.
+ */
+export const themePersistenceShopIdRef = { current: "" as string };
+
+function perShopThemeStorageKey(shopId: string) {
+  return `${LEGACY_THEME_STORAGE_KEY}__shop__${shopId}`;
+}
+
+const perShopThemeStorage = createJSONStorage(() => ({
+  getItem: (_name: string): string | null => {
+    const id = themePersistenceShopIdRef.current;
+    if (!id) return null;
+    const key = perShopThemeStorageKey(id);
+    let raw = localStorage.getItem(key);
+    if (raw === null) {
+      const legacy = localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
+      if (legacy !== null) {
+        localStorage.setItem(key, legacy);
+        localStorage.removeItem(LEGACY_THEME_STORAGE_KEY);
+        raw = legacy;
+      }
+    }
+    return raw;
+  },
+  setItem: (_name: string, value: string) => {
+    const id = themePersistenceShopIdRef.current;
+    if (!id) return;
+    localStorage.setItem(perShopThemeStorageKey(id), value);
+  },
+  removeItem: (_name: string) => {
+    const id = themePersistenceShopIdRef.current;
+    if (!id) return;
+    localStorage.removeItem(perShopThemeStorageKey(id));
+  },
+}));
+
 function themePatchFromPersisted(value: unknown): Partial<ThemeState> {
   if (!value || typeof value !== "object") return {};
 
@@ -183,7 +225,8 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
       reset: () => set({ ...defaults }),
     }),
     {
-      name: "shop-builder-theme-v1",
+      name: LEGACY_THEME_STORAGE_KEY,
+      storage: perShopThemeStorage,
       version: THEME_STORE_VERSION,
       migrate: (persisted) => ({
         ...defaults,

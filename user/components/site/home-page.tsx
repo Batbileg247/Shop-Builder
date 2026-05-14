@@ -34,7 +34,7 @@ import { Input } from "@/ui/input";
 import { ShopProductDetailModal } from "./shop-product-detail-modal";
 import { SiteHeader } from "./site-header";
 import { useBuilderUi } from "@/context/builder-ui-context";
-import { storefrontNavBase } from "@/lib/site-paths";
+import { PATHS, storefrontNavBase } from "@/lib/site-paths";
 import { CartDrawer } from "@/app/components/ecommerce/CartDrawer";
 
 const PREVIEW_SLOT_COUNT = 6;
@@ -66,7 +66,7 @@ function AddProductSlot({ onClick }: { onClick: () => void }) {
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-[length:var(--pv-card-content-pad,1rem)]">
+      <div className="flex flex-1 flex-col gap-2 p-(--pv-card-content-pad,1rem)">
         <div className="min-w-0">
           <h3 className="font-inter text-xl font-semibold leading-snug text-pv-fg">
             Add product
@@ -121,12 +121,16 @@ function HomePageInner() {
   /** Жинхэнэ storefront (`/s/...`) — builder preview-ийн хүрээгүй, View Demo-тэй ижил бүтэн site. */
   const isStorefront = pathname.startsWith("/s/");
   const fullSiteShell = isDemo || isStorefront;
-  const isEmbeddedCustomize = pathname.startsWith("/admin/customize");
+  /** Theme studio (`/builder`) and shop settings use the dashboard main column, not full viewport. */
+  const isEmbeddedDashboardPreview =
+    pathname.startsWith(PATHS.adminShop) ||
+    pathname === PATHS.builder ||
+    pathname.startsWith(`${PATHS.builder}/`);
 
   const catalogFull = searchParams.get("view") === "all";
   const previewHostClass = fullSiteShell
     ? SHOP_PREVIEW_HOST_DEMO_CLASS
-    : isEmbeddedCustomize
+    : isEmbeddedDashboardPreview
       ? "flex h-full min-h-0 w-full flex-1"
       : SHOP_PREVIEW_HOST_CLASS;
 
@@ -296,8 +300,8 @@ function HomePageInner() {
         className={cn(
           "shrink-0 border-pv-divider bg-pv-header",
           fullSiteShell
-            ? "w-full border-b px-4 py-6 lg:w-[17.5rem] lg:border-r lg:border-b-0 lg:shrink-0 sm:px-6"
-            : "hidden w-[17.5rem] overflow-y-auto border-r lg:block",
+            ? "w-full border-b px-4 py-6 lg:w-70 lg:border-r lg:border-b-0 lg:shrink-0 sm:px-6"
+            : "hidden w-70 overflow-y-auto border-r lg:block",
         )}
       >
         <FilterSidebar {...filterSidebarProps} />
@@ -432,7 +436,7 @@ function HomePageInner() {
           ? isStorefront
             ? "min-h-svh w-full"
             : "w-full pt-16"
-          : isEmbeddedCustomize
+          : isEmbeddedDashboardPreview
             ? "h-full min-h-0 min-w-0 flex-1"
             : "min-h-svh",
       )}
@@ -470,7 +474,7 @@ function HomePageInner() {
                     <Link
                       href={navBase}
                       className={cn(
-                        "rounded-[length:var(--pv-radius)] px-1 py-0.5 text-sm font-semibold tracking-tight text-pv-fg",
+                        "rounded-(--pv-radius) px-1 py-0.5 text-sm font-semibold tracking-tight text-pv-fg",
                         "pv-interactive transition-none",
                       )}
                     >
