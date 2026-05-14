@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ThemeStoreShopPersistenceSync } from "@/context/theme-store-shop-persistence-sync";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { themePersistenceShopIdRef, useThemeStore } from "@/stores/useThemeStore";
 import {
   deleteAdminCategory,
   deleteAdminProduct,
@@ -135,6 +135,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setShops((prev) =>
         prev.map((s) => (s.id === d.store.id ? d.store : s)),
       );
+      themePersistenceShopIdRef.current = d.store.id;
       if (d.store.themeConfig != null) {
         useThemeStore.getState().applyPersistedSiteTheme(d.store.themeConfig);
       }

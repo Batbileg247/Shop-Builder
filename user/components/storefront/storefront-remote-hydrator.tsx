@@ -10,7 +10,7 @@ import {
   fetchStorefrontBySlug,
   mapStorefrontProductsToShop,
 } from "@/lib/storefront-api";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { themePersistenceShopIdRef, useThemeStore } from "@/stores/useThemeStore";
 
 type Props = {
   slug: string;
@@ -44,6 +44,10 @@ export function StorefrontRemoteHydrator({ slug, onOwnerHydrated }: Props) {
             /* ignore */
           }
           isOwner = true;
+        }
+
+        if (data.store.id) {
+          themePersistenceShopIdRef.current = data.store.id;
         }
 
         if (data.store.themeConfig != null) {

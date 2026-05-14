@@ -217,7 +217,7 @@ export function CheckoutSummary({
                 className="object-cover"
                 fill
                 sizes="(max-width:768px) 40vw, 200px"
-                src="https://images.unsplash.com/photo-1539109136881-3be0616acf5b?auto=format&fit=crop&w=600&q=80"
+                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=600&q=80"
               />
             </div>
           </div>

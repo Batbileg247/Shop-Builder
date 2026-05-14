@@ -16,6 +16,8 @@ import {
 
 import { StorefrontTopNav } from "./storefront-top-nav";
 
+const STOREFRONT_GIFT_WRAP_FEE = 10_000;
+
 function StorefrontCheckoutInner() {
   const params = useParams<{ slug: string }>();
   const slug =
@@ -41,10 +43,13 @@ function StorefrontCheckoutInner() {
     setBusy(true);
     setError(null);
     try {
+      const totalWithGift =
+        shop.cartTotal + (giftWrap ? STOREFRONT_GIFT_WRAP_FEE : 0);
       const { orderId } = await postStorefrontCheckout(slug, {
         buyerName: shop.buyerName.trim(),
         buyerEmail: shop.buyerEmail.trim(),
         giftWrap,
+        totalPrice: totalWithGift,
         lines: shop.cartItems.map((i) => ({
           productId: i.product.id,
           quantity: i.quantity,

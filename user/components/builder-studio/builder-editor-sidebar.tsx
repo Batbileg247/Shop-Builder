@@ -94,6 +94,7 @@ export function BuilderEditorSidebar() {
   const backgroundColor = useThemeStore((s) => s.backgroundColor);
   const textColor = useThemeStore((s) => s.textColor);
   const font = useThemeStore((s) => s.font);
+  const heroAnnouncement = useThemeStore((s) => s.heroAnnouncement);
 
   const resetTheme = useThemeStore((s) => s.reset);
 
@@ -171,6 +172,11 @@ export function BuilderEditorSidebar() {
         productGridGapRem,
         heroImageHeightPx,
         previewProductCardBasisRem,
+        primaryColor,
+        backgroundColor,
+        textColor,
+        font,
+        heroAnnouncement,
       });
 
       const basePart = normalizeMerchantSlugBase(createSlug.trim() || name);
@@ -264,6 +270,11 @@ export function BuilderEditorSidebar() {
       productGridGapRem,
       heroImageHeightPx,
       previewProductCardBasisRem,
+      primaryColor,
+      backgroundColor,
+      textColor,
+      font,
+      heroAnnouncement,
     });
 
     try {

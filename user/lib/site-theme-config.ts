@@ -1,5 +1,7 @@
 export type ThemePresetId = "minimal" | "glass" | "neumorph";
 
+export type ThemeStudioFont = "sans" | "serif" | "mono";
+
 /** D1 `theme_config` / API-д зөвхөн эдгээр талбарууд хадгалагдана. */
 export type SiteThemePersisted = {
   builderTheme: ThemePresetId;
@@ -13,6 +15,11 @@ export type SiteThemePersisted = {
     previewProductCardBasisRem: number;
   };
   heroGallery: string[];
+  primaryColor: string;
+  backgroundColor: string;
+  textColor: string;
+  font: ThemeStudioFont;
+  heroAnnouncement: string;
 };
 
 const PRESETS: ThemePresetId[] = ["minimal", "glass", "neumorph"];
@@ -26,6 +33,27 @@ function num(v: unknown, fallback: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
+function safeThemeColor(v: unknown): string | undefined {
+  if (typeof v !== "string") return undefined;
+  const s = v.trim().slice(0, 40);
+  if (!s) return undefined;
+  if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(s)) return s;
+  if (/^rgba?\(/i.test(s)) return s;
+  return undefined;
+}
+
+function parseThemeFont(v: unknown): ThemeStudioFont | undefined {
+  if (v === "sans" || v === "serif" || v === "mono") return v;
+  return undefined;
+}
+
+function safeHeroAnnouncement(v: unknown): string | undefined {
+  if (typeof v !== "string") return undefined;
+  const t = v.trim();
+  if (!t) return undefined;
+  return t.slice(0, 500);
+}
+
 /** Сервер / localStorage-аас уншсан JSON → store patch. */
 export type ParsedSiteTheme = {
   preset?: ThemePresetId;
@@ -37,6 +65,11 @@ export type ParsedSiteTheme = {
   productGridGapRem?: number;
   heroImageHeightPx?: number;
   previewProductCardBasisRem?: number;
+  primaryColor?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  font?: ThemeStudioFont;
+  heroAnnouncement?: string;
 };
 
 export function parseSiteThemePersisted(raw: unknown): ParsedSiteTheme {
@@ -99,6 +132,17 @@ export function parseSiteThemePersisted(raw: unknown): ParsedSiteTheme {
     }
   }
 
+  const pc = safeThemeColor(o.primaryColor);
+  if (pc) patch.primaryColor = pc;
+  const bc = safeThemeColor(o.backgroundColor);
+  if (bc) patch.backgroundColor = bc;
+  const tc = safeThemeColor(o.textColor);
+  if (tc) patch.textColor = tc;
+  const f = parseThemeFont(o.font);
+  if (f) patch.font = f;
+  const ann = safeHeroAnnouncement(o.heroAnnouncement);
+  if (ann) patch.heroAnnouncement = ann;
+
   return patch;
 }
 
@@ -113,7 +157,16 @@ export function buildSiteThemePersisted(s: {
   productGridGapRem: number;
   heroImageHeightPx: number;
   previewProductCardBasisRem: number;
+  primaryColor: string;
+  backgroundColor: string;
+  textColor: string;
+  font: ThemeStudioFont;
+  heroAnnouncement: string;
 }): SiteThemePersisted {
+  const pc = safeThemeColor(s.primaryColor) ?? "#0a0a0a";
+  const bc = safeThemeColor(s.backgroundColor) ?? "#ffffff";
+  const tc = safeThemeColor(s.textColor) ?? "#0a0a0a";
+  const font = parseThemeFont(s.font) ?? "sans";
   return {
     builderTheme: s.preset,
     heroTitle: s.heroTitle,
@@ -131,5 +184,10 @@ export function buildSiteThemePersisted(s: {
       ),
     },
     heroGallery: [...s.heroGallery],
+    primaryColor: pc,
+    backgroundColor: bc,
+    textColor: tc,
+    font,
+    heroAnnouncement: safeHeroAnnouncement(s.heroAnnouncement) ?? "",
   };
 }

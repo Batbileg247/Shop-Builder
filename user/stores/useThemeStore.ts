@@ -227,16 +227,26 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
         const parsed = parseSiteThemePersisted(raw);
         set((prev) => {
           const preset = parsed.preset ?? prev.preset;
+          const pd = presetDefaults(preset);
           const next: ThemeState = {
             ...prev,
-            ...presetDefaults(preset),
             preset,
+            ...pd,
             heroTitle: parsed.heroTitle ?? prev.heroTitle,
             shopName: parsed.shopName ?? prev.shopName,
             heroGallery: parsed.heroGallery ?? prev.heroGallery,
             heroImage: "",
-            heroAnnouncement: "",
-            radius: parsed.radius ?? prev.radius,
+            heroAnnouncement:
+              parsed.heroAnnouncement ?? prev.heroAnnouncement,
+            primaryColor:
+              parsed.primaryColor ?? pd.primaryColor ?? prev.primaryColor,
+            backgroundColor:
+              parsed.backgroundColor ??
+              pd.backgroundColor ??
+              prev.backgroundColor,
+            textColor: parsed.textColor ?? pd.textColor ?? prev.textColor,
+            font: parsed.font ?? pd.font ?? prev.font,
+            radius: parsed.radius ?? pd.radius ?? prev.radius,
             cardContentPaddingRem:
               parsed.cardContentPaddingRem ?? prev.cardContentPaddingRem,
             productGridGapRem:
@@ -290,6 +300,11 @@ export const useThemeStore = create<ThemeState & ThemeActions>()(
           productGridGapRem: s.productGridGapRem,
           heroImageHeightPx: s.heroImageHeightPx,
           previewProductCardBasisRem: s.previewProductCardBasisRem,
+          primaryColor: s.primaryColor,
+          backgroundColor: s.backgroundColor,
+          textColor: s.textColor,
+          font: s.font,
+          heroAnnouncement: s.heroAnnouncement,
         }),
     },
   ),
