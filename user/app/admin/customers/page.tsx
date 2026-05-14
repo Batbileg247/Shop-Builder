@@ -18,25 +18,26 @@ export default function CustomersPage() {
       <header className="rounded-[2rem] bg-white px-6 py-6 shadow-[0_24px_70px_rgba(15,23,42,0.07)] sm:px-8">
         <p className="text-sm font-bold text-slate-400">Customers</p>
         <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">
-          {activeShop.name} audience
+          People who shop at {activeShop.name}
         </h1>
-        <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-400">
-          Customer records are filtered by the active shop in the sidebar.
+        <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
+          Same list you would scribble in a notebook — names, emails, and what
+          they have spent. Use the shop picker in the sidebar to switch stores.
         </p>
       </header>
 
       <section className="rounded-[2rem] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.07)] sm:p-7">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-bold text-slate-400">Customer List</p>
+            <p className="text-sm font-bold text-slate-400">Directory</p>
             <h2 className="mt-1 text-2xl font-black text-slate-950">
-              Recent buyers
+              Recent orders
             </h2>
           </div>
           <div className="relative w-full md:w-80">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
             <input
-              placeholder="Search customers"
+              placeholder="Name or email"
               className="h-12 w-full rounded-2xl border border-slate-100 bg-slate-50 pl-11 pr-4 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-300 focus:bg-white"
             />
           </div>

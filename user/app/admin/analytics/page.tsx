@@ -20,10 +20,11 @@ export default function AnalyticsPage() {
       <header className="rounded-[2rem] bg-white px-6 py-6 shadow-[0_24px_70px_rgba(15,23,42,0.07)] sm:px-8">
         <p className="text-sm font-bold text-slate-400">Analytics</p>
         <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">
-          {activeShop.name} sales
+          What {activeShop.name} sold
         </h1>
-        <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-400">
-          Monthly sales analytics for the selected tenant.
+        <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
+          Same chart as Overview, just bigger — pick a month in your head and
+          match it to the bump on the line.
         </p>
       </header>
 
@@ -34,7 +35,7 @@ export default function AnalyticsPage() {
       />
 
       <section className="rounded-[2rem] bg-white p-7 shadow-[0_24px_70px_rgba(15,23,42,0.06)]">
-        <p className="text-sm font-bold text-slate-400">Annual Summary</p>
+        <p className="text-sm font-bold text-slate-400">Year in review</p>
         <h2 className="mt-1 text-2xl font-black text-slate-950">
           {currencyFormatter.format(totalSales)}
         </h2>

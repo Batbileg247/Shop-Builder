@@ -77,12 +77,10 @@ export default function CustomizePage() {
   const previewAccent = form.accentColor || activeShop.accentColor;
 
   return (
-    <div>
-      <div className="min-h-0 min-w-0 self-stretch">
-        <ThemeStudioLayout variant="embedded">
-          <HomePage />
-        </ThemeStudioLayout>
-      </div>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <ThemeStudioLayout variant="embedded">
+        <HomePage />
+      </ThemeStudioLayout>
     </div>
   );
 }

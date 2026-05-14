@@ -115,6 +115,7 @@ export default function SparkleButton({
       <style>{styles}</style>
 
       <button
+        type="button"
         onClick={onClick}
         className={`generate-btn relative flex items-center gap-2 cursor-pointer border-none bg-transparent px-8 py-4 rounded-full origin-center transition-transform duration-300 ease-in-out hover:scale-110 ${className}`}
       >
