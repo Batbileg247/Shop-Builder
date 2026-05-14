@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-import { Play } from "lucide-react";
+import { Play, Sparkle } from "lucide-react";
 
 import { useShop } from "@/app/hooks/useShop";
 import { useBuilderUi } from "@/context/builder-ui-context";
@@ -12,6 +12,7 @@ import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { storefrontNavBase } from "@/lib/site-paths";
 import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
+import SparkleButton from "@/app/components/LandingPage/SparkleButton";
 
 function SiteHeaderInner() {
   const pathname = usePathname();
@@ -42,16 +43,12 @@ function SiteHeaderInner() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-end px-6">
         <nav className="flex items-center gap-1.5 sm:gap-2" aria-label="Main">
           {!isStorefront ? (
-            <Button
-              type="button"
-              variant="default"
-              size="lg"
-              className={builderDemoCtaButtonClassName()}
+            <SparkleButton
+              label="View Demo"
+              icon={Sparkle}
+              className="h-9 gap-3"
               onClick={() => setIsDemo(true)}
-            >
-              <Play className="size-4 fill-current opacity-95" aria-hidden />
-              View Demo
-            </Button>
+            ></SparkleButton>
           ) : null}
           <Link
             href={navBase}

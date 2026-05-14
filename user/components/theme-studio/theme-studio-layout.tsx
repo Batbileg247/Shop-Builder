@@ -7,9 +7,10 @@ import { builderDemoCtaButtonClassName } from "@/lib/builder-demo-cta-button";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { cn } from "@/lib/utils";
 import { Button } from "@/ui/button";
-import { PanelLeftClose } from "lucide-react";
+import { PanelLeftClose, Space } from "lucide-react";
 
 import { ThemeEditorSidebar } from "./theme-editor-sidebar";
+import SparkleButton from "@/app/components/LandingPage/SparkleButton";
 
 /** Theme Studio shell for `/builder` routes. */
 export function ThemeStudioLayout({ children }: { children: React.ReactNode }) {
@@ -57,19 +58,17 @@ export function ThemeStudioLayout({ children }: { children: React.ReactNode }) {
         className="site-preview-root relative z-50 w-full min-h-screen overflow-y-auto bg-pv-bg"
         style={previewCssVars}
       >
-        <Button
-          type="button"
-          variant="default"
-          size="lg"
-          className={cn(
-            builderDemoCtaButtonClassName(),
-            "fixed right-4 top-4 z-60",
-          )}
-          onClick={() => setIsDemo(false)}
-        >
-          <PanelLeftClose className="size-4 opacity-95" aria-hidden />
-          Back to Editor
-        </Button>
+        <div className="flex justify-end p-2">
+          <SparkleButton
+            label="Back to Editor"
+            icon={PanelLeftClose}
+            className={cn(
+              builderDemoCtaButtonClassName(),
+              "fixed right-4 top-4 z-60",
+            )}
+            onClick={() => setIsDemo(false)}
+          ></SparkleButton>
+        </div>
         {children}
       </main>
     );
