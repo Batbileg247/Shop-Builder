@@ -647,7 +647,7 @@ function HomePageInner() {
   return (
     <div
       className={cn(
-        "pv-storefront flex w-full flex-col",
+        "pv-storefront overflow-clip rounded-2xl border-2 flex w-full flex-col",
         fullSiteShell
           ? isStorefront
             ? "min-h-svh w-full"

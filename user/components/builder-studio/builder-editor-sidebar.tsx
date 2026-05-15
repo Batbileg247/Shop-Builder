@@ -10,11 +10,18 @@ import { useShop } from "@/app/hooks/useShop";
 import { useDashboard } from "@/context/DashboardContext";
 import { getAuthSession } from "@/lib/auth-session";
 import { patchAdminStore } from "@/lib/admin-api";
-import { postPlatformStore, type PlatformStoreCreated } from "@/lib/platform-stores";
+import {
+  postPlatformStore,
+  type PlatformStoreCreated,
+} from "@/lib/platform-stores";
 import { PATHS, storefrontNavBase } from "@/lib/site-paths";
 import { buildSiteThemePersisted } from "@/lib/site-theme-config";
 import { buildHeroCarouselUrls } from "@/lib/shop-theme";
-import { getMerchantBaseUrl, resolveThemeImageUrlsForStorage, uploadImageViaMerchantApi } from "@/lib/storefront-api";
+import {
+  getMerchantBaseUrl,
+  resolveThemeImageUrlsForStorage,
+  uploadImageViaMerchantApi,
+} from "@/lib/storefront-api";
 import { useThemeStore, type ThemePresetId } from "@/stores/useThemeStore";
 import { Button } from "@/ui/button";
 import {
@@ -119,8 +126,7 @@ export function BuilderEditorSidebar() {
   const [heroUploadError, setHeroUploadError] = React.useState<string | null>(
     null,
   );
-  const [uploadingGalleryHero, setUploadingGalleryHero] =
-    React.useState(false);
+  const [uploadingGalleryHero, setUploadingGalleryHero] = React.useState(false);
 
   const [createOwnerId, setCreateOwnerId] = React.useState("");
   const [createStoreName, setCreateStoreName] = React.useState("");
@@ -156,7 +162,9 @@ export function BuilderEditorSidebar() {
         resolvedGallery = r.heroGallery;
       } catch (e) {
         setCreateError(
-          e instanceof Error ? e.message : "Зургийг Cloudinary руу илгээхэд алдаа.",
+          e instanceof Error
+            ? e.message
+            : "Зургийг Cloudinary руу илгээхэд алдаа.",
         );
         setCreateBusy(false);
         return;
@@ -254,7 +262,9 @@ export function BuilderEditorSidebar() {
       resolvedGallery = r.heroGallery;
     } catch (e) {
       setSaveError(
-        e instanceof Error ? e.message : "Зургийг Cloudinary руу илгээхэд алдаа.",
+        e instanceof Error
+          ? e.message
+          : "Зургийг Cloudinary руу илгээхэд алдаа.",
       );
       setSaveStatus("error");
       return;
@@ -758,7 +768,10 @@ export function BuilderEditorSidebar() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="create-store-name" className={fieldLabelClass}>
+                  <label
+                    htmlFor="create-store-name"
+                    className={fieldLabelClass}
+                  >
                     Дэлгүүрийн нэр
                   </label>
                   <SidebarInput
@@ -793,7 +806,9 @@ export function BuilderEditorSidebar() {
                 </button>
 
                 {createError ? (
-                  <p className="text-xs font-semibold text-red-600">{createError}</p>
+                  <p className="text-xs font-semibold text-red-600">
+                    {createError}
+                  </p>
                 ) : null}
               </SidebarGroupContent>
             </SidebarGroup>
@@ -823,7 +838,9 @@ export function BuilderEditorSidebar() {
                 </button>
 
                 {saveError ? (
-                  <p className="text-xs font-semibold text-red-600">{saveError}</p>
+                  <p className="text-xs font-semibold text-red-600">
+                    {saveError}
+                  </p>
                 ) : null}
               </SidebarGroupContent>
             </SidebarGroup>

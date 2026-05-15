@@ -2,7 +2,10 @@
 
 import * as React from "react";
 import { ThemeStoreShopPersistenceSync } from "@/context/theme-store-shop-persistence-sync";
-import { themePersistenceShopIdRef, useThemeStore } from "@/stores/useThemeStore";
+import {
+  themePersistenceShopIdRef,
+  useThemeStore,
+} from "@/stores/useThemeStore";
 import {
   deleteAdminCategory,
   deleteAdminProduct,
@@ -48,7 +51,10 @@ type DashboardContextValue = {
   switchShop: (shopId: string) => void;
   updateShop: (shopId: string, shop: ShopUpdateInput) => Promise<void>;
   addProduct: (product: NewProductInput) => Promise<void>;
-  updateProduct: (productId: string, product: ProductUpdateInput) => Promise<void>;
+  updateProduct: (
+    productId: string,
+    product: ProductUpdateInput,
+  ) => Promise<void>;
   deleteProduct: (productId: string) => Promise<void>;
   refreshDashboard: () => Promise<void>;
   /** Merchant admin-аас дэлгүүрийн жагсаалтыг дахин татна (жишээ нь platform-оор шинэ дэлгүүр үүсгэсний дараа). */
@@ -118,12 +124,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const effectiveShopId =
     shops.some((s) => s.id === activeShopId) && activeShopId
       ? activeShopId
-      : shops[0]?.id ?? "";
+      : (shops[0]?.id ?? "");
 
-  const metrics = React.useMemo(
-    () => calculateMetrics(products),
-    [products],
-  );
+  const metrics = React.useMemo(() => calculateMetrics(products), [products]);
 
   const remoteStatus = React.useMemo<DashboardRemoteStatus>(
     () => (isLoadingDashboard ? "loading" : "ready"),
@@ -146,9 +149,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     try {
       const d = await fetchAdminDashboard(effectiveShopId);
       if (n !== dashboardReq.current) return;
-      setShops((prev) =>
-        prev.map((s) => (s.id === d.store.id ? d.store : s)),
-      );
+      setShops((prev) => prev.map((s) => (s.id === d.store.id ? d.store : s)));
       themePersistenceShopIdRef.current = d.store.id;
       if (d.store.themeConfig != null) {
         useThemeStore.getState().applyPersistedSiteTheme(d.store.themeConfig);
@@ -252,7 +253,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         ...(shop.name !== undefined ? { name: shop.name } : {}),
         ...(shop.slug !== undefined ? { slug: shop.slug } : {}),
         ...(shop.logoUrl !== undefined ? { logoUrl: shop.logoUrl } : {}),
-        ...(shop.brandColor !== undefined ? { brandColor: shop.brandColor } : {}),
+        ...(shop.brandColor !== undefined
+          ? { brandColor: shop.brandColor }
+          : {}),
         ...(shop.accentColor !== undefined
           ? { accentColor: shop.accentColor }
           : {}),
@@ -310,12 +313,16 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       await patchAdminProduct(effectiveShopId, productId, {
         ...(product.name !== undefined ? { name: product.name } : {}),
         ...(product.sku !== undefined ? { sku: product.sku } : {}),
-        ...(product.category !== undefined ? { category: product.category } : {}),
+        ...(product.category !== undefined
+          ? { category: product.category }
+          : {}),
         ...(product.size !== undefined ? { size: product.size } : {}),
         ...(product.description !== undefined
           ? { description: product.description }
           : {}),
-        ...(product.imageUrl !== undefined ? { imageUrl: product.imageUrl } : {}),
+        ...(product.imageUrl !== undefined
+          ? { imageUrl: product.imageUrl }
+          : {}),
         ...(product.status !== undefined ? { status: product.status } : {}),
         ...(product.price !== undefined ? { price: product.price } : {}),
         ...(product.inventory !== undefined
