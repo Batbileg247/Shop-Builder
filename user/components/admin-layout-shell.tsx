@@ -1,5 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { Plus } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import SparkleButton from "@/app/components/LandingPage/SparkleButton";
 import { BuilderChromeMyShopButton } from "@/components/builder-studio/builder-chrome-my-shop-button";
@@ -17,6 +20,11 @@ export function AdminDashboardChrome({
   showViewDemo?: boolean;
   children: ReactNode;
 }) {
+  const pathname = usePathname();
+  const hideCreateShopCta =
+    pathname.startsWith(PATHS.builderCreate) ||
+    pathname.startsWith(PATHS.buildingCreate);
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="mb-6 flex shrink-0 items-center justify-between gap-4">
@@ -28,13 +36,15 @@ export function AdminDashboardChrome({
               <BuilderChromeMyShopButton />
             </>
           ) : null}
-          <SparkleButton
-            label="Create New Shop"
-            icon={Plus}
-            href={PATHS.builderCreate}
-            size="compact"
-            className="gap-2"
-          />
+          {!hideCreateShopCta ? (
+            <SparkleButton
+              label="Create New Shop"
+              icon={Plus}
+              href={PATHS.builderCreate}
+              size="compact"
+              className="gap-2"
+            />
+          ) : null}
         </div>
       </div>
       <div className="flex min-h-0 flex-1 flex-col">{children}</div>
