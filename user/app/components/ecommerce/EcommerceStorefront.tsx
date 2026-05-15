@@ -68,8 +68,6 @@ type Props = {
   checkout: () => void;
   clearLastOrder: () => void;
   lastOrderId: string;
-  /** Client storefront: fixed hero height, no drag handle. Builder/catalog: resizable split. */
-  resizableHero?: boolean;
   catalogLayout?: StorefrontCatalogLayout;
   /** Client navigates here when View More is clicked (preview mode). */
   allProductsHref?: string;
@@ -98,7 +96,6 @@ export function EcommerceStorefront({
   lastOrderId,
   catalogLayout = "preview",
   allProductsHref = BUILDER_PREVIEW_BASE,
-  resizableHero = true,
   deeplinkProductId,
   deeplinkCartOpen = false,
 }: Props) {
@@ -296,23 +293,11 @@ export function EcommerceStorefront({
 
   return (
     <div className={SHOP_PREVIEW_HOST_CLASS}>
-      {resizableHero ? (
-        <HeroShelfResizable
-          belowHero={storefrontBody}
-          hero={heroNode}
-          theme={theme}
-        />
-      ) : (
-        <div
-          className="flex h-full min-h-0 flex-col overflow-hidden rounded-md border border-black/10 shadow-sm"
-          style={shopPreviewShellStyle(theme)}
-        >
-          <div className="relative h-[min(34vh,320px)] min-h-[180px] w-full shrink-0 overflow-hidden sm:h-[min(38vh,380px)]">
-            {heroNode}
-          </div>
-          {storefrontBody}
-        </div>
-      )}
+      <HeroShelfResizable
+        belowHero={storefrontBody}
+        hero={heroNode}
+        theme={theme}
+      />
 
       {catalogLayout === "full" && (
         <Sheet onOpenChange={setMobileFiltersOpen} open={mobileFiltersOpen}>
