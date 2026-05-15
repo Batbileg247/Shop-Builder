@@ -12,6 +12,7 @@ import { buildHeroCarouselUrls, shopPreviewShellStyle } from "@/lib/shop-theme";
 import {
   HeroShelfResizable,
   SHOP_PREVIEW_HOST_CLASS,
+  SHOP_PREVIEW_HOST_DEMO_CLASS,
 } from "@/app/components/shop/HeroShelfResizable";
 import { ProductCard } from "@/app/components/ecommerce/ProductCard";
 import { ProductGrid } from "@/app/components/ecommerce/ProductGrid";
@@ -255,6 +256,7 @@ function HomePageInner() {
   );
   const shop = useShop();
   const { isDemo } = useBuilderUi();
+  /** Resizable split only when not locked; builder/storefront/demo use theme Hero height (px). */
   const [heroPanelPercent, setHeroPanelPercent] = React.useState(44);
 
   const isStorefront = pathname.startsWith("/s/");
@@ -263,14 +265,16 @@ function HomePageInner() {
   const fullSiteShell = isDemo || isStorefront;
   /** Theme studio (`/builder/...`) and landing create (`/building/...`) use the dashboard main column, not full viewport. */
   const isEmbeddedDashboardPreview = isBuilderPreviewPath(pathname);
-  /** Builder/building main column: outer shell scrolls; hero split uses a fixed viewport slice (see `BuilderStudioLayout` previewOnly). */
+  /** Builder/building main column: let the preview grow with content; outer shell scrolls (see `BuilderStudioLayout` previewOnly). */
   const relaxEmbeddedPreviewOverflow = isEmbeddedDashboardPreview;
+  /** Builder/storefront/demo: fixed hero via theme `heroImageHeightPx`, not drag-resize. */
+  const heroShelfLocked = fullSiteShell || isEmbeddedDashboardPreview;
 
   const catalogFull = searchParams.get("view") === "all";
   const previewHostClass = fullSiteShell
-    ? "flex w-full flex-1 min-h-0 flex-col"
+    ? SHOP_PREVIEW_HOST_DEMO_CLASS
     : isEmbeddedDashboardPreview
-      ? "flex min-h-0 w-full flex-1 flex-col"
+      ? "flex h-full min-h-0 w-full flex-1"
       : SHOP_PREVIEW_HOST_CLASS;
 
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -566,7 +570,16 @@ function HomePageInner() {
   );
 
   const previewBelowHero = (
-    <div className="min-h-0 flex-1 overflow-y-auto border-t border-pv-divider bg-pv-bg">
+    <div
+      className={cn(
+        "border-t border-pv-divider bg-pv-bg",
+        fullSiteShell
+          ? "w-full"
+          : relaxEmbeddedPreviewOverflow
+            ? "w-full"
+            : "min-h-0 flex-1 overflow-y-auto",
+      )}
+    >
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
         <div className="mb-10 flex flex-wrap justify-center gap-2">
           {categoryChips.map((cat) => (
@@ -634,11 +647,13 @@ function HomePageInner() {
   return (
     <div
       className={cn(
-        "pv-storefront overflow-clip rounded-2xl border-2 flex w-full flex-col",
+        "pv-storefront flex w-full flex-col",
         fullSiteShell
-          ? "min-h-0 w-full flex-1 flex-col"
+          ? isStorefront
+            ? "min-h-svh w-full"
+            : "w-full"
           : relaxEmbeddedPreviewOverflow
-            ? "min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden"
+            ? "min-h-0 min-w-0 w-full"
             : "min-h-svh",
       )}
       data-theme={preset}
@@ -647,18 +662,17 @@ function HomePageInner() {
         className={cn(
           "flex w-full flex-col",
           fullSiteShell
-            ? "w-full flex-1 min-h-0"
+            ? "w-full"
             : relaxEmbeddedPreviewOverflow
-              ? "flex min-h-0 w-full flex-1 flex-col overflow-hidden"
+              ? "min-h-0 w-full"
               : "min-h-0 flex-1 flex-col overflow-hidden",
         )}
       >
         <div className={previewHostClass}>
           <div
             className={cn(
-              "flex w-full max-w-full flex-col overflow-hidden",
-              relaxEmbeddedPreviewOverflow && "h-full min-h-0",
-              fullSiteShell && "min-h-0 flex-1",
+              "flex w-full max-w-full flex-col",
+              relaxEmbeddedPreviewOverflow ? "min-h-0" : "overflow-hidden",
               isStorefront
                 ? ""
                 : "rounded-2xl border border-zinc-200 shadow-sm",
@@ -728,32 +742,26 @@ function HomePageInner() {
             {catalogFull ? (
               fullShopLayout
             ) : (
-              <div
-                className={cn(
-                  "flex min-h-0 flex-col",
-                  isEmbeddedDashboardPreview && !fullSiteShell
-                    ? "h-full"
-                    : "flex-1",
-                )}
-              >
-                <HeroShelfResizable
-                  belowHero={previewBelowHero}
-                  hero={
-                    <div className="flex h-full min-h-0 flex-col overflow-hidden">
-                      <div className="min-h-0 flex-1 overflow-hidden">
-                        <ShopHero
-                          fillContainer
-                          heroImages={buildHeroCarouselUrls(effectiveTheme)}
-                          theme={effectiveTheme}
-                        />
-                      </div>
+              <HeroShelfResizable
+                belowHero={previewBelowHero}
+                hero={
+                  <div className="flex h-full min-h-0 flex-col overflow-hidden">
+                    <div className="min-h-0 flex-1 overflow-hidden">
+                      <ShopHero
+                        fillContainer
+                        heroImages={buildHeroCarouselUrls(effectiveTheme)}
+                        theme={effectiveTheme}
+                      />
                     </div>
-                  }
-                  heroSizePercent={heroPanelPercent}
-                  onHeroPercentChange={setHeroPanelPercent}
-                  theme={effectiveTheme}
-                />
-              </div>
+                  </div>
+                }
+                heroSizePercent={heroPanelPercent}
+                locked={heroShelfLocked}
+                onHeroPercentChange={
+                  heroShelfLocked ? undefined : setHeroPanelPercent
+                }
+                theme={effectiveTheme}
+              />
             )}
           </div>
         </div>
@@ -822,7 +830,7 @@ function HomePageInner() {
       ) : null}
 
       {!fullSiteShell && (
-        <footer className="mt-auto shrink-0 border-t border-pv-divider py-8 text-center text-xs text-pv-muted">
+        <footer className="mt-auto border-t border-pv-divider py-8 text-center text-xs text-pv-muted">
           © {new Date().getFullYear()} Developed for Online Commerce by{" "}
           <span className="font-bold">UNLIMITED. LLC</span>
         </footer>

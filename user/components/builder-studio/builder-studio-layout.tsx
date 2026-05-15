@@ -44,7 +44,7 @@ function PreviewOnlyAnimatedSurface({
       <div
         data-theme={preset}
         className={cn(
-          "site-preview-root flex min-h-0 flex-1 flex-col overflow-hidden bg-pv-bg transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:opacity-100",
+          "site-preview-root min-h-0 flex-1 overflow-y-auto bg-pv-bg transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:opacity-100",
           entered ? "translate-x-0 opacity-100" : "translate-x-5 opacity-0",
         )}
         style={previewCssVars}

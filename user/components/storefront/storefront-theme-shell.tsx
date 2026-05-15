@@ -42,7 +42,7 @@ export function StorefrontThemeShell({
 
   return (
     <div
-      className="site-preview-root flex h-svh min-h-0 w-full flex-col overflow-hidden bg-pv-bg text-pv-fg"
+      className="site-preview-root min-h-svh w-full bg-pv-bg text-pv-fg"
       data-theme={preset}
       style={style}
     >
